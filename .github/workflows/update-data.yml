@@ -1,0 +1,73 @@
+name: Update kumoh data
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'    # 5분마다 (GitHub 사정으로 몇 분 늦을 수 있음)
+  workflow_dispatch:         # Actions 탭에서 수동 실행 가능
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATA_DIR: ${{ github.workspace }}/pub
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install --no-audit --no-fund
+
+      # 'data' 브랜치(JSON 보관용)를 pub 폴더로 받아온다. 처음이면 빈 폴더로 시작.
+      - name: Prepare data branch
+        run: |
+          URL="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$URL" data >/dev/null 2>&1; then
+            git clone --depth 1 --branch data "$URL" pub
+          else
+            mkdir pub
+            git -C pub init -b data
+            git -C pub remote add origin "$URL"
+          fi
+
+      - name: Scrape menu and notices
+        id: scrape
+        continue-on-error: true
+        run: node scripts/scrape.mjs
+
+      - name: Fetch bus arrivals
+        id: bus
+        continue-on-error: true
+        run: node scripts/bus.mjs
+        env:
+          TAGO_API_KEY: ${{ secrets.TAGO_API_KEY }}
+
+      # 변경이 있으면 'data' 브랜치를 "커밋 1개짜리"로 덮어쓴다 (기록이 쌓이지 않아 저장소가 안 커짐)
+      - name: Publish data branch
+        run: |
+          cd pub
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          TREE=$(git write-tree)
+          COMMIT=$(git commit-tree "$TREE" -m "data snapshot $(date -u +%FT%TZ)")
+          git push --force origin "$COMMIT:refs/heads/data"
+
+      - name: Fail if a step failed
+        if: steps.scrape.outcome == 'failure' || steps.bus.outcome == 'failure'
+        run: |
+          echo "scrape=${{ steps.scrape.outcome }} bus=${{ steps.bus.outcome }}"
+          exit 1
