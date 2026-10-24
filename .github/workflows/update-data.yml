@@ -39,17 +39,21 @@ jobs:
             git -C pub remote add origin "$URL"
           fi
 
-      - name: Scrape menu and notices
-        id: scrape
-        continue-on-error: true
-        run: node scripts/scrape.mjs
-
       - name: Fetch bus arrivals
         id: bus
         continue-on-error: true
+        timeout-minutes: 3
         run: node scripts/bus.mjs
         env:
           TAGO_API_KEY: ${{ secrets.TAGO_API_KEY }}
+
+      - name: Scrape menu and notices
+        id: scrape
+        continue-on-error: true
+        timeout-minutes: 12   # 이 단계만 먼저 끊어서, 그때까지 모은 데이터를 아래 Publish 단계에서 저장
+        run: node scripts/scrape.mjs
+        env:
+          DETAIL_PER_RUN: 150
 
       # 변경이 있으면 'data' 브랜치를 "커밋 1개짜리"로 덮어쓴다 (기록이 쌓이지 않아 저장소가 안 커짐)
       - name: Publish data branch
