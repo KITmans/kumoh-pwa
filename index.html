@@ -1185,6 +1185,8 @@
   }
 
   // ===================== 교통 (TAGO 버스도착정보, Actions가 bus.json 갱신) =====================
+  // Cloudflare Worker 주소 (배포 후 https://이름.계정.workers.dev 로 교체). 비워 두면 GitHub 데이터만 사용.
+  const BUS_API = 'https://1.kangdongwan7.workers.dev/';
   let busData = null;
   const busArea = document.getElementById('busArea');
   const busUpdated = document.getElementById('busUpdated');
@@ -1217,9 +1219,16 @@
   async function loadBus(){
     busArea.innerHTML = busData ? busArea.innerHTML : '<div class="notice-loading">버스 정보를 불러오는 중이에요…</div>';
     try{
-      // 캐시를 피하려고 1분 단위 값을 붙인다.
-      const res = await fetch(DATA_BASE+'bus.json?t='+Math.floor(Date.now()/60000), { cache:'no-cache' });
-      if(!res.ok) throw new Error('HTTP '+res.status);
+      let res = null;
+      if(BUS_API){
+        // Cloudflare Worker (30초 단위 갱신). 실패하면 아래 GitHub 데이터로 대체한다.
+        try{ res = await fetch(BUS_API, { cache:'no-store' }); if(!res.ok) res = null; }catch(_){ res = null; }
+      }
+      if(!res){
+        // 캐시를 피하려고 1분 단위 값을 붙인다.
+        res = await fetch(DATA_BASE+'bus.json?t='+Math.floor(Date.now()/60000), { cache:'no-cache' });
+        if(!res.ok) throw new Error('HTTP '+res.status);
+      }
       busData = await res.json();
       renderBus();
     }catch(e){
@@ -1232,7 +1241,7 @@
   loadWeather();
   loadBus();
   setInterval(loadWeather, 10*60*1000);
-  setInterval(()=>{ if(document.visibilityState==='visible') loadBus(); }, 60*1000);
+  setInterval(()=>{ if(document.visibilityState==='visible') loadBus(); }, 30*1000);
   setInterval(renderBus, 15*1000);
   renderStatus();
   renderFreeRooms();
