@@ -1,8 +1,8 @@
-{
-  "cityCode": "37050",
-  "searchKeyword": "금오",
-  "groups": [
-    { "title": "금오공대 출발", "nodeIds": [] },
-    { "title": "금오공대 도착", "nodeIds": [] }
-  ]
-}
+  {
+    "cityCode": "37050",
+    "searchKeyword": "금오",
+    "groups": [
+      { "title": "금오공대 출발", "nodeIds": ["GMB132","GMB131"] },
+      { "title": "금오공대 도착", "nodeIds": ["GMB130"] }
+    ]
+  }
