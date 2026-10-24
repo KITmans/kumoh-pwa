@@ -496,6 +496,176 @@
     .tab-btn{padding:6px 0;}
   }
   @media (hover:hover){.tab-btn:hover,.theme-btn:hover,.free-item:hover,.notice-item:hover{color:var(--amber);}}
+
+  /* ============================================================
+     UI 다듬기: 둥근 모서리 · 큰 글씨 · 가운데 정렬 (아이폰/아이패드용)
+     ============================================================ */
+  :root{
+    --radius:14px;
+    --radius-lg:20px;
+    --tabbar-h:66px;
+    --amber-soft:rgba(217,155,63,.16);
+    --shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 6px 18px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --amber-soft:rgba(184,111,10,.12);
+    --shadow:0 2px 14px rgba(20,20,40,.07);
+  }
+  body{font-size:16px;line-height:1.5;}
+
+  /* 상단 바: 전부 가운데 정렬 */
+  header.top{
+    display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 10px;
+    text-align:center;border-bottom:none;border-radius:0 0 26px 26px;
+    padding:calc(14px + env(safe-area-inset-top)) 20px 16px;
+    box-shadow:var(--shadow);
+  }
+  header.top .kicker{width:100%;font-size:13px;margin:0;}
+  header.top h1{width:100%;font-size:24px;margin:0 0 2px;}
+  .clock-row{width:auto;font-size:14px;align-items:center;justify-content:center;}
+  .clock-row b{font-size:17px;}
+  .weather,.theme-btn{position:static;padding:7px 13px;font-size:13px;}
+  .weather .w-temp{font-size:15px;}
+  .theme-btn .t-icon{font-size:15px;}
+
+  /* 섹션 제목 */
+  section{padding:20px 16px;}
+  section h2{font-size:15px;letter-spacing:0;color:var(--ink);justify-content:center;text-align:center;margin:0 0 14px;font-weight:700;}
+  .count-line{font-size:13px;text-align:center;}
+  .note-block{font-size:13px;text-align:center;}
+  .placeholder{font-size:15px;line-height:1.7;}
+
+  /* 입력/버튼 (iOS는 16px 미만이면 입력 시 화면이 확대됨) */
+  select,input[type=text]{font-size:16px;padding:14px 14px;border-radius:var(--radius);}
+  select{padding-right:34px;}
+  .go-btn{font-size:16px;padding:14px;border-radius:var(--radius);}
+  .load-more,.notice-back-btn{font-size:15px;padding:12px 16px;border-radius:var(--radius);}
+  .refresh-btn{font-size:13px;padding:8px 14px;border-radius:999px;}
+  .mt-tool-btn{font-size:14px;padding:11px 0;}
+  .mt-add-btn{font-size:14px;padding:9px 14px;}
+  .menu-day-row,.notice-cat-row{justify-content:flex-start;padding-bottom:2px;}
+  .menu-day-btn,.notice-cat-btn{font-size:15px;padding:9px 17px;}
+
+  /* 카드: 둥글게 + 은은한 그림자 */
+  .status-card,.menu-card,.notice-item,.bus-stop,.hall-col,.fill-cols>.bus-stop{
+    border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  }
+  .free-item,.mt-course-item,.mt-result-item,.attach-item{border-radius:var(--radius);}
+
+  /* 강의실 현황 */
+  .status-card{text-align:center;padding:22px 18px;}
+  .status-card .room-name{font-size:24px;}
+  .status-card .room-sub{font-size:14px;}
+  .badge{font-size:14px;padding:6px 14px;}
+  .class-row .cname{font-size:18px;}
+  .class-row .cmeta{font-size:14px;}
+  .free-item{font-size:16px;padding:13px 16px;}
+  .free-item .fr-tag{font-size:13px;}
+  .mt-course-item .mt-cinfo{font-size:15px;}
+  .mt-course-item .mt-cmeta{font-size:13px;}
+  .mt-result-info .mt-rname{font-size:16px;}
+  .mt-result-info .mt-rmeta{font-size:13px;}
+  .mt-empty{font-size:14px;}
+  table.mt-grid{font-size:13px;}
+  table.mt-grid th{font-size:12px;padding:7px 2px;}
+  table.mt-grid td.mt-pcol{font-size:12px;width:26px;}
+  table.mt-grid td.mt-cell{height:30px;}
+  table.mt-grid td.mt-cell.filled{height:46px;}
+  table.mt-grid td.mt-cell.filled .mt-cell-course{font-size:11px;}
+  table.mt-grid td.mt-cell.filled .mt-cell-room{font-size:10px;}
+
+  /* 식단 */
+  .hall-col .hc-title{font-size:19px;text-align:center;border-bottom-width:3px;border-radius:2px;}
+  .hall-col .hc-meal{text-align:center;padding:14px 0;}
+  .hall-col .hc-meal .m-meal{font-size:14px;margin-bottom:8px;}
+  .hall-col .hc-meal .m-items{font-size:16px;line-height:1.8;}
+  .hall-col .hc-empty{font-size:15px;}
+  .menu-card .m-hall{font-size:16px;}
+  .menu-card .m-items{font-size:15px;}
+
+  /* 교통 */
+  .tab-panel[data-tab="bus"] section h2{position:relative;min-height:38px;}
+  #busRefreshBtn{position:absolute;right:0;top:50%;transform:translateY(-50%);}
+  .fill-cols>.bus-stop,.bus-stop{padding:18px 16px;text-align:center;}
+  .bus-stop .bs-title{font-size:19px;margin-bottom:4px;}
+  .bus-stop .bs-sub{font-size:13px;margin-bottom:12px;}
+  .bus-row,.fill-cols>.bus-stop .bus-row{
+    display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:13px 0;text-align:center;
+  }
+  .bus-row .br-no,.fill-cols>.bus-stop .bus-row .br-no{
+    font-size:19px;min-width:56px;margin:0;padding:5px 10px;border-radius:999px;background:var(--amber-soft);text-align:center;
+  }
+  .bus-row .br-info,.fill-cols>.bus-stop .bus-row .br-info{font-size:14px;padding:0;text-align:center;}
+  .bus-row .br-eta,.fill-cols>.bus-stop .bus-row .br-eta{font-size:18px;min-width:76px;text-align:right;}
+
+  /* 공지 */
+  .notice-item{padding:16px 18px;}
+  .notice-item .n-title{font-size:16px;line-height:1.45;}
+  .notice-item .n-meta{font-size:13px;}
+  .notice-item .n-snippet{font-size:14px;}
+  .n-pin{font-size:13px;}
+  .notice-search-info{font-size:13px;text-align:center;}
+  .notice-detail-title{font-size:21px;}
+  .notice-detail-meta{font-size:14px;}
+  .attach-item{font-size:15px;padding:12px 14px;}
+  .board-contents{font-size:16px;line-height:1.85;}
+  .notice-loading{font-size:15px;}
+  .empty-state{font-size:15px;}
+
+  /* 하단 탭바 */
+  nav.tabbar{
+    border-top:none;border-radius:22px 22px 0 0;
+    box-shadow:0 -4px 20px rgba(0,0,0,.18);
+  }
+  .tab-btn{font-size:12px;padding:10px 0 8px;font-weight:600;}
+  .tab-btn .tb-icon{font-size:23px;}
+
+  /* 아이폰(좁은 화면): 카드를 한 줄에 하나씩 크게 */
+  @media (max-width:599px){
+    .fill-cols{grid-template-columns:1fr;align-content:start;}
+  }
+
+  /* 아이패드: 가운데에 적당한 폭으로 */
+  @media (min-width:700px){
+    .wrap,nav.tabbar{max-width:920px;margin-left:auto;margin-right:auto;}
+    header.top{padding:calc(18px + env(safe-area-inset-top)) 28px 20px;}
+    header.top h1{font-size:28px;}
+    header.top .kicker{font-size:14px;}
+    .clock-row{font-size:15px;}.clock-row b{font-size:19px;}
+    .weather,.theme-btn{font-size:14px;padding:8px 15px;}
+    section{padding:26px 28px;}
+    section h2{font-size:17px;}
+    .tab-panel.fill>section{padding:22px;}
+    .status-card .room-name{font-size:28px;}
+    .free-item{font-size:17px;}
+    .hall-col,.fill-cols>.bus-stop{padding:22px;}
+    .hall-col .hc-title{font-size:22px;}
+    .hall-col .hc-meal .m-items{font-size:18px;}
+    .hall-col .hc-meal .m-meal{font-size:15px;}
+    .bus-stop .bs-title{font-size:22px;}
+    .bus-stop .bs-sub{font-size:14px;}
+    .bus-row .br-no,.fill-cols>.bus-stop .bus-row .br-no{font-size:22px;min-width:68px;}
+    .bus-row .br-info,.fill-cols>.bus-stop .bus-row .br-info{font-size:15px;}
+    .bus-row .br-eta,.fill-cols>.bus-stop .bus-row .br-eta{font-size:21px;min-width:88px;}
+    .notice-item .n-title{font-size:18px;}
+    .notice-item .n-meta{font-size:14px;}
+    .notice-item .n-snippet{font-size:15px;}
+    .board-contents{font-size:18px;}
+    table.mt-grid th,table.mt-grid td.mt-pcol{font-size:13px;}
+    table.mt-grid td.mt-cell.filled .mt-cell-course{font-size:13px;}
+    table.mt-grid td.mt-cell.filled .mt-cell-room{font-size:11px;}
+    .tab-btn{font-size:13px;}
+  }
+  @media (min-width:1000px){
+    .tab-btn{flex-direction:row;font-size:15px;}
+  }
+  /* 가로 방향 낮은 화면은 상단 바를 컴팩트하게 */
+  @media (orientation:landscape) and (max-height:820px){
+    header.top{padding-top:calc(8px + env(safe-area-inset-top));padding-bottom:10px;gap:4px 10px;}
+    header.top h1{font-size:19px;margin:0;}
+    :root{--tabbar-h:52px;}
+    .tab-btn .tb-icon{font-size:20px;}
+  }
 </style>
 </head>
 <body>
