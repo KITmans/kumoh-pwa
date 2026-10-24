@@ -419,6 +419,42 @@
   .tab-btn .tb-icon{font-size:19px;line-height:1;}
   .tab-btn.active{color:var(--amber);}
 
+  /* 식단/교통: 화면을 꽉 채우는 2칸 레이아웃 (사방 여백 12px로 동일) */
+  .wrap{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;}
+  #tabContents{flex:1;display:flex;flex-direction:column;}
+  .tab-panel.fill.active{flex:1;display:flex;flex-direction:column;}
+  .tab-panel.fill>section{flex:1;display:flex;flex-direction:column;padding:12px;border-bottom:none;}
+  .tab-panel.fill>section>h2{margin:0 2px 10px;}
+  .tab-panel.fill .menu-day-row{margin-bottom:12px;}
+  .fill-cols{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch;min-height:0;}
+  .fill-cols>.empty-state,.fill-cols>.placeholder{grid-column:1/-1;align-self:center;}
+  .hall-col,.fill-cols>.bus-stop{
+    border:1px solid var(--line);background:var(--paper-2);border-radius:var(--radius);
+    padding:14px;margin:0;display:flex;flex-direction:column;min-width:0;
+  }
+  .hall-col .hc-title{font-size:16px;font-weight:700;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid var(--amber);}
+  .hall-col .hc-meal{padding:10px 0;border-top:1px dashed var(--line);}
+  .hall-col .hc-meal:first-of-type{border-top:none;padding-top:0;}
+  .hall-col .hc-meal .m-meal{margin:0 0 6px;font-size:12px;font-weight:700;color:var(--amber);}
+  .hall-col .hc-meal .m-items{font-size:13px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere;}
+  .hall-col .hc-meal .m-items.none{color:var(--ink-dim);}
+  .hall-col .hc-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--ink-dim);font-size:13px;text-align:center;}
+  .fill-cols>.bus-stop .bus-row .br-no{min-width:0;margin-right:6px;font-size:15px;}
+  .fill-cols>.bus-stop .bus-row .br-info{padding:0 4px;}
+  .fill-cols>.bus-stop .bus-row .br-eta{font-size:13px;white-space:nowrap;}
+  @media (min-width:700px){
+    .tab-panel.fill>section{padding:16px;}
+    .hall-col,.fill-cols>.bus-stop{padding:18px;}
+    .hall-col .hc-title{font-size:19px;}
+    .hall-col .hc-meal .m-items{font-size:15px;}
+    .fill-cols>.bus-stop .bus-row .br-no{font-size:18px;min-width:70px;}
+    .fill-cols>.bus-stop .bus-row .br-eta{font-size:16px;}
+  }
+
+  /* 공지 검색 */
+  .notice-search{margin-bottom:12px;}
+  .notice-search-info{font-size:12px;color:var(--ink-dim);margin:-4px 2px 10px;}
+
   /* theme toggle */
   .theme-btn{
     position:absolute;right:16px;bottom:14px;
@@ -430,7 +466,7 @@
 
   /* 태블릿(아이패드) 세로: 조금 넓게 */
   @media (min-width:700px){
-    .wrap, nav.tabbar{max-width:880px;}
+    .wrap, nav.tabbar{max-width:none;}
     section{padding:24px 28px;}
     header.top{padding:20px 28px;}
     .weather{right:28px;}
@@ -441,15 +477,14 @@
     table.mt-grid td.mt-cell.filled .mt-cell-room{font-size:10px;}
     table.mt-grid th{font-size:12px;}
     table.mt-grid td.mt-pcol{font-size:12px;width:28px;}
-    #menuArea,#busArea,#freeList{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
-    #menuArea>*,#busArea>*,#freeList>*{margin-bottom:0;}
-    #menuArea>.empty-state,#menuArea>.placeholder,#busArea>.empty-state,#busArea>.placeholder,#freeList>.placeholder{grid-column:1/-1;}
+    #freeList{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
+    #freeList>*{margin-bottom:0;}
+    #freeList>.placeholder{grid-column:1/-1;}
   }
   /* 아이패드 가로 등 넓은 화면 */
   @media (min-width:1000px){
-    .wrap, nav.tabbar{max-width:1100px;}
     body{font-size:17px;}
-    #menuArea,#busArea,#freeList{grid-template-columns:repeat(3,1fr);}
+    #freeList{grid-template-columns:repeat(3,1fr);}
     .tab-btn{flex-direction:row;justify-content:center;gap:8px;font-size:13px;padding:12px 0;}
   }
   /* 가로 방향은 세로 공간이 부족하니 상단 바를 낮게 */
@@ -523,20 +558,20 @@
     </div>
 
     <!-- ===== TAB: 식단 ===== -->
-    <div class="tab-panel" data-tab="menu">
+    <div class="tab-panel fill" data-tab="menu">
       <section>
         <h2>오늘의 학식</h2>
         <div class="menu-day-row" id="menuDayRow"></div>
-        <div id="menuArea"></div>
+        <div class="fill-cols" id="menuArea"></div>
       </section>
     </div>
 
     <!-- ===== TAB: 교통 ===== -->
-    <div class="tab-panel" data-tab="bus">
+    <div class="tab-panel fill" data-tab="bus">
       <section>
         <h2><span>금오공대 버스 도착정보</span><button class="refresh-btn" id="busRefreshBtn">새로고침</button></h2>
         <p class="count-line" id="busUpdated"></p>
-        <div id="busArea"></div>
+        <div class="fill-cols" id="busArea"></div>
         <p class="note-block">국토교통부 TAGO 버스도착정보 기준이며, 실제 도착 시간과 다를 수 있어요.</p>
       </section>
     </div>
@@ -546,7 +581,9 @@
       <div id="noticeListView">
         <section>
           <h2>교내 공지</h2>
+          <input type="text" class="notice-search" id="noticeSearch" placeholder="공지 제목·부서 검색" enterkeyhint="search" autocomplete="off">
           <div class="notice-cat-row" id="noticeCatRow"></div>
+          <p class="notice-search-info" id="noticeSearchInfo" style="display:none;"></p>
           <div id="noticeArea"></div>
         </section>
       </div>
@@ -866,19 +903,24 @@
   }
 
   function renderMenu(){
-    const list = MENU_DATA[menuSelectedDay];
-    if(!list || list.length===0){
+    const list = MENU_DATA[menuSelectedDay] || [];
+    if(Object.keys(MENU_DATA).every(d=>!MENU_DATA[d] || MENU_DATA[d].length===0)){
       menuArea.innerHTML = '<div class="empty-state"><span class="es-icon">🍽️</span>아직 연결된 식단 정보가 없어요.<br>학교 식단 데이터를 연결하면 이 탭에 바로 표시돼요.</div>';
       return;
     }
-    menuArea.innerHTML = list.map(m=>
-      '<div class="menu-card">'+
-        '<p class="m-hall">'+escapeHtml(m.hall)+'</p>'+
-        '<p class="m-meal">'+escapeHtml(m.meal)+'</p>'+
-        '<p class="m-items">'+m.items.map(escapeHtml).join('<br>')+'</p>'+
-        (m.price? '<p class="m-price">'+escapeHtml(m.price)+'</p>':'')+
-      '</div>'
-    ).join('');
+    // 식당마다 한 칸. 칸 안에 그날의 모든 끼니(조식, 일품요리 등)를 함께 보여준다. 데이터가 없어도 두 칸은 항상 유지.
+    const HALLS = ['정찬식당','일품식당'];
+    menuArea.innerHTML = HALLS.map(hall=>{
+      const meals = list.filter(m=>m.hall===hall);
+      const body = meals.length ? meals.map(m=>{
+        const none = m.items.length===1 && m.items[0]==='정보 없음';
+        return '<div class="hc-meal">'+
+          '<p class="m-meal">'+escapeHtml(m.meal)+(m.price? ' · '+escapeHtml(m.price):'')+'</p>'+
+          '<p class="m-items'+(none?' none':'')+'">'+m.items.map(escapeHtml).join('<br>')+'</p>'+
+        '</div>';
+      }).join('') : '<div class="hc-empty">등록된 식단이 없어요</div>';
+      return '<div class="hall-col"><p class="hc-title">'+escapeHtml(hall)+'</p>'+body+'</div>';
+    }).join('');
   }
 
   function applyMenuData(data){
@@ -959,17 +1001,30 @@
     '</div>';
   }
 
+  let noticeQuery = ''; // 소문자로 정규화된 검색어. 비어 있으면 검색 안 함
+  const noticeSearch = document.getElementById('noticeSearch');
+  const noticeSearchInfo = document.getElementById('noticeSearchInfo');
+  const matchesNotice = (n)=> ((n.title||'')+' '+(n.dept||'')).toLowerCase().includes(noticeQuery);
+
   function renderNotices(){
-    const pinned = (noticeIndex && noticeIndex.pinned) || [];
-    if(pinned.length===0 && noticeShown.length===0){
-      noticeArea.innerHTML = '<div class="empty-state"><span class="es-icon">📢</span>표시할 공지사항이 없어요.</div>';
+    const allPinned = (noticeIndex && noticeIndex.pinned) || [];
+    const pinned = noticeQuery ? allPinned.filter(matchesNotice) : allPinned;
+    const shown = noticeQuery ? noticeShown.filter(matchesNotice) : noticeShown;
+    const searching = !!noticeQuery;
+    const allLoaded = !noticeIndex || noticeNextBucket >= noticeIndex.buckets.length;
+    noticeSearchInfo.style.display = searching ? '' : 'none';
+    if(searching) noticeSearchInfo.textContent = allLoaded ? '"'+noticeSearch.value.trim()+'" 검색 결과' : '전체 공지에서 검색하는 중이에요…';
+    if(pinned.length===0 && shown.length===0){
+      noticeArea.innerHTML = searching
+        ? '<div class="empty-state"><span class="es-icon">🔍</span>'+(allLoaded?'검색 결과가 없어요.':'검색하는 중이에요…')+'</div>'
+        : '<div class="empty-state"><span class="es-icon">📢</span>표시할 공지사항이 없어요.</div>';
       return;
     }
     const pinnedNos = new Set(pinned.map(p=>p.articleNo));
-    const hasMore = noticeIndex && noticeNextBucket < noticeIndex.buckets.length;
+    const hasMore = !searching && noticeIndex && noticeNextBucket < noticeIndex.buckets.length;
     noticeArea.innerHTML =
       pinned.map(n=>noticeItemHtml(n,true)).join('')+
-      noticeShown.filter(n=>!pinnedNos.has(n.articleNo)).map(n=>noticeItemHtml(n,false)).join('')+
+      shown.filter(n=>!pinnedNos.has(n.articleNo)).map(n=>noticeItemHtml(n,false)).join('')+
       (hasMore ? '<button class="load-more" id="noticeMoreBtn">이전 공지 더 보기</button>' : '');
     noticeArea.querySelectorAll('.notice-item').forEach(el=>{
       el.addEventListener('click', ()=> openNoticeDetail(el.getAttribute('data-article-no')));
@@ -992,6 +1047,30 @@
     if(reqId === noticeReqId) renderNotices();
   }
 
+  // 검색할 때는 아직 안 읽은 구간 파일을 전부 읽어서 전체 공지에서 찾는다.
+  async function loadAllNotices(reqId){
+    while(noticeIndex && noticeNextBucket < noticeIndex.buckets.length){
+      const b = noticeIndex.buckets[noticeNextBucket];
+      const data = await fetchJson('notices/'+noticeSelectedCat+'/b'+b+'.json');
+      if(reqId !== noticeReqId) return;
+      noticeNextBucket++;
+      noticeShown = noticeShown.concat(data.items || []);
+      renderNotices();
+    }
+  }
+
+  let noticeSearchTimer = null;
+  noticeSearch.addEventListener('input', ()=>{
+    clearTimeout(noticeSearchTimer);
+    noticeSearchTimer = setTimeout(async ()=>{
+      noticeQuery = noticeSearch.value.trim().toLowerCase();
+      renderNotices();
+      if(noticeQuery){
+        try{ await loadAllNotices(noticeReqId); }catch(e){ noticeSearchInfo.textContent = '일부 공지를 불러오지 못했어요. 다시 시도해주세요.'; }
+      }
+    }, 250);
+  });
+
   let noticeReqId = 0; // 카테고리를 빠르게 바꿔도 마지막 요청만 반영
   async function tryLoadNotices(){
     const reqId = ++noticeReqId;
@@ -1001,6 +1080,7 @@
       noticeIndex = await fetchJson('notices/'+noticeSelectedCat+'/index.json');
       if(reqId !== noticeReqId) return;
       await loadMoreNotices(reqId);
+      if(noticeQuery) await loadAllNotices(reqId);
     }catch(e){
       if(reqId !== noticeReqId) return;
       noticeArea.innerHTML = '<div class="empty-state"><span class="es-icon">📢</span>공지사항을 불러오지 못했어요.<br>네트워크 상태를 확인하고 다시 시도해주세요.</div>';
