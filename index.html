@@ -1113,7 +1113,7 @@
     if(!busData){ return; }
     const elapsedSec = Math.max(0, Math.round((Date.now() - new Date(busData.updatedAt).getTime())/1000));
     const ageMin = Math.floor(elapsedSec/60);
-    busUpdated.textContent = (ageMin<1 ? '방금 전' : ageMin+'분 전')+' 기준 · 도착 시간은 경과 시간만큼 보정해서 보여줘요';
+    busUpdated.textContent = (ageMin<1 ? '방금 전' : ageMin+'분 전')+' 기준 · 도착 시간은 경과 시간만큼 보정해서 보여줘요'+(elapsedSec>600 ? ' (오래된 정보예요. 새로고침을 눌러 주세요)' : '');
 
     if(!busData.groups || busData.groups.length===0){
       busArea.innerHTML = '<div class="empty-state"><span class="es-icon">🚌</span>'+escapeHtml(busData.message || '표시할 버스 정보가 없어요.')+'</div>';
@@ -1123,7 +1123,8 @@
       const rows = (g.arrivals||[]).map(a=>{
         const left = a.sec - elapsedSec;
         let eta;
-        if(left <= 30) eta = '<span class="br-eta soon">곧 도착</span>';
+        if(elapsedSec > 600) eta = '<span class="br-eta" style="color:var(--ink-dim)">정보 오래됨</span>';
+        else if(left <= 30) eta = '<span class="br-eta soon">곧 도착</span>';
         else { const m = Math.max(1, Math.round(left/60)); eta = '<span class="br-eta'+(m<=3?' soon':'')+'">'+m+'분 후</span>'; }
         return '<div class="bus-row"><span class="br-no">'+escapeHtml(a.routeNo)+'</span>'+
           '<span class="br-info">'+(a.stopsLeft!=null? a.stopsLeft+'정거장 전':'')+(a.routeType? ' · '+escapeHtml(a.routeType):'')+'</span>'+eta+'</div>';
