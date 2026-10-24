@@ -47,6 +47,22 @@ jobs:
         env:
           TAGO_API_KEY: ${{ secrets.TAGO_API_KEY }}
 
+      # 버스 정보는 시간에 민감하니, 오래 걸리는 공지 수집 전에 먼저 올린다.
+      - name: Publish bus data early
+        continue-on-error: true
+        run: |
+          cd pub
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          TREE=$(git write-tree)
+          COMMIT=$(git commit-tree "$TREE" -m "bus snapshot $(date -u +%FT%TZ)")
+          git push --force origin "$COMMIT:refs/heads/data"
+
       - name: Scrape menu and notices
         id: scrape
         continue-on-error: true
