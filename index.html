@@ -7,6 +7,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0b0c">
 <title>강의실 사용 현황 조회</title>
+<script>
+  // 저장된 테마(없으면 기기 설정)를 화면이 그려지기 전에 적용해서 깜빡임을 막는다.
+  (function(){
+    var t = null;
+    try { t = localStorage.getItem('kit-theme'); } catch(e){}
+    if (t !== 'light' && t !== 'dark') t = (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', t === 'light' ? '#f5f5f7' : '#0b0b0c');
+  })();
+</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon.svg">
@@ -27,6 +38,29 @@
     --ink-dim:#9a9a9d;
     --radius:2px;
     --tabbar-h:60px;
+    --tabbar-bg:#141416;
+    --ink-strong:#ffffff;
+    --clock-dim:#a9a9ac;
+    color-scheme:dark;
+  }
+  :root[data-theme="light"]{
+    --navy:#ffffff;
+    --navy-2:#f2f2f4;
+    --paper:#f5f5f7;
+    --paper-2:#ffffff;
+    --line:#dcdce0;
+    --amber:#b86f0a;
+    --amber-dim:#e3c48e;
+    --free:#1f8a5b;
+    --free-bg:#e3f4ec;
+    --busy:#c8392d;
+    --busy-bg:#fbe9e7;
+    --ink:#1c1c1e;
+    --ink-dim:#6b6b70;
+    --tabbar-bg:#ffffff;
+    --ink-strong:#000000;
+    --clock-dim:#6b6b70;
+    color-scheme:light;
   }
   *{box-sizing:border-box;}
   body{
@@ -92,10 +126,10 @@
     align-items:baseline;
     gap:10px;
     font-size:13px;
-    color:#a9a9ac;
+    color:var(--clock-dim);
   }
   .clock-row b{
-    color:#fff;
+    color:var(--ink-strong);
     font-size:15px;
     font-variant-numeric: tabular-nums;
   }
@@ -367,7 +401,7 @@
     left:0;right:0;bottom:0;
     max-width:520px;margin:0 auto;
     display:flex;
-    background:#141416;
+    background:var(--tabbar-bg);
     border-top:1px solid var(--line);
     padding-bottom:env(safe-area-inset-bottom);
     z-index:10;
@@ -384,6 +418,49 @@
   }
   .tab-btn .tb-icon{font-size:19px;line-height:1;}
   .tab-btn.active{color:var(--amber);}
+
+  /* theme toggle */
+  .theme-btn{
+    position:absolute;right:16px;bottom:14px;
+    display:flex;align-items:center;gap:5px;
+    border:1px solid var(--line);background:var(--navy-2);color:var(--ink-dim);
+    border-radius:999px;padding:5px 11px;font-size:12px;font-family:inherit;cursor:pointer;
+  }
+  .theme-btn .t-icon{font-size:14px;line-height:1;}
+
+  /* 태블릿(아이패드) 세로: 조금 넓게 */
+  @media (min-width:700px){
+    .wrap, nav.tabbar{max-width:880px;}
+    section{padding:24px 28px;}
+    header.top{padding:20px 28px;}
+    .weather{right:28px;}
+    .theme-btn{right:28px;}
+    .status-card .room-name{font-size:22px;}
+    table.mt-grid td.mt-cell{width:auto;}
+    table.mt-grid td.mt-cell.filled .mt-cell-course{font-size:12px;}
+    table.mt-grid td.mt-cell.filled .mt-cell-room{font-size:10px;}
+    table.mt-grid th{font-size:12px;}
+    table.mt-grid td.mt-pcol{font-size:12px;width:28px;}
+    #menuArea,#busArea,#freeList{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
+    #menuArea>*,#busArea>*,#freeList>*{margin-bottom:0;}
+    #menuArea>.empty-state,#menuArea>.placeholder,#busArea>.empty-state,#busArea>.placeholder,#freeList>.placeholder{grid-column:1/-1;}
+  }
+  /* 아이패드 가로 등 넓은 화면 */
+  @media (min-width:1000px){
+    .wrap, nav.tabbar{max-width:1100px;}
+    body{font-size:17px;}
+    #menuArea,#busArea,#freeList{grid-template-columns:repeat(3,1fr);}
+    .tab-btn{flex-direction:row;justify-content:center;gap:8px;font-size:13px;padding:12px 0;}
+  }
+  /* 가로 방향은 세로 공간이 부족하니 상단 바를 낮게 */
+  @media (orientation:landscape) and (max-height:820px){
+    header.top{padding-top:10px;padding-bottom:10px;}
+    header.top .kicker{margin-bottom:2px;}
+    header.top h1{margin-bottom:4px;font-size:18px;}
+    :root{--tabbar-h:48px;}
+    .tab-btn{padding:6px 0;}
+  }
+  @media (hover:hover){.tab-btn:hover,.theme-btn:hover,.free-item:hover,.notice-item:hover{color:var(--amber);}}
 </style>
 </head>
 <body>
@@ -400,6 +477,9 @@
       <span class="w-temp" id="wTemp">--°</span>
       <span class="w-desc" id="wDesc">거의동</span>
     </div>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="화면 모드 바꾸기">
+      <span class="t-icon" id="themeIcon">🌙</span><span id="themeLabel">다크</span>
+    </button>
   </header>
 
   <main id="tabContents">
@@ -1088,6 +1168,27 @@
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
   }
+</script>
+<script>
+  // 다크/라이트 전환
+  (function(){
+    const root = document.documentElement;
+    const btn = document.getElementById('themeBtn');
+    function paint(){
+      const light = root.getAttribute('data-theme') === 'light';
+      document.getElementById('themeIcon').textContent = light ? '☀️' : '🌙';
+      document.getElementById('themeLabel').textContent = light ? '라이트' : '다크';
+      const m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', light ? '#f5f5f7' : '#0b0b0c');
+    }
+    btn.addEventListener('click', ()=>{
+      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('kit-theme', next); } catch(e){}
+      paint();
+    });
+    paint();
+  })();
 </script>
 </body>
 </html>
