@@ -254,6 +254,23 @@
     font-size:14px;
     cursor:pointer;
   }
+  /* 테크노관 층별 배치도 */
+  .floor-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+  .floor-tab{flex:1;min-width:44px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink);padding:8px 0;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .floor-tab.active{background:var(--amber);border-color:var(--amber);color:#fff;}
+  .floor-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink-dim);margin:0 0 8px;}
+  .floor-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px;}
+  .floor-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);padding:8px;background:var(--paper-2);}
+  .floor-grid{display:grid;gap:2px;width:max-content;}
+  .fm-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:11px;font-weight:700;line-height:1.2;text-align:center;color:#fff;min-width:0;overflow:hidden;}
+  .fm-cell small{font-size:9px;font-weight:600;opacity:.95;}
+  .fm-cell.free{background:#2e9e6b;cursor:pointer;}
+  .fm-cell.busy{background:#2f6fd6;cursor:pointer;}
+  .fm-cell.off{background:#2e9e6b;opacity:.6;}
+  .fm-cell.office{background:#e0605a;}
+  .fm-cell.stair{background:#8a8a8a;}
+  .fm-cell.sel{outline:2px solid var(--ink);outline-offset:1px;}
+  .floor-info{margin-top:10px;font-size:13px;}
   .free-item .fr-room{font-weight:600;}
   .free-item .fr-tag{font-size:11px;color:var(--free);}
   .count-line{font-size:12px;color:var(--ink-dim);margin-bottom:8px;}
@@ -438,6 +455,12 @@
   .hall-col .hc-meal .m-meal{margin:0 0 6px;font-size:12px;font-weight:700;color:var(--amber);}
   .hall-col .hc-meal .m-items{font-size:13px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere;}
   .hall-col .hc-meal .m-items.none{color:var(--ink-dim);}
+  .hall-col .hc-meal .m-meal{display:inline-block;margin:0 0 8px;padding:3px 10px;border-radius:999px;background:var(--paper);border:1px solid var(--amber);}
+  .hall-col .hc-meal .m-list{list-style:none;margin:0;padding:0;}
+  .hall-col .hc-meal .m-list li{padding:6px 2px;border-bottom:1px solid var(--line);font-size:13px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere;}
+  .hall-col .hc-meal .m-list li:last-child{border-bottom:none;}
+  .hall-col .hc-meal .m-list.none li{color:var(--ink-dim);}
+  .hall-col .hc-meal+.hc-meal{border-top:2px solid var(--line);margin-top:6px;padding-top:14px;}
   .hall-col .hc-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--ink-dim);font-size:13px;text-align:center;}
   .fill-cols>.bus-stop .bus-row .br-no{min-width:0;margin-right:6px;font-size:15px;}
   .fill-cols>.bus-stop .bus-row .br-info{padding:0 4px;}
@@ -446,7 +469,7 @@
     .tab-panel.fill>section{padding:16px;}
     .hall-col,.fill-cols>.bus-stop{padding:18px;}
     .hall-col .hc-title{font-size:19px;}
-    .hall-col .hc-meal .m-items{font-size:15px;}
+    .hall-col .hc-meal .m-items,.hall-col .hc-meal .m-list li{font-size:15px;}
     .fill-cols>.bus-stop .bus-row .br-no{font-size:18px;min-width:70px;}
     .fill-cols>.bus-stop .bus-row .br-eta{font-size:16px;}
   }
@@ -470,7 +493,7 @@
     section{padding:24px 28px;}
     header.top{padding:20px 28px;}
     .weather{right:28px;}
-    .theme-btn{right:28px;}
+    .theme-btn{left:28px;right:auto;}
     .status-card .room-name{font-size:22px;}
     table.mt-grid td.mt-cell{width:auto;}
     table.mt-grid td.mt-cell.filled .mt-cell-course{font-size:12px;}
@@ -513,20 +536,49 @@
   }
   body{font-size:16px;line-height:1.5;}
 
-  /* 상단 바: 전부 가운데 정렬 */
+  /* 상단 바: 가운데 정렬 + 좌우 상단 고정 배치 */
   header.top{
-    display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 10px;
+    position:sticky;top:0;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;
     text-align:center;border-bottom:none;border-radius:0 0 26px 26px;
-    padding:calc(14px + env(safe-area-inset-top)) 20px 16px;
+    padding:calc(16px + env(safe-area-inset-top)) 20px 16px;
     box-shadow:var(--shadow);
   }
   header.top .kicker{width:100%;font-size:13px;margin:0;}
   header.top h1{width:100%;font-size:24px;margin:0 0 2px;}
   .clock-row{width:auto;font-size:14px;align-items:center;justify-content:center;}
   .clock-row b{font-size:17px;}
-  .weather,.theme-btn{position:static;padding:7px 13px;font-size:13px;}
-  .weather .w-temp{font-size:15px;}
+
+  /* 좌측 상단 테마 버튼 & 우측 상단 날씨 (테두리/배경 없이 자연스럽게) */
+  .weather, .theme-btn{
+    position:absolute;
+    top:calc(14px + env(safe-area-inset-top));
+    bottom:auto;
+    background:transparent;
+    border:none;
+    box-shadow:none;
+    padding:4px 6px;
+    font-size:13px;
+    color:var(--ink-dim);
+    display:flex;align-items:center;gap:5px;
+  }
+  .theme-btn{left:16px;right:auto;color:var(--ink);font-weight:600;cursor:pointer;}
+  .weather{right:16px;left:auto;}
+  .weather .w-temp{font-size:15px;color:var(--ink);font-weight:700;}
+  .weather .w-desc{color:var(--ink-dim);}
   .theme-btn .t-icon{font-size:15px;}
+
+  /* 공지사항 페이지네이션 UI */
+  .notice-pagination{
+    display:flex;justify-content:center;align-items:center;gap:12px;margin-top:16px;padding:6px 0;
+  }
+  .page-btn{
+    border:1px solid var(--line);background:var(--paper-2);color:var(--ink);
+    padding:9px 16px;font-size:14px;font-weight:600;border-radius:var(--radius);
+    cursor:pointer;font-family:inherit;box-shadow:var(--shadow);
+  }
+  .page-btn:disabled{opacity:0.35;cursor:default;box-shadow:none;}
+  .page-info{font-size:14px;color:var(--ink-dim);font-weight:600;font-variant-numeric:tabular-nums;}
 
   /* 섹션 제목 */
   section{padding:20px 16px;}
@@ -578,7 +630,7 @@
   .hall-col .hc-title{font-size:19px;text-align:center;border-bottom-width:3px;border-radius:2px;}
   .hall-col .hc-meal{text-align:center;padding:14px 0;}
   .hall-col .hc-meal .m-meal{font-size:14px;margin-bottom:8px;}
-  .hall-col .hc-meal .m-items{font-size:16px;line-height:1.8;}
+  .hall-col .hc-meal .m-items,.hall-col .hc-meal .m-list li{font-size:16px;line-height:1.8;}
   .hall-col .hc-empty{font-size:15px;}
   .menu-card .m-hall{font-size:16px;}
   .menu-card .m-items{font-size:15px;}
@@ -632,7 +684,9 @@
     header.top h1{font-size:28px;}
     header.top .kicker{font-size:14px;}
     .clock-row{font-size:15px;}.clock-row b{font-size:19px;}
-    .weather,.theme-btn{font-size:14px;padding:8px 15px;}
+    .weather,.theme-btn{font-size:14px;padding:6px 8px;top:calc(18px + env(safe-area-inset-top));}
+    .theme-btn{left:28px;right:auto;}
+    .weather{right:28px;left:auto;}
     section{padding:26px 28px;}
     section h2{font-size:17px;}
     .tab-panel.fill>section{padding:22px;}
@@ -640,7 +694,7 @@
     .free-item{font-size:17px;}
     .hall-col,.fill-cols>.bus-stop{padding:22px;}
     .hall-col .hc-title{font-size:22px;}
-    .hall-col .hc-meal .m-items{font-size:18px;}
+    .hall-col .hc-meal .m-items,.hall-col .hc-meal .m-list li{font-size:18px;}
     .hall-col .hc-meal .m-meal{font-size:15px;}
     .bus-stop .bs-title{font-size:22px;}
     .bus-stop .bs-sub{font-size:14px;}
@@ -724,6 +778,14 @@
         <p class="count-line" id="freeCount"></p>
         <div class="free-list" id="freeList"></div>
         <p class="note-block">학교 수업시간표(개설강좌 편람) 기준이며, 휴강·보강 등 변동사항은 반영되지 않을 수 있어요.<br>같은 건물의 지하층(예: 테크노관지하)은 지상층과 한 건물로 묶었어요.</p>
+      </section>
+
+      <section>
+        <h2>테크노관 층별 배치도</h2>
+        <div class="floor-tabs" id="floorTabs"></div>
+        <p class="floor-legend"><span><i style="background:#2e9e6b"></i>비어있음</span><span><i style="background:#2f6fd6"></i>강의중</span><span><i style="background:#e0605a"></i>교수실·연구실</span><span><i style="background:#8a8a8a"></i>엘리베이터/계단</span></p>
+        <div class="floor-scroll"><div class="floor-grid" id="floorGrid"></div></div>
+        <div class="floor-info" id="floorInfo"></div>
       </section>
     </div>
 
@@ -1050,6 +1112,61 @@
     });
   }
 
+  // ===================== 테크노관 층별 배치도 =====================
+  // FLOOR_MAP[층] = [행, 열, 세로칸, 가로칸, 호실, 종류(p=교수실/연구실, w=강의실, g=엘리베이터·계단)]
+  const FLOOR_MAP = {"1":[[2,6,1,2,"122","p"],[2,8,1,1,"121","p"],[2,9,1,1,"120","p"],[2,10,1,1,"119","p"],[2,11,1,1,"118","p"],[2,12,1,1,"117","p"],[2,13,1,1,"116","p"],[2,18,1,1,"114","p"],[2,19,1,2,"113","w"],[4,6,2,2,"125-1","w"],[4,8,2,2,"125","p"],[4,10,2,2,"126","w"],[4,12,2,1,"127","w"],[4,18,2,3,"112","w"],[4,22,1,1,"107","w"],[4,23,1,1,"106","w"],[5,22,4,2,"105","w"],[6,20,2,1,"111","w"],[8,20,2,1,"110","w"],[9,22,1,1,"104","w"],[9,23,1,1,"103","w"],[10,4,1,1,"137","p"],[10,5,1,1,"136","p"],[10,6,1,1,"135","p"],[10,7,1,1,"134","p"],[10,8,1,1,"133","p"],[10,9,1,1,"132","p"],[10,10,1,1,"131-1","p"],[10,11,1,1,"131","p"],[10,12,1,1,"130","w"],[10,13,1,1,"129","w"],[10,14,1,2,"128","w"],[10,18,2,2,"E/V","g"],[12,4,2,1,"140","p"],[12,5,2,3,"141","w"],[12,8,2,3,"142","w"],[12,11,2,1,"143","w"],[12,12,2,3,"144","w"],[12,20,2,1,"108","w"],[12,22,4,2,"102","w"],[15,13,3,2,"145","w"],[16,18,5,3,"101","w"],[18,5,1,1,"154","p"],[18,6,1,1,"153","p"],[18,7,1,1,"152","p"],[18,8,1,1,"151","p"],[18,9,1,1,"150","p"],[18,10,1,1,"149","p"],[18,11,1,1,"148","p"],[18,12,1,1,"147","p"],[18,13,1,2,"146","w"],[20,5,2,4,"157","w"],[20,9,2,3,"158","w"],[20,12,2,3,"159","w"]],"2":[[2,4,1,1,"227","p"],[2,5,1,1,"226","p"],[2,6,1,1,"225","p"],[2,7,1,1,"224","p"],[2,8,1,1,"223","p"],[2,9,1,1,"222","p"],[2,10,1,1,"221","p"],[2,11,1,1,"221-1","w"],[2,12,1,2,"220","w"],[2,14,1,1,"219","p"],[2,15,1,1,"218","p"],[2,16,1,1,"217","p"],[2,17,1,1,"216","p"],[2,18,1,1,"215","p"],[2,19,1,1,"214","p"],[4,4,2,2,"230","w"],[4,6,2,2,"231","p"],[4,8,2,1,"232","p"],[4,9,2,2,"233","p"],[4,11,2,1,"234","w"],[4,16,2,1,"213","w"],[4,17,2,2,"212","w"],[4,19,2,1,"212-2","w"],[5,21,2,2,"206","w"],[6,11,3,1,"235","w"],[6,18,2,1,"210","w"],[6,19,1,1,"212-1","w"],[7,21,2,2,"205","p"],[8,16,2,3,"209","w"],[9,11,2,1,"236","w"],[9,21,2,2,"204","w"],[10,3,1,1,"243","p"],[10,4,1,1,"242","p"],[10,5,1,1,"241","p"],[10,6,1,1,"240","p"],[10,7,1,1,"239","p"],[10,8,1,1,"238-1","p"],[10,9,1,1,"238","p"],[10,10,1,1,"237","p"],[10,16,2,2,"E/V","g"],[11,21,2,2,"203","w"],[12,3,2,3,"246","w"],[12,6,2,1,"247","w"],[12,7,2,2,"248","w"],[12,9,2,2,"249","w"],[13,16,1,3,"207","p"],[14,11,1,1,"250","w"],[14,21,3,2,"202","p"],[15,11,2,1,"251","p"],[16,16,4,4,"201","w"],[17,11,1,1,"251-1","w"],[18,11,2,1,"252","w"],[19,4,1,1,"259","w"],[19,5,1,1,"258","w"],[19,6,1,1,"257","p"],[19,7,1,1,"256-1","w"],[19,8,1,1,"256","w"],[19,9,1,1,"255","w"],[19,10,1,1,"254","w"],[20,11,1,1,"253","w"],[21,4,2,2,"262","w"],[21,6,2,3,"263","w"],[21,9,2,2,"264","w"],[21,11,2,2,"265","w"]],"3":[[2,4,1,1,"326","p"],[2,5,1,1,"325","p"],[2,6,1,1,"324","p"],[2,7,1,1,"323-1","p"],[2,8,1,1,"323","p"],[2,9,1,1,"322","p"],[2,10,1,1,"321","p"],[2,11,1,1,"320","p"],[2,12,1,2,"319","p"],[2,14,1,1,"318","p"],[2,15,1,1,"317","p"],[2,16,1,1,"316","p"],[2,17,1,1,"315","p"],[2,18,1,1,"314","p"],[2,19,1,1,"313","p"],[4,4,2,2,"329","w"],[4,6,2,2,"330","p"],[4,8,2,1,"331","w"],[4,9,2,2,"332","w"],[4,11,2,1,"333","w"],[4,16,2,1,"312","w"],[4,17,2,3,"311","p"],[5,21,2,2,"305-1","w"],[6,11,3,1,"334","w"],[6,18,2,1,"309","w"],[6,19,2,1,"310","w"],[7,21,2,2,"305","w"],[8,16,2,3,"308","w"],[9,11,2,1,"335","w"],[9,21,2,2,"304","p"],[10,3,1,1,"343","p"],[10,4,1,1,"342","p"],[10,5,1,1,"341","p"],[10,6,1,1,"340","p"],[10,7,1,1,"339","p"],[10,8,1,1,"338","p"],[10,9,1,1,"337-1","w"],[10,10,2,1,"336","p"],[10,16,2,2,"E/V","g"],[11,9,1,1,"337","p"],[11,21,2,2,"303","w"],[12,3,2,3,"346","w"],[12,6,2,1,"347","w"],[12,7,2,2,"348","w"],[12,9,2,1,"348-1","w"],[12,10,2,1,"349","w"],[13,16,1,3,"306","w"],[14,11,3,1,"350","w"],[14,21,3,2,"302","w"],[16,16,4,4,"301","w"],[17,11,2,1,"351","w"],[19,3,1,1,"362","p"],[19,4,1,1,"361","p"],[19,5,1,1,"360","p"],[19,6,1,1,"359","p"],[19,7,1,1,"358","p"],[19,8,1,1,"357","p"],[19,9,1,1,"356","p"],[19,10,1,1,"355","p"],[19,11,1,1,"352","w"],[20,10,1,1,"354","p"],[20,11,1,1,"353","p"],[21,3,2,2,"365","p"],[21,5,2,2,"365-1","w"],[21,7,2,2,"366","w"],[21,9,2,1,"366-1","w"],[21,10,2,2,"367","w"],[21,12,2,2,"367-1","w"]],"4":[[2,6,1,1,"427","p"],[2,7,1,1,"426","p"],[2,8,1,1,"425","p"],[2,9,1,1,"424","p"],[2,10,1,1,"423","p"],[2,11,1,2,"422","p"],[2,13,1,1,"421","p"],[2,14,1,1,"420","p"],[2,15,1,1,"419","p"],[2,16,1,1,"418","p"],[2,17,1,1,"417","p"],[2,18,1,1,"416","p"],[2,19,1,1,"415","p"],[2,20,1,1,"414","p"],[4,6,2,2,"430","w"],[4,8,2,2,"431","p"],[4,10,2,1,"432","w"],[4,11,2,2,"433","p"],[4,13,2,1,"434","w"],[4,19,2,1,"413","w"],[4,20,2,2,"412","w"],[4,24,2,1,"406","w"],[6,12,2,2,"435","w"],[6,21,1,1,"411","w"],[6,24,2,1,"405","w"],[7,21,1,1,"410","w"],[8,12,3,2,"436","w"],[8,19,2,2,"409","w"],[8,24,3,1,"404","w"],[10,2,1,1,"446","p"],[10,3,1,1,"445","p"],[10,4,1,1,"444","p"],[10,5,1,1,"443","p"],[10,6,1,1,"442","p"],[10,7,1,1,"441","p"],[10,8,1,1,"440","p"],[10,9,1,1,"439","p"],[10,10,1,1,"438","p"],[10,11,1,1,"437","p"],[10,19,2,2,"E/V","g"],[12,4,2,3,"449","w"],[12,7,2,3,"450","w"],[12,10,2,3,"451","w"],[13,23,4,2,"403","w"],[14,12,1,1,"452","p"],[14,19,1,2,"407","w"],[15,12,1,1,"453","w"],[16,12,1,1,"454","p"],[16,18,4,2,"401","w"],[16,20,4,2,"402","w"],[17,12,1,1,"455","p"],[18,12,2,1,"456","w"],[19,2,1,2,"461","p"],[19,4,1,2,"460","w"],[19,6,1,1,"459","p"],[19,7,1,1,"458-3","p"],[19,8,1,1,"458-2","p"],[19,9,1,1,"458-1","p"],[19,10,1,1,"458","p"],[19,11,1,1,"457","p"],[21,3,2,2,"462","w"],[21,5,2,2,"463","p"],[21,7,2,1,"464","p"],[21,8,2,1,"464-1","p"],[21,9,2,3,"465","w"],[21,12,2,3,"466","w"]],"5":[[2,10,1,1,"522","p"],[2,11,1,1,"521","p"],[2,12,1,1,"520","p"],[2,13,1,1,"519","p"],[2,14,1,1,"518","p"],[2,15,1,2,"517","p"],[2,17,1,2,"516","p"],[2,19,1,1,"515","p"],[2,20,1,1,"514","p"],[2,21,1,1,"513","w"],[2,22,1,1,"512","w"],[4,10,2,3,"525-1","w"],[4,13,2,3,"525","w"],[4,19,2,3,"511","w"],[5,23,2,2,"505","w"],[6,12,2,2,"526","w"],[6,18,2,2,"509","w"],[6,20,2,2,"510","p"],[7,23,2,2,"504","w"],[8,18,2,2,"E/V","g"],[9,23,2,2,"503","w"],[12,23,3,2,"502","w"],[13,19,2,2,"507","w"],[15,19,2,2,"506","w"],[15,23,4,2,"501","w"]],"6":[[6,12,2,2,"607","w"],[6,19,2,2,"606-2","w"],[6,22,4,2,"602-1","w"],[8,19,2,2,"606-1","w"],[10,19,2,2,"606","w"],[10,22,4,2,"602","w"],[12,19,2,2,"E/V","g"],[14,19,2,2,"604","w"],[14,22,4,2,"601","w"],[16,19,2,2,"603","w"]]};
+  let floorSel = '1';
+  let floorPick = null;
+  const floorTabsEl = document.getElementById('floorTabs');
+  const floorGridEl = document.getElementById('floorGrid');
+  const floorInfoEl = document.getElementById('floorInfo');
+  Object.keys(FLOOR_MAP).forEach(f=>{
+    const b = document.createElement('button');
+    b.className = 'floor-tab'+(f===floorSel?' active':'');
+    b.textContent = f+'층';
+    b.onclick = ()=>{
+      floorSel = f; floorPick = null;
+      floorTabsEl.querySelectorAll('.floor-tab').forEach(x=>x.classList.toggle('active', x===b));
+      renderFloorMap();
+    };
+    floorTabsEl.appendChild(b);
+  });
+
+  function renderFloorMap(){
+    const cells = FLOOR_MAP[floorSel];
+    const {day, ch} = nowDayPeriod();
+    const r0 = Math.min(...cells.map(c=>c[0])), c0 = Math.min(...cells.map(c=>c[1]));
+    const rN = Math.max(...cells.map(c=>c[0]+c[2]-1)), cN = Math.max(...cells.map(c=>c[1]+c[3]-1));
+    floorGridEl.style.gridTemplateColumns = 'repeat('+(cN-c0+1)+',34px)';
+    floorGridEl.style.gridTemplateRows = 'repeat('+(rN-r0+1)+',26px)';
+    floorGridEl.innerHTML = '';
+    cells.forEach(([r,c,h,w,t,k])=>{
+      const el = document.createElement('div');
+      el.style.gridArea = (r-r0+1)+'/'+(c-c0+1)+'/span '+h+'/span '+w;
+      let cls = 'fm-cell', inner = escapeHtml(t);
+      if(k==='p') cls += ' office';
+      else if(k==='g') cls += ' stair';
+      else {
+        const room = 'T'+t;
+        if(ch===null) cls += ' off';
+        else if(findClassAt(room, day, ch)){ cls += ' busy'; inner += '<small>강의중</small>'; }
+        else cls += ' free';
+        if(room===floorPick) cls += ' sel';
+        el.onclick = ()=>{ floorPick = room; renderFloorMap(); };
+      }
+      el.className = cls;
+      el.innerHTML = inner;
+      floorGridEl.appendChild(el);
+    });
+    let info = '<span class="count-line">'+DAY_FULL[day]+' '+(ch===null ? '정규 교시 시간이 아니에요 (모든 강의실 비어있음 표시)' : periodLabel(ch)+' ('+periodTimeRangeExact(ch)+') 기준')+'</span>';
+    if(floorPick){
+      const m = ch===null ? null : findClassAt(floorPick, day, ch);
+      info += '<div class="status-card" style="margin-top:8px;"><p class="room-name">'+escapeHtml(floorPick)+'</p>'+
+        (m ? '<span class="badge busy">강의중</span><div class="class-row"><p class="cname">'+escapeHtml(m.course)+'</p><p class="cmeta">'+escapeHtml(m.prof||'담당교수 미기재')+(m.dept?' · '+escapeHtml(m.dept):'')+'</p></div>'
+           : '<span class="badge free">비어있음</span>')+'</div>';
+    }
+    floorInfoEl.innerHTML = info;
+  }
   // ===================== 식단 tab =====================
   // 식단은 GitHub Actions가 학교 사이트에서 크롤링해 둔 data/menu.json 을 읽어서 채운다.
   // MENU_DATA['월'] = [ {hall, meal, items:[...], price}, ... ]
@@ -1086,7 +1203,7 @@
         const none = m.items.length===1 && m.items[0]==='정보 없음';
         return '<div class="hc-meal">'+
           '<p class="m-meal">'+escapeHtml(m.meal)+(m.price? ' · '+escapeHtml(m.price):'')+'</p>'+
-          '<p class="m-items'+(none?' none':'')+'">'+m.items.map(escapeHtml).join('<br>')+'</p>'+
+          '<ul class="m-list'+(none?' none':'')+'">'+m.items.map(i=>'<li>'+escapeHtml(i)+'</li>').join('')+'</ul>'+
         '</div>';
       }).join('') : '<div class="hc-empty">등록된 식단이 없어요</div>';
       return '<div class="hall-col"><p class="hc-title">'+escapeHtml(hall)+'</p>'+body+'</div>';
@@ -1155,10 +1272,11 @@
   // 공지는 글번호 구간(5000개 단위)별 파일로 나뉘어 있고, 최신 구간부터 "더 보기"로 이어서 불러온다.
   //   notices/{카테고리}/index.json  : { buckets:[큰 번호부터], pinned:[고정공지] }
   //   notices/{카테고리}/b{구간}.json : { items:[글번호 내림차순] }
-  const NOTICE_PAGE_MIN = 30; // 한 번에 최소 이 개수 이상 보여주기
+  const NOTICE_PAGE_SIZE = 20; // 한 페이지당 20개씩 표시
   let noticeIndex = null;
   let noticeNextBucket = 0;
   let noticeShown = [];
+  let noticeCurrentPage = 1;
 
   function noticeItemHtml(n, pinned){
     return '<div class="notice-item" data-article-no="'+escapeHtml(n.articleNo)+'">'+
@@ -1176,45 +1294,100 @@
   const noticeSearchInfo = document.getElementById('noticeSearchInfo');
   const matchesNotice = (n)=> ((n.title||'')+' '+(n.dept||'')).toLowerCase().includes(noticeQuery);
 
-  function renderNotices(){
+  // 현재 공지 배열(고정공지 + 일반공지 중복제거)을 합쳐서 반환
+  function getCombinedNotices(){
     const allPinned = (noticeIndex && noticeIndex.pinned) || [];
     const pinned = noticeQuery ? allPinned.filter(matchesNotice) : allPinned;
     const shown = noticeQuery ? noticeShown.filter(matchesNotice) : noticeShown;
-    const searching = !!noticeQuery;
-    const allLoaded = !noticeIndex || noticeNextBucket >= noticeIndex.buckets.length;
-    noticeSearchInfo.style.display = searching ? '' : 'none';
-    if(searching) noticeSearchInfo.textContent = allLoaded ? '"'+noticeSearch.value.trim()+'" 검색 결과' : '전체 공지에서 검색하는 중이에요…';
-    if(pinned.length===0 && shown.length===0){
-      noticeArea.innerHTML = searching
-        ? '<div class="empty-state"><span class="es-icon">🔍</span>'+(allLoaded?'검색 결과가 없어요.':'검색하는 중이에요…')+'</div>'
-        : '<div class="empty-state"><span class="es-icon">📢</span>표시할 공지사항이 없어요.</div>';
-      return;
-    }
     const pinnedNos = new Set(pinned.map(p=>p.articleNo));
-    const hasMore = !searching && noticeIndex && noticeNextBucket < noticeIndex.buckets.length;
-    noticeArea.innerHTML =
-      pinned.map(n=>noticeItemHtml(n,true)).join('')+
-      shown.filter(n=>!pinnedNos.has(n.articleNo)).map(n=>noticeItemHtml(n,false)).join('')+
-      (hasMore ? '<button class="load-more" id="noticeMoreBtn">이전 공지 더 보기</button>' : '');
-    noticeArea.querySelectorAll('.notice-item').forEach(el=>{
-      el.addEventListener('click', ()=> openNoticeDetail(el.getAttribute('data-article-no')));
+    const list = [];
+    pinned.forEach(n => list.push({ item: n, pinned: true }));
+    shown.forEach(n => {
+      if(!pinnedNos.has(n.articleNo)) list.push({ item: n, pinned: false });
     });
-    const more = document.getElementById('noticeMoreBtn');
-    if(more) more.addEventListener('click', ()=>{ more.disabled = true; more.textContent = '불러오는 중…'; loadMoreNotices(noticeReqId).catch(()=>{ more.disabled=false; more.textContent='다시 시도'; }); });
+    return list;
   }
 
-  // 최소 NOTICE_PAGE_MIN개가 추가될 때까지 구간 파일을 이어서 읽는다.
-  async function loadMoreNotices(reqId){
-    let added = 0;
-    while(added < NOTICE_PAGE_MIN && noticeIndex && noticeNextBucket < noticeIndex.buckets.length){
+  // requestedPage 페이지를 보여주기 위해 필요한 만큼 버킷 데이터를 먼저 확보
+  async function ensureNoticesForPage(requestedPage, reqId){
+    const neededCount = (requestedPage + 1) * NOTICE_PAGE_SIZE;
+    while(getCombinedNotices().length < neededCount && noticeIndex && noticeNextBucket < noticeIndex.buckets.length){
       const b = noticeIndex.buckets[noticeNextBucket];
       const data = await fetchJson('notices/'+noticeSelectedCat+'/b'+b+'.json');
       if(reqId !== noticeReqId) return;
       noticeNextBucket++;
       noticeShown = noticeShown.concat(data.items || []);
-      added += (data.items || []).length;
     }
-    if(reqId === noticeReqId) renderNotices();
+  }
+
+  function renderNotices(){
+    const combined = getCombinedNotices();
+    const searching = !!noticeQuery;
+    const allLoaded = !noticeIndex || noticeNextBucket >= noticeIndex.buckets.length;
+    noticeSearchInfo.style.display = searching ? '' : 'none';
+    if(searching) noticeSearchInfo.textContent = allLoaded ? '"'+noticeSearch.value.trim()+'" 검색 결과 ('+combined.length+'건)' : '전체 공지에서 검색하는 중이에요…';
+
+    if(combined.length === 0){
+      noticeArea.innerHTML = searching
+        ? '<div class="empty-state"><span class="es-icon">🔍</span>'+(allLoaded?'검색 결과가 없어요.':'검색하는 중이에요…')+'</div>'
+        : '<div class="empty-state"><span class="es-icon">📢</span>표시할 공지사항이 없어요.</div>';
+      return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(combined.length / NOTICE_PAGE_SIZE));
+    if(noticeCurrentPage > totalPages) noticeCurrentPage = totalPages;
+    if(noticeCurrentPage < 1) noticeCurrentPage = 1;
+
+    const startIdx = (noticeCurrentPage - 1) * NOTICE_PAGE_SIZE;
+    const pageSlice = combined.slice(startIdx, startIdx + NOTICE_PAGE_SIZE);
+    const hasMoreBuckets = !searching && noticeIndex && noticeNextBucket < noticeIndex.buckets.length;
+    const canGoPrev = noticeCurrentPage > 1;
+    const canGoNext = (noticeCurrentPage < totalPages) || hasMoreBuckets;
+
+    let paginationHtml = '';
+    if(totalPages > 1 || hasMoreBuckets){
+      paginationHtml =
+        '<div class="notice-pagination">'+
+          '<button type="button" class="page-btn" id="noticePrevPage" '+(canGoPrev?'':'disabled')+'>‹ 이전</button>'+
+          '<span class="page-info">'+noticeCurrentPage+' / '+(hasMoreBuckets ? totalPages+'+' : totalPages)+' 페이지</span>'+
+          '<button type="button" class="page-btn" id="noticeNextPage" '+(canGoNext?'':'disabled')+'>다음 ›</button>'+
+        '</div>';
+    }
+
+    noticeArea.innerHTML =
+      pageSlice.map(entry => noticeItemHtml(entry.item, entry.pinned)).join('') +
+      paginationHtml;
+
+    noticeArea.querySelectorAll('.notice-item').forEach(el=>{
+      el.addEventListener('click', ()=> openNoticeDetail(el.getAttribute('data-article-no')));
+    });
+
+    const prevBtn = document.getElementById('noticePrevPage');
+    const nextBtn = document.getElementById('noticeNextPage');
+    if(prevBtn){
+      prevBtn.addEventListener('click', ()=>{
+        if(noticeCurrentPage > 1){
+          noticeCurrentPage--;
+          renderNotices();
+          window.scrollTo({top:0, behavior:'smooth'});
+        }
+      });
+    }
+    if(nextBtn){
+      nextBtn.addEventListener('click', async ()=>{
+        nextBtn.disabled = true;
+        nextBtn.textContent = '로딩…';
+        try{
+          noticeCurrentPage++;
+          await ensureNoticesForPage(noticeCurrentPage, noticeReqId);
+          renderNotices();
+          window.scrollTo({top:0, behavior:'smooth'});
+        }catch(e){
+          noticeCurrentPage--;
+          renderNotices();
+        }
+      });
+    }
   }
 
   // 검색할 때는 아직 안 읽은 구간 파일을 전부 읽어서 전체 공지에서 찾는다.
@@ -1234,6 +1407,7 @@
     clearTimeout(noticeSearchTimer);
     noticeSearchTimer = setTimeout(async ()=>{
       noticeQuery = noticeSearch.value.trim().toLowerCase();
+      noticeCurrentPage = 1;
       renderNotices();
       if(noticeQuery){
         try{ await loadAllNotices(noticeReqId); }catch(e){ noticeSearchInfo.textContent = '일부 공지를 불러오지 못했어요. 다시 시도해주세요.'; }
@@ -1244,12 +1418,13 @@
   let noticeReqId = 0; // 카테고리를 빠르게 바꿔도 마지막 요청만 반영
   async function tryLoadNotices(){
     const reqId = ++noticeReqId;
-    noticeIndex = null; noticeNextBucket = 0; noticeShown = [];
+    noticeIndex = null; noticeNextBucket = 0; noticeShown = []; noticeCurrentPage = 1;
     noticeArea.innerHTML = '<div class="notice-loading">공지사항을 불러오는 중이에요…</div>';
     try{
       noticeIndex = await fetchJson('notices/'+noticeSelectedCat+'/index.json');
       if(reqId !== noticeReqId) return;
-      await loadMoreNotices(reqId);
+      await ensureNoticesForPage(1, reqId);
+      if(reqId === noticeReqId) renderNotices();
       if(noticeQuery) await loadAllNotices(reqId);
     }catch(e){
       if(reqId !== noticeReqId) return;
@@ -1415,12 +1590,13 @@
   setInterval(renderBus, 15*1000);
   renderStatus();
   renderFreeRooms();
+  renderFloorMap();
   renderClock();
   initMenuDayRow();
   tryLoadMenu();
   initNoticeCatRow();
   tryLoadNotices();
-  setInterval(()=>{ renderClock(); renderStatus(); renderFreeRooms(); }, 30000);
+  setInterval(()=>{ renderClock(); renderStatus(); renderFreeRooms(); renderFloorMap(); }, 30000);
 
 })();
 </script>
