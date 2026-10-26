@@ -737,12 +737,54 @@
     .weather .w-icon{font-size:16px;}.weather .w-temp{font-size:15px;}.weather .w-desc{font-size:13px;}
   }
   @media (orientation:landscape) and (max-height:820px){ header.top h1{font-size:19px;} }
+
+  /* side menu */
+  .menu-btn{position:absolute;top:14px;left:12px;width:38px;height:34px;display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);background:var(--navy-2);color:var(--ink);border-radius:8px;font-size:20px;line-height:1;cursor:pointer;z-index:6;}
+  header.top, header.top.x{padding-left:62px !important;}
+  .side-dim{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s;z-index:998;}
+  .side-menu{position:fixed;top:0;left:0;bottom:0;width:260px;max-width:80vw;background:var(--tabbar-bg,#141416);color:var(--ink);
+    border-right:3px solid var(--amber);transform:translateX(-100%);transition:transform .25s ease;z-index:999;display:flex;flex-direction:column;
+    padding:env(safe-area-inset-top) 0 0;box-shadow:4px 0 20px rgba(0,0,0,.35);}
+  body.side-open .side-menu{transform:translateX(0);}
+  body.side-open .side-dim{opacity:1;pointer-events:auto;}
+  .side-head{display:flex;justify-content:space-between;align-items:center;padding:18px 18px 12px;font-weight:700;color:var(--amber);border-bottom:1px solid var(--line);}
+  .side-close{background:none;border:0;color:var(--ink-dim);font-size:20px;cursor:pointer;}
+  .side-menu a{display:flex;align-items:center;gap:10px;padding:16px 18px;color:var(--ink);text-decoration:none;font-size:15px;border-bottom:1px solid var(--line);
+    opacity:0;transform:translateX(-14px);transition:opacity .3s,transform .3s,background .15s;}
+  body.side-open .side-menu a{opacity:1;transform:none;}
+  body.side-open .side-menu a:nth-of-type(1){transition-delay:.06s}
+  body.side-open .side-menu a:nth-of-type(2){transition-delay:.12s}
+  body.side-open .side-menu a:nth-of-type(3){transition-delay:.18s}
+  .side-menu a:active{background:var(--line);}
+  .side-menu a small{margin-left:auto;color:var(--ink-dim);font-size:11px;}
+
+  /* shuttle */
+  .sh-tabs{display:flex;gap:6px;margin:8px 0 12px;}
+  .sh-tabs button{flex:1;padding:9px 4px;border:1px solid var(--line);background:var(--navy-2);color:var(--ink-dim);border-radius:999px;font-size:13px;font-family:inherit;cursor:pointer;}
+  .sh-tabs button.on{background:var(--amber);color:#000;border-color:var(--amber);font-weight:700;}
+  .sh-h{font-size:14px;font-weight:700;margin:14px 0 8px;color:var(--ink);}
+  .sh-h span{color:var(--amber);}
+  .sh-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+  @media (min-width:700px){.sh-grid{grid-template-columns:1fr 1fr;}}
+  .sh-card{border:1px solid var(--line);background:var(--paper-2,var(--navy-2));border-radius:10px;padding:12px 14px;}
+  .sh-card.next{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber) inset;}
+  .sh-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .sh-time{font-size:20px;font-weight:700;color:var(--amber);font-variant-numeric:tabular-nums;}
+  .sh-dir{font-size:12px;color:var(--ink-dim);flex:1;}
+  .sh-next{font-size:11px;background:var(--amber);color:#000;border-radius:999px;padding:2px 8px;font-weight:700;}
+  .sh-route{display:flex;flex-wrap:wrap;align-items:center;gap:4px 2px;}
+  .sh-stop{display:inline-flex;flex-direction:column;align-items:center;font-size:11px;line-height:1.25;padding:4px 7px;border-radius:6px;background:var(--navy-2);border:1px solid var(--line);color:var(--ink-dim);}
+  .sh-stop b{font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .sh-stop.camp{border-color:var(--amber-dim);}
+  .sh-arrow{color:var(--ink-dim);font-size:11px;}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header class="top">
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="메뉴 열기">☰</button>
     <p class="kicker">국립금오공과대학교 KIT</p>
     <h1 id="pageTitle">강의실별 수업현황</h1>
     <div class="clock-row">
@@ -822,6 +864,13 @@
         <p class="count-line" id="busUpdated"></p>
         <div class="fill-cols" id="busArea"></div>
         <p class="note-block">국토교통부 TAGO 버스도착정보 기준이며, 실제 도착 시간과 다를 수 있어요.</p>
+      </section>
+      <section id="shuttleSec">
+        <h2>🚍 구미 통학버스 시간표</h2>
+        <p class="count-line">학교 대형버스 · 무료 · 선착순(입석 금지) · 토요일/공휴일 미운행</p>
+        <div class="sh-tabs" id="shTabs"></div>
+        <div id="shBody"></div>
+        <p class="note-block">출처: <a href="https://www.kumoh.ac.kr/ko/sub04_02_07_01.do" target="_blank" rel="noopener" style="color:var(--amber)">금오공대 통학버스 안내</a><br>교통 상황에 따라 지연될 수 있어요. 하교 시 승차: kit라운지(정문 옆 버스 승차장)<br>문의: 총무과 재산관리팀 054-478-6779 (대구 노선: 학생지원팀 054-478-7040)</p>
       </section>
     </div>
 
@@ -1642,6 +1691,84 @@
     });
     paint();
   })();
+</script>
+<div class="side-dim" id="sideDim"></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true">
+  <div class="side-head"><span>바로가기</span><button class="side-close" id="sideClose" type="button" aria-label="닫기">✕</button></div>
+  <a href="https://www.kumoh.ac.kr/ko/index.do" target="_blank" rel="noopener">🏫 학교 홈페이지<small>↗</small></a>
+  <a href="https://onekit.kumoh.ac.kr/login.jsp" target="_blank" rel="noopener">🔑 Onekit<small>↗</small></a>
+  <a href="https://biskit.kumoh.ac.kr/" target="_blank" rel="noopener">📚 Biskit<small>↗</small></a>
+</aside>
+<script>
+(function(){
+  const b=document.body,o=()=>{b.classList.add('side-open');document.getElementById('sideMenu').setAttribute('aria-hidden','false')},
+  c=()=>{b.classList.remove('side-open');document.getElementById('sideMenu').setAttribute('aria-hidden','true')};
+  document.getElementById('menuBtn').addEventListener('click',o);
+  document.getElementById('sideClose').addEventListener('click',c);
+  document.getElementById('sideDim').addEventListener('click',c);
+  document.querySelectorAll('#sideMenu a').forEach(a=>a.addEventListener('click',c));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')c()});
+})();
+</script>
+
+<script>
+(function(){
+  const S=n=>n.replace('양호캠퍼스','양호').replace('신평캠퍼스 후문','신평후문').replace('양포동행정복지센터','양포동센터').replace('옥계대우아파트','옥계대우APT');
+  const P=str=>str.split('>').map(x=>{const m=x.trim().match(/^(.+)\((\d\d:\d\d)\)$/);return [m[1],m[2]]});
+  // [구분, 시간대, 방면, 경로]
+  const D={
+   '학기 중':[
+    ['등교','08시','구미역·터미널','구미역(08:15)>버스터미널(08:20)>양호캠퍼스(08:50)'],
+    ['등교','08시','신평·옥계','신평캠퍼스 후문(08:00)>양호캠퍼스(08:25)>양포동행정복지센터(08:35)>옥계대우아파트(08:38)>양호캠퍼스(08:50)'],
+    ['등교','09시','구미역·터미널','양호캠퍼스(09:00)>구미역(09:15)>버스터미널(09:20)>양호캠퍼스(09:45)'],
+    ['등교','09시','신평캠퍼스','양호캠퍼스(09:15)>신평캠퍼스 후문(09:25)>양호캠퍼스(09:45)'],
+    ['등교','10시','구미역·터미널','양호캠퍼스(10:00)>구미역(10:15)>버스터미널(10:20)>신평캠퍼스 후문(10:25)>양호캠퍼스(10:45)'],
+    ['등교','11시','신평캠퍼스','양호캠퍼스(11:10)>신평캠퍼스 후문(11:20)>양호캠퍼스(11:40)'],
+    ['하교','13시','구미역·터미널','양호캠퍼스(13:00)>구미역(13:15)>버스터미널(13:20)>신평캠퍼스 후문(13:25)>양호캠퍼스(13:45)'],
+    ['하교','15시','신평캠퍼스','양호캠퍼스(15:10)>신평캠퍼스 후문(15:20)>양호캠퍼스(15:40)'],
+    ['하교','16시','구미역·터미널','양호캠퍼스(16:10)>구미역(16:25)>버스터미널(16:30)>신평캠퍼스 후문(16:35)>양호캠퍼스(17:00)'],
+    ['하교','18시','옥계','양호캠퍼스(18:10)>옥계대우아파트(18:20)>양포동행정복지센터(18:25)>양호캠퍼스(18:40)'],
+    ['하교','18시','신평·터미널·구미역','양호캠퍼스(18:10)>신평캠퍼스 후문(18:20)>버스터미널(18:25)>구미역(18:30)>양호캠퍼스(18:50)']],
+   '계절학기':[
+    ['등교','08시','구미역·터미널·신평','구미역(08:15)>버스터미널(08:20)>신평캠퍼스 후문(08:25)>양호캠퍼스(08:45)'],
+    ['등교','08시','옥계','양포동행정복지센터(08:30)>옥계대우아파트(08:33)>양호캠퍼스(08:45)'],
+    ['등교','09시','구미역·터미널·신평','양호캠퍼스(09:00)>구미역(09:15)>버스터미널(09:20)>신평캠퍼스 후문(09:25)>양호캠퍼스(09:45)'],
+    ['하교','16시','구미역·터미널·신평','양호캠퍼스(16:10)>구미역(16:25)>버스터미널(16:30)>신평캠퍼스 후문(16:35)>양호캠퍼스(17:00)'],
+    ['하교','18시','옥계','양호캠퍼스(18:10)>옥계대우아파트(18:15)>양포동행정복지센터(18:20)>양호캠퍼스(18:40)'],
+    ['하교','18시','구미역·터미널·신평','양호캠퍼스(18:10)>신평캠퍼스 후문(18:18)>버스터미널(18:23)>구미역(18:28)>양호캠퍼스(18:50)']],
+   '방학':[
+    ['등교','08시','구미역·터미널·신평','구미역(08:15)>버스터미널(08:20)>신평캠퍼스 후문(08:25)>양호캠퍼스(08:45)'],
+    ['등교','08시','옥계','양포동행정복지센터(08:30)>옥계대우아파트(08:33)>양호캠퍼스(08:45)'],
+    ['하교','18시','옥계','양호캠퍼스(18:10)>옥계대우아파트(18:15)>양포동행정복지센터(18:20)>양호캠퍼스(18:40)'],
+    ['하교','18시','구미역·터미널·신평','양호캠퍼스(18:10)>신평캠퍼스 후문(18:18)>버스터미널(18:23)>구미역(18:28)>양호캠퍼스(18:50)']]
+  };
+  let cur='학기 중';
+  const tabs=document.getElementById('shTabs'),body=document.getElementById('shBody');
+  function render(){
+    tabs.innerHTML=Object.keys(D).map(k=>'<button class="'+(k===cur?'on':'')+'" data-k="'+k+'">'+(k==='방학'?'방학기간':k)+'</button>').join('');
+    const now=new Date(),nm=now.getHours()*60+now.getMinutes(),dow=now.getDay();
+    const rows=D[cur].map(r=>({r,st:P(r[3])}));
+    let next=null;
+    if(dow>0&&dow<6) for(const x of rows){const[h,m]=x.st[0][1].split(':').map(Number);if(h*60+m>=nm){next=x;break;}}
+    // 가장 빠른 다음 출발(등교/하교 구분 없이 시각순)
+    let best=null,bt=1e9;
+    if(dow>0&&dow<6) for(const x of rows){const[h,m]=x.st[0][1].split(':').map(Number);const t=h*60+m;if(t>=nm&&t<bt){bt=t;best=x;}}
+    let html='';
+    ['등교','하교'].forEach(g=>{
+      const list=rows.filter(x=>x.r[0]===g);
+      html+='<div class="sh-h"><span>'+(g==='등교'?'🌅 등교':'🌇 하교')+'</span> · '+(g==='등교'?'각 정류장 → 양호캠퍼스':'양호캠퍼스 출발')+'</div><div class="sh-grid">';
+      list.forEach(x=>{
+        const isNext=x===best;
+        html+='<div class="sh-card'+(isNext?' next':'')+'"><div class="sh-top"><span class="sh-time">'+x.st[0][1]+'</span><span class="sh-dir">'+x.r[2]+' 방면</span>'+(isNext?'<span class="sh-next">다음 출발</span>':'')+'</div><div class="sh-route">'+
+          x.st.map((p,i)=>(i?'<span class="sh-arrow">▶</span>':'')+'<span class="sh-stop'+(p[0].indexOf('양호')>=0?' camp':'')+'"><b>'+p[1]+'</b>'+S(p[0])+'</span>').join('')+'</div></div>';
+      });
+      html+='</div>';
+    });
+    body.innerHTML=html;
+  }
+  tabs.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k){cur=k;render();}});
+  render();
+})();
 </script>
 </body>
 </html>
