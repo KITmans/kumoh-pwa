@@ -260,15 +260,18 @@
   .floor-tab.active{background:var(--amber);border-color:var(--amber);color:#fff;}
   .floor-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink-dim);margin:0 0 8px;}
   .floor-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px;}
-  .floor-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);padding:8px;background:var(--paper-2);}
-  .floor-grid{display:grid;gap:2px;width:max-content;}
-  .fm-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;font-size:11px;font-weight:700;line-height:1.2;text-align:center;color:#fff;min-width:0;overflow:hidden;}
-  .fm-cell small{font-size:9px;font-weight:600;opacity:.95;}
+  .floor-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);padding:6px 4px;background:var(--paper-2);}
+  .floor-grid{display:grid;gap:1.5px;width:100%;}
+  .fm-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:3px;font-size:clamp(7.5px, 1.9vw, 11px);font-weight:700;line-height:1.05;text-align:center;color:#fff;min-width:0;overflow:hidden;padding:1px;word-break:break-all;letter-spacing:-0.04em;}
+  .fm-cell small{font-size:clamp(6.5px, 1.5vw, 9px);font-weight:600;opacity:.95;letter-spacing:-0.05em;line-height:1;}
+  .fm-cell.stair{font-size:clamp(7.5px, 1.7vw, 10px);line-height:1.05;white-space:nowrap;word-break:keep-all;letter-spacing:-0.05em;}
+  .fm-cell.arrow{font-size:clamp(14px, 3.5vw, 24px);}
   .fm-cell.free{background:#2e9e6b;cursor:pointer;}
   .fm-cell.busy{background:#2f6fd6;cursor:pointer;}
   .fm-cell.off{background:#2e9e6b;opacity:.6;}
   .fm-cell.office{background:#e0605a;}
   .fm-cell.stair{background:#8a8a8a;font-size:9px;font-weight:600;line-height:1.15;}
+  .fm-cell.arrow{background:none;color:var(--ink);font-size:26px;font-weight:800;line-height:1;}
   .fm-cell.sel{outline:2px solid var(--ink);outline-offset:1px;}
   .floor-info{margin-top:10px;font-size:13px;}
   .free-item .fr-room{font-weight:600;}
@@ -756,8 +759,45 @@
   body.side-open .side-menu a:nth-of-type(1){transition-delay:.06s}
   body.side-open .side-menu a:nth-of-type(2){transition-delay:.12s}
   body.side-open .side-menu a:nth-of-type(3){transition-delay:.18s}
+  body.side-open .side-menu a:nth-of-type(4){transition-delay:.24s}
+  body.side-open .side-menu a:nth-of-type(5){transition-delay:.3s}
+  body.side-open .side-menu a:nth-of-type(6){transition-delay:.36s}
   .side-menu a:active{background:var(--line);}
   .side-menu a small{margin-left:auto;color:var(--ink-dim);font-size:11px;}
+
+
+  /* my timetable */
+  .tt-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);padding:6px;background:var(--paper-2);}
+  .tt-grid{display:grid;gap:2px;min-width:300px;}
+  .tt-h{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--ink-dim);padding:6px 0;}
+  .tt-h.today{color:var(--amber);}
+  .tt-p{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--ink-dim);line-height:1.2;}
+  .tt-p small{font-size:9px;font-weight:500;opacity:.8;}
+  .tt-bg{background:var(--navy-2);border-radius:3px;}
+  .tt-bg.now{outline:1px solid var(--amber);outline-offset:-1px;}
+  .tt-blk{border-radius:4px;color:#fff;padding:3px 4px;font-size:10px;line-height:1.25;font-weight:700;overflow:hidden;word-break:keep-all;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+  .tt-blk small{font-size:9px;font-weight:500;opacity:.92;}
+  .tt-blk.conf{outline:2px solid #ffeb3b;}
+  .tt-search{width:100%;padding:12px 14px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink);border-radius:var(--radius);font-size:15px;font-family:inherit;}
+  .tt-card{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--paper-2);border-radius:8px;padding:10px 12px;margin-top:8px;}
+  .tt-card .tt-dot{width:8px;align-self:stretch;border-radius:4px;flex:none;}
+  .tt-card .tt-body{flex:1;min-width:0;}
+  .tt-card .tt-name{font-size:14px;font-weight:700;color:var(--ink);}
+  .tt-card .tt-meta{font-size:12px;color:var(--ink-dim);margin-top:2px;}
+  .tt-card .tt-slots{font-size:12px;color:var(--ink);margin-top:3px;}
+  .tt-btn{flex:none;border:1px solid var(--amber);background:var(--amber);color:#000;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
+  .tt-btn.del{background:transparent;color:var(--busy);border-color:var(--busy);}
+  .tt-btn.done{background:transparent;color:var(--ink-dim);border-color:var(--line);cursor:default;}
+  .tt-clear{margin-top:12px;border:1px solid var(--line);background:none;color:var(--ink-dim);border-radius:var(--radius);padding:8px 12px;font-size:12px;font-family:inherit;cursor:pointer;}
+
+
+  /* reminders */
+  .rm-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+  .rm-row select,.rm-row input{width:auto;flex:1;min-width:90px;padding:10px 12px;font-size:14px;}
+  .tt-btn.ghost{background:transparent;color:var(--amber);}
+  .rm-sw{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink);}
+  .rm-sw input{width:20px;height:20px;accent-color:var(--amber);}
+  .rm-warn{color:var(--busy);}
 
   /* shuttle */
   .sh-tabs{display:flex;gap:6px;margin:8px 0 12px;}
@@ -778,6 +818,273 @@
   .sh-stop b{font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums;}
   .sh-stop.camp{border-color:var(--amber-dim);}
   .sh-arrow{color:var(--ink-dim);font-size:11px;}
+
+  /* 엠블럼(좌측 상단) & 날씨(우측 상단) & 사이드바 하단 테마 토글 */
+  header.top .kit-emblem{
+    grid-column:1;grid-row:1;justify-self:start;
+    height:22px;width:auto;max-width:165px;object-fit:contain;
+    display:block;margin:2px 0;
+    filter:invert(1) brightness(1.35) contrast(1.05);
+    transition:filter .2s ease;
+  }
+  header.top .weather{grid-column:2;grid-row:1;justify-self:end;}
+  :root[data-theme="light"] header.top .kit-emblem{
+    filter:none;
+  }
+  header.top h1{grid-column:1/-1;grid-row:2;margin-top:4px;}
+  header.top .clock-row{grid-column:1/-1;grid-row:3;}
+  @media (min-width:700px){
+    header.top .kit-emblem{height:28px;max-width:210px;}
+  }
+  .side-foot{
+    margin-top:auto;
+    padding:14px 18px calc(16px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--line);
+  }
+  .side-menu .theme-btn{
+    position:static;
+    width:100%;
+    justify-content:center;
+    gap:8px;
+    padding:12px 16px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink);
+    border-radius:var(--radius);
+    font-size:15px;
+    font-weight:600;
+    box-shadow:var(--shadow);
+  }
+  .side-menu .theme-btn .t-icon{font-size:17px;}
+
+  /* ============================================================
+     1. 타이틀(페이지 제목 & 섹션 제목) 테두리 배지 디자인
+     ============================================================ */
+  header.top h1{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:auto !important;
+    max-width:92%;
+    padding:6px 22px !important;
+    margin:6px auto 4px !important;
+    border:1.5px solid var(--amber);
+    border-radius:999px;
+    background:var(--amber-soft);
+    box-shadow:0 2px 10px rgba(0,0,0,.18);
+    font-size:clamp(17px, 4.8vw, 23px);
+    letter-spacing:-0.01em;
+  }
+  section > h2{
+    width:fit-content;
+    max-width:94%;
+    margin:0 auto 16px !important;
+    padding:6px 18px;
+    border:1.5px solid var(--line);
+    border-left:4px solid var(--amber);
+    border-radius:999px;
+    background:var(--navy-2);
+    box-shadow:var(--shadow);
+    gap:10px;
+  }
+  .tab-panel[data-tab="bus"] section > h2{
+    width:100%;
+    max-width:100%;
+    border-radius:var(--radius);
+    padding:8px 16px;
+  }
+  #busRefreshBtn{
+    right:10px;
+  }
+
+  /* ============================================================
+     내 캘린더 (모바일 캘린더 앱 스타일: 월간 달력 + 하단 팝업)
+     ============================================================ */
+  .cal-wrap{padding:10px 0 24px;}
+  .cal-wrap.sheet-open{padding-bottom:calc(52vh + 90px);}
+  .cal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 14px 8px;}
+  .cal-ym{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-0.02em;}
+  .cal-nav{display:flex;align-items:center;gap:6px;}
+  .cal-nav-btn{
+    border:1px solid var(--line);background:var(--navy-2);color:var(--ink);
+    border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  }
+  .cal-nav-btn.today{border-color:var(--amber);color:var(--amber);background:var(--amber-soft);}
+  .cal-cat-bar{display:flex;gap:6px;overflow-x:auto;padding:2px 14px 10px;scrollbar-width:none;}
+  .cal-cat-bar::-webkit-scrollbar{display:none;}
+  .cal-cat-chip{
+    flex-shrink:0;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);
+    background:var(--navy-2);color:var(--ink-dim);padding:5px 11px;border-radius:999px;
+    font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  .cal-cat-chip.active{border-color:var(--amber);color:var(--ink);background:var(--amber-soft);}
+  .cal-cat-chip.manage{border-style:dashed;}
+  .cal-cat-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0;}
+  .cal-dow-row{
+    display:grid;grid-template-columns:repeat(7,minmax(0,1fr));text-align:center;
+    font-size:12px;font-weight:700;color:var(--ink-dim);padding:6px 0;
+    background:var(--navy-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .cal-dow-row span:first-child{color:#e2685c;}
+  .cal-dow-row span:last-child{color:#4a90e2;}
+  .cal-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-left:1px solid var(--line);}
+  .cal-day{
+    min-height:98px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:3px 1px 3px;display:flex;flex-direction:column;align-items:stretch;gap:2px;
+    cursor:pointer;background:var(--paper-2);overflow:hidden;min-width:0;-webkit-tap-highlight-color:transparent;
+  }
+  .cal-day.other{background:var(--navy-2);}
+  .cal-day.other .cal-day-num,.cal-day.other .cal-pill{opacity:.45;}
+  .cal-day.sel{box-shadow:0 0 0 2px var(--amber) inset;background:var(--amber-soft);}
+  .cal-day-num{font-size:12px;font-weight:700;padding:0 3px;height:20px;line-height:20px;color:var(--ink);align-self:flex-start;}
+  .cal-day.sun .cal-day-num{color:#e2685c;}
+  .cal-day.sat .cal-day-num{color:#4a90e2;}
+  .cal-day.today .cal-day-num{
+    background:var(--amber);color:#fff;border-radius:999px;min-width:20px;text-align:center;padding:0 5px;
+  }
+  .cal-pill{
+    font-size:10px;font-weight:600;line-height:1.25;padding:2px 3px;border-radius:3px;
+    color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;
+    letter-spacing:-0.04em;border-left:3px solid transparent;
+  }
+  .cal-pill .pt{font-size:8.5px;opacity:.75;margin-right:2px;font-variant-numeric:tabular-nums;}
+  .cal-more{font-size:9.5px;color:var(--ink-dim);text-align:center;font-weight:700;}
+
+  /* 하단 팝업 (날짜 탭 시) */
+  .cal-sheet{
+    position:fixed;left:50%;transform:translate(-50%,calc(100% + 140px));visibility:hidden;width:100%;max-width:520px;
+    bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+    background:var(--paper-2);border:1px solid var(--line);border-bottom:none;
+    border-radius:20px 20px 0 0;box-shadow:0 -8px 28px rgba(0,0,0,.28);
+    z-index:90;max-height:52vh;display:flex;flex-direction:column;
+    transition:transform .25s ease,visibility 0s linear .25s;pointer-events:none;
+  }
+  .cal-sheet.open{transform:translate(-50%,0);visibility:visible;pointer-events:auto;transition:transform .25s ease,visibility 0s;}
+  .cal-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);flex-shrink:0;}
+  .cal-sheet-date{font-size:16px;font-weight:800;color:var(--ink);}
+  .cal-sheet-sub{font-size:11.5px;color:var(--ink-dim);margin-top:2px;font-weight:500;}
+  .cal-sheet-close{border:none;background:var(--navy-2);color:var(--ink);width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;}
+  .cal-sheet-body{overflow-y:auto;padding:10px 14px 4px;flex:1;-webkit-overflow-scrolling:touch;}
+  .cal-sheet-foot{padding:8px 14px 12px;flex-shrink:0;border-top:1px solid var(--line);}
+  .cal-add-open-btn{
+    width:100%;border:none;background:var(--amber);color:#fff;font-weight:800;font-size:15px;
+    padding:13px;border-radius:14px;cursor:pointer;font-family:inherit;
+  }
+  .cal-empty{padding:18px 0;text-align:center;color:var(--ink-dim);font-size:14px;}
+  .cal-ev-list{display:flex;flex-direction:column;gap:8px;padding-bottom:6px;}
+  .cal-ev-item{
+    display:grid;grid-template-columns:58px 4px 1fr auto;align-items:center;gap:10px;
+    padding:10px 10px;border:1px solid var(--line);background:var(--navy-2);border-radius:12px;
+  }
+  .cal-ev-time{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;font-variant-numeric:tabular-nums;line-height:1.25;}
+  .cal-ev-time .t-all{font-size:12px;font-weight:800;color:var(--amber);background:var(--amber-soft);padding:3px 8px;border-radius:999px;}
+  .cal-ev-time .t-start{font-size:13px;font-weight:700;color:var(--ink);}
+  .cal-ev-time .t-end{font-size:11px;color:var(--ink-dim);}
+  .cal-ev-bar{width:4px;align-self:stretch;min-height:32px;border-radius:4px;}
+  .cal-ev-body{min-width:0;text-align:left;}
+  .cal-ev-title{font-size:15px;font-weight:700;color:var(--ink);word-break:keep-all;}
+  .cal-ev-meta{font-size:12px;color:var(--ink-dim);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .cal-ev-cat-tag{display:inline-block;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:700;color:#fff;}
+  .cal-ev-actions{display:flex;gap:4px;}
+  .cal-icon-btn{border:1px solid var(--line);background:var(--paper-2);color:var(--ink-dim);border-radius:8px;padding:5px 8px;font-size:12px;cursor:pointer;font-family:inherit;}
+  .cal-icon-btn.del{color:var(--busy);}
+
+  /* 모달 (일정 추가/수정, 분류 편집) */
+  .cal-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;}
+  .cal-modal-bg.open{display:flex;}
+  .cal-modal{
+    width:100%;max-width:420px;max-height:90vh;overflow-y:auto;background:var(--paper-2);border:1px solid var(--line);
+    border-radius:var(--radius-lg);padding:18px;box-shadow:0 12px 34px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:12px;
+  }
+  .cal-modal h3{margin:0;font-size:17px;font-weight:800;color:var(--ink);display:flex;justify-content:space-between;align-items:center;}
+  .cal-form-row{display:flex;flex-direction:column;gap:5px;text-align:left;}
+  .cal-form-row label{font-size:12px;font-weight:700;color:var(--ink-dim);}
+  .cal-form-inline{display:flex;align-items:center;gap:8px;}
+  .cal-form-inline input[type="time"],
+  .cal-form-row input[type="date"],
+  .cal-form-row input[type="text"]{
+    width:100%;padding:11px 12px;border:1px solid var(--line);background:var(--navy-2);color:var(--ink);
+    border-radius:var(--radius);font-size:16px;font-family:inherit;min-width:0;
+  }
+  .cal-cat-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .cal-cat-opt{
+    border:1.5px solid var(--line);background:var(--navy-2);color:var(--ink);padding:8px 6px;border-radius:10px;
+    font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-family:inherit;
+    min-width:0;
+  }
+  .cal-cat-opt.sel{border-color:var(--amber);background:var(--amber-soft);}
+  .cal-modal-btns{display:flex;gap:8px;margin-top:4px;}
+  .cal-modal-btns button{flex:1;padding:12px;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .cal-btn-cancel{border:1px solid var(--line);background:var(--navy-2);color:var(--ink-dim);}
+  .cal-btn-save{border:1px solid var(--amber);background:var(--amber);color:#fff;}
+
+  /* 분류 편집 */
+  .cal-catm-list{display:flex;flex-direction:column;gap:8px;}
+  .cal-catm-row{display:flex;align-items:center;gap:8px;}
+  .cal-catm-row input[type="color"]{
+    width:42px;height:42px;padding:0;border:1px solid var(--line);border-radius:10px;background:none;cursor:pointer;flex-shrink:0;
+  }
+  .cal-catm-row input[type="text"]{
+    flex:1;min-width:0;padding:11px 12px;border:1px solid var(--line);background:var(--navy-2);color:var(--ink);
+    border-radius:var(--radius);font-size:16px;font-family:inherit;
+  }
+  .cal-catm-del{border:1px solid var(--line);background:var(--paper-2);color:var(--busy);border-radius:10px;width:38px;height:42px;font-size:15px;cursor:pointer;flex-shrink:0;}
+  .cal-catm-add{border:1.5px dashed var(--line);background:none;color:var(--ink);border-radius:12px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .cal-catm-hint{font-size:12px;color:var(--ink-dim);text-align:left;margin:0;}
+
+  @media (min-width:768px){
+    .cal-sheet{max-width:920px;}
+    .cal-day{min-height:118px;padding:5px 3px;}
+    .cal-pill{font-size:12px;padding:2px 5px;}
+    .cal-pill .pt{font-size:10.5px;}
+  }
+  @media (orientation:landscape) and (max-height:600px){
+    .cal-day{min-height:64px;}
+    header.top h1{font-size:17px !important;margin:2px auto !important;}
+  }
+
+  /* ============================================================
+     제목 디자인 (깔끔한 텍스트 + 짧은 포인트 라인)
+     ============================================================ */
+  header.top h1{
+    border:none !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    padding:2px 0 !important;
+    font-weight:800;
+    letter-spacing:-0.02em;
+  }
+  section > h2,
+  .tab-panel[data-tab="bus"] section > h2{
+    position:relative;
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 0 18px !important;
+    padding:2px 0 14px !important;
+    border:none !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    font-size:18px;
+    font-weight:800;
+    letter-spacing:-0.02em;
+    color:var(--ink);
+    justify-content:center;
+    text-align:center;
+  }
+  section > h2::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:34px;
+    height:4px;
+    border-radius:4px;
+    background:linear-gradient(90deg,var(--amber),#f2c27a);
+  }
+  @media (min-width:768px){ section > h2{font-size:20px;} }
 </style>
 </head>
 <body>
@@ -785,27 +1092,32 @@
 
   <header class="top">
     <button class="menu-btn" id="menuBtn" type="button" aria-label="메뉴 열기">☰</button>
-    <p class="kicker">국립금오공과대학교 KIT</p>
-    <h1 id="pageTitle">강의실별 수업현황</h1>
-    <div class="clock-row">
-      <span>현재</span><b id="clockText">-</b>
-    </div>
+    <img class="kit-emblem" src="data:image/png;base64,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" alt="국립금오공과대학교 KIT">
     <div class="weather" id="weatherBox" title="구미시 거의동 현재 날씨">
       <span class="w-icon" id="wIcon">⛅</span>
       <span class="w-temp" id="wTemp">--°</span>
       <span class="w-desc" id="wDesc">거의동</span>
     </div>
-    <button class="theme-btn" id="themeBtn" type="button" aria-label="화면 모드 바꾸기">
-      <span class="t-icon" id="themeIcon">🌙</span><span id="themeLabel">다크</span>
-    </button>
+    <h1 id="pageTitle">강의실 현황 조회</h1>
+    <div class="clock-row">
+      <span>오늘은</span><b id="clockText">-</b>
+    </div>
   </header>
 
   <main id="tabContents">
 
-    <!-- ===== TAB: 강의실별 수업현황 ===== -->
+    <!-- ===== TAB: 강의실 현황 조회 ===== -->
     <div class="tab-panel active" data-tab="rooms">
       <section>
-        <h2>강의실 선택</h2>
+        <h2>테크노관 층별 강의실 현황</h2>
+        <div class="floor-tabs" id="floorTabs"></div>
+        <p class="floor-legend"><span><i style="background:#2e9e6b"></i>비어있음</span><span><i style="background:#2f6fd6"></i>강의중</span><span><i style="background:#e0605a"></i>교수실·연구실</span><span><i style="background:#8a8a8a"></i>엘리베이터·화장실 등</span></p>
+        <div class="floor-scroll"><div class="floor-grid" id="floorGrid"></div></div>
+        <div class="floor-info" id="floorInfo"></div>
+      </section>
+
+      <section id="roomSelectSec">
+        <h2>강의실별 현황</h2>
         <div class="picker-row">
           <select id="buildingSel"></select>
           <select id="roomSel" disabled></select>
@@ -820,7 +1132,7 @@
       </section>
 
       <section>
-        <h2>다른 시간 조회하기</h2>
+        <h2>시간대별 현황</h2>
         <div class="time-row">
           <select id="daySel"></select>
           <select id="periodSel"></select>
@@ -837,14 +1149,6 @@
         <p class="count-line" id="freeCount"></p>
         <div class="free-list" id="freeList"></div>
         <p class="note-block">학교 수업시간표(개설강좌 편람) 기준이며, 휴강·보강 등 변동사항은 반영되지 않을 수 있어요.<br>같은 건물의 지하층(예: 테크노관지하)은 지상층과 한 건물로 묶었어요.</p>
-      </section>
-
-      <section>
-        <h2>테크노관 층별 배치도</h2>
-        <div class="floor-tabs" id="floorTabs"></div>
-        <p class="floor-legend"><span><i style="background:#2e9e6b"></i>비어있음</span><span><i style="background:#2f6fd6"></i>강의중</span><span><i style="background:#e0605a"></i>교수실·연구실</span><span><i style="background:#8a8a8a"></i>엘리베이터·화장실 등</span></p>
-        <div class="floor-scroll"><div class="floor-grid" id="floorGrid"></div></div>
-        <div class="floor-info" id="floorInfo"></div>
       </section>
     </div>
 
@@ -891,6 +1195,151 @@
           <div id="noticeDetailArea"></div>
         </section>
       </div>
+    </div>
+
+    <!-- ===== TAB: 내 시간표 (사이드메뉴에서 진입) ===== -->
+    <div class="tab-panel" data-tab="mytt">
+      <section>
+        <h2>내 시간표</h2>
+        <div class="tt-scroll"><div class="tt-grid" id="ttGrid"></div></div>
+        <p class="count-line" id="ttInfo" style="margin-top:8px;"></p>
+      </section>
+      <section>
+        <h2>과목 추가</h2>
+        <input type="search" class="tt-search" id="ttSearch" placeholder="과목명 · 교수명 검색" enterkeyhint="search" autocomplete="off">
+        <div id="ttResults"></div>
+      </section>
+      <section>
+        <h2>담은 과목</h2>
+        <div id="ttList"></div>
+        <button class="tt-clear" id="ttClear" type="button">전체 삭제</button>
+      </section>
+    </div>
+
+    <!-- ===== TAB: 내 캘린더 (사이드메뉴에서 진입) ===== -->
+    <div class="tab-panel" data-tab="mycal">
+      <div class="cal-wrap" id="calWrap">
+        <div class="cal-top">
+          <div class="cal-ym" id="calYM">2026년 10월</div>
+          <div class="cal-nav">
+            <button type="button" class="cal-nav-btn" id="calPrevBtn" aria-label="이전 달">‹</button>
+            <button type="button" class="cal-nav-btn today" id="calTodayBtn">오늘</button>
+            <button type="button" class="cal-nav-btn" id="calNextBtn" aria-label="다음 달">›</button>
+          </div>
+        </div>
+        <div class="cal-cat-bar" id="calCatBar"></div>
+        <div class="cal-dow-row">
+          <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+        </div>
+        <div class="cal-month-grid" id="calMonthGrid"></div>
+      </div>
+
+      <!-- 날짜 탭 시 올라오는 하단 팝업 -->
+      <div class="cal-sheet" id="calSheet">
+        <div class="cal-sheet-head">
+          <div style="text-align:left;">
+            <div class="cal-sheet-date" id="calDetailDate">-</div>
+            <div class="cal-sheet-sub" id="calDetailSub"></div>
+          </div>
+          <button type="button" class="cal-sheet-close" id="calSheetClose" aria-label="닫기">✕</button>
+        </div>
+        <div class="cal-sheet-body"><div class="cal-ev-list" id="calEvList"></div></div>
+        <div class="cal-sheet-foot"><button type="button" class="cal-add-open-btn" id="calAddOpenBtn">＋ 일정 추가하기</button></div>
+      </div>
+
+      <!-- 일정 추가/수정 모달 -->
+      <div class="cal-modal-bg" id="calModalBg">
+        <div class="cal-modal">
+          <h3><span id="calModalTitle">일정 추가</span><button type="button" class="side-close" id="calModalClose">✕</button></h3>
+          <div class="cal-form-row">
+            <label for="calInTitle">제목</label>
+            <input type="text" id="calInTitle" placeholder="예: 정역학 과제 제출, 동아리 모임" autocomplete="off">
+          </div>
+          <div class="cal-form-row">
+            <label>분류</label>
+            <div class="cal-cat-picker" id="calCatPicker"></div>
+          </div>
+          <div class="cal-form-row">
+            <label for="calInDate">시작 날짜</label>
+            <input type="date" id="calInDate">
+          </div>
+          <div class="cal-form-row">
+            <label for="calInEndDate">종료 날짜 (여러 날 일정이면 선택)</label>
+            <input type="date" id="calInEndDate">
+          </div>
+          <div class="cal-form-row">
+            <label class="rm-sw" style="font-size:14px;font-weight:700;color:var(--ink);margin:2px 0;">
+              <input type="checkbox" id="calInAllDay"> 종일
+            </label>
+          </div>
+          <div class="cal-form-row" id="calTimeRow">
+            <label>시간</label>
+            <div class="cal-form-inline">
+              <input type="time" id="calInStart" value="09:00">
+              <span style="color:var(--ink-dim);font-weight:700;">~</span>
+              <input type="time" id="calInEnd" value="10:00">
+            </div>
+          </div>
+          <div class="cal-form-row">
+            <label for="calInMemo">장소 / 메모 (선택)</label>
+            <input type="text" id="calInMemo" placeholder="예: 테크노관 T308, 준비물 지참" autocomplete="off">
+          </div>
+          <div class="cal-modal-btns">
+            <button type="button" class="cal-btn-cancel" id="calBtnCancel">취소</button>
+            <button type="button" class="cal-btn-save" id="calBtnSave">저장</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 분류(카테고리) 편집 모달 -->
+      <div class="cal-modal-bg" id="calCatModalBg">
+        <div class="cal-modal">
+          <h3><span>분류 편집</span><button type="button" class="side-close" id="calCatModalClose">✕</button></h3>
+          <p class="cal-catm-hint">이름을 바꾸고, 왼쪽 색 칸을 눌러 원하는 색을 고르세요.</p>
+          <div class="cal-catm-list" id="calCatMList"></div>
+          <button type="button" class="cal-catm-add" id="calCatMAdd">＋ 분류 추가</button>
+          <div class="cal-modal-btns">
+            <button type="button" class="cal-btn-save" id="calCatMDone">완료</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TAB: 미리알림 (사이드메뉴에서 진입) ===== -->
+    <div class="tab-panel" data-tab="remind">
+      <section>
+        <h2>알림 권한</h2>
+        <p class="count-line" id="rmPerm"></p>
+        <div class="rm-row">
+          <button class="tt-btn" id="rmAsk" type="button">알림 허용하기</button>
+          <button class="tt-btn ghost" id="rmTest" type="button">테스트 알림 보내기</button>
+        </div>
+        <p class="note-block">앱이 열려 있거나 백그라운드에 있을 때 알려드려요. 앱을 완전히 종료하면 알림이 오지 않을 수 있어요.<br>아이폰은 Safari에서 "홈 화면에 추가"한 앱에서만 알림을 받을 수 있어요.</p>
+      </section>
+      <section>
+        <h2>🎓 수업 시작 알림</h2>
+        <p class="count-line">전체 수업에 한 번에 적용하거나, 아래에서 과목마다 따로 정할 수 있어요.</p>
+        <label class="rm-sw"><input type="checkbox" id="rmClsOn"> 내 시간표 전체 수업 알림</label>
+        <div class="rm-row"><select class="tt-search" id="rmClsMin"></select></div>
+        <h3 style="font-size:14px;margin:16px 0 0;color:var(--ink);">과목별 설정</h3>
+        <div id="rmClsList"></div>
+        <p class="count-line" id="rmClsInfo" style="margin-top:12px;"></p>
+      </section>
+      <section>
+        <h2>🚌 버스 도착 알림</h2>
+        <div id="rmBusForm">
+          <div class="rm-row">
+            <select class="tt-search" id="rmBusStop"></select>
+          </div>
+          <div class="rm-row">
+            <input class="tt-search" id="rmBusRoute" list="rmRouteList" placeholder="버스 번호 (예: 190)" autocomplete="off">
+            <datalist id="rmRouteList"></datalist>
+            <select class="tt-search" id="rmBusMin"></select>
+          </div>
+          <div class="rm-row"><button class="tt-btn" id="rmBusAdd" type="button">알림 추가</button></div>
+        </div>
+        <div id="rmBusList"></div>
+      </section>
     </div>
 
   </main>
@@ -1077,10 +1526,13 @@
   }
 
   function renderClock(){
-    const {day, hour, minute} = nowDayPeriod();
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+    const {hour, minute} = nowDayPeriod();
     const hh = String(hour).padStart(2,'0');
     const mm = String(minute).padStart(2,'0');
-    document.getElementById('clockText').textContent = DAY_FULL[day]+' '+hh+':'+mm;
+    document.getElementById('clockText').textContent = month+'월 '+date+'일 '+hh+'시 '+mm+'분';
   }
 
   function statusCardHTML(room, day, ch){
@@ -1172,7 +1624,7 @@
         selectedRoom = n; roomSel.value = n;
         renderStatus();
         switchTab('rooms');
-        window.scrollTo({top:0, behavior:'smooth'});
+        (document.getElementById('roomSelectSec')||document.body).scrollIntoView({behavior:'smooth', block:'start'});
       };
       listEl.appendChild(item);
     });
@@ -1180,7 +1632,7 @@
 
   // ===================== 테크노관 층별 배치도 =====================
   // FLOOR_MAP[층] = [행, 열, 세로칸, 가로칸, 호실, 종류(p=교수실/연구실, w=강의실, g=엘리베이터·화장실 등)]  ← 테크노관_층별_호실배치도 v3 엑셀 기준
-  const FLOOR_MAP = {"1":[[2,6,1,2,"122","p"],[2,8,1,1,"121","p"],[2,9,1,1,"120","p"],[2,10,1,1,"119","p"],[2,11,1,1,"118","p"],[2,12,1,1,"117","p"],[2,13,1,1,"116","p"],[2,17,1,2,"115\n화장실","g"],[2,19,1,1,"114","p"],[2,20,1,2,"113","w"],[4,4,2,2,"123\n화장실","g"],[4,6,2,2,"125-1","w"],[4,8,2,2,"125","p"],[4,10,2,2,"126","w"],[4,12,2,2,"127","w"],[4,16,1,2,"화장실","g"],[4,18,2,4,"112","w"],[4,23,1,1,"107","w"],[4,24,1,1,"106","w"],[5,23,4,2,"105","w"],[6,6,1,2,"124\n샤워실","g"],[6,20,2,2,"111","w"],[8,20,2,2,"110","w"],[9,23,1,1,"104","w"],[9,24,1,1,"103","w"],[10,2,1,1,"137","p"],[10,3,1,1,"136","p"],[10,4,1,1,"135","p"],[10,5,1,1,"134","p"],[10,6,1,1,"133","p"],[10,7,1,1,"132","p"],[10,8,1,1,"131-1","p"],[10,9,1,1,"131","p"],[10,10,1,1,"130","w"],[10,11,1,1,"129","w"],[10,12,1,2,"128","w"],[10,19,1,3,"109 화장실","g"],[12,2,2,2,"138\n화장실","g"],[12,4,2,1,"140","p"],[12,5,2,3,"141","w"],[12,8,2,2,"142","w"],[12,10,2,1,"143","w"],[12,11,2,3,"144","w"],[12,20,2,2,"108","w"],[12,23,4,2,"102","w"],[14,4,1,2,"139\n장애인화장실","g"],[15,12,4,2,"145","w"],[15,18,5,4,"101","w"],[19,4,1,1,"154","p"],[19,5,1,1,"153","p"],[19,6,1,1,"152","p"],[19,7,1,1,"151","p"],[19,8,1,1,"150","p"],[19,9,1,1,"149","p"],[19,10,1,1,"148","p"],[19,11,1,1,"147","p"],[19,12,1,2,"146","w"],[21,2,2,2,"155\n화장실","g"],[21,4,2,4,"157","w"],[21,8,2,3,"158","w"],[21,11,2,3,"159","w"],[23,4,1,2,"156\n샤워실","g"]],"2":[[2,6,1,1,"227","p"],[2,7,1,1,"226","p"],[2,8,1,1,"225","p"],[2,9,1,1,"224","p"],[2,10,1,1,"223","p"],[2,11,1,1,"222","p"],[2,12,1,1,"221","p"],[2,13,1,1,"221-1","w"],[2,14,1,2,"220","w"],[2,16,1,1,"219","p"],[2,17,1,1,"218","p"],[2,18,1,1,"217","p"],[2,19,1,1,"216","p"],[2,20,1,1,"215","p"],[2,21,1,1,"214","p"],[4,4,2,2,"228\n화장실","g"],[4,6,2,2,"230","w"],[4,8,2,2,"231","p"],[4,10,2,1,"232","p"],[4,11,2,2,"233","p"],[4,13,2,1,"234","w"],[4,16,1,2,"화장실","g"],[4,18,2,1,"213","w"],[4,19,2,2,"212","w"],[4,21,2,1,"212-2","w"],[5,23,2,2,"206","w"],[6,6,1,2,"229\n샤워실","g"],[6,12,2,2,"235","w"],[6,20,2,1,"210","w"],[6,21,1,1,"212-1","w"],[7,23,2,2,"205","p"],[8,12,3,2,"236","w"],[8,19,2,3,"209","w"],[9,23,2,2,"204","w"],[10,4,1,1,"243","p"],[10,5,1,1,"242","p"],[10,6,1,1,"241","p"],[10,7,1,1,"240","p"],[10,8,1,1,"239","p"],[10,9,1,1,"238-1","p"],[10,10,1,1,"238","p"],[10,11,1,1,"237","p"],[10,19,1,3,"208 화장실","g"],[11,23,2,2,"203","w"],[12,2,2,2,"244\n화장실","g"],[12,4,2,3,"246","w"],[12,7,2,1,"247","w"],[12,8,2,2,"248","w"],[12,10,2,2,"249","w"],[12,12,2,2,"250","w"],[13,19,2,3,"207","p"],[14,4,1,2,"245\n장애인화장실","g"],[14,12,2,2,"251","p"],[14,23,3,2,"202","p"],[16,12,2,2,"251-1","w"],[16,18,4,4,"201","w"],[18,12,1,2,"252","w"],[19,4,1,1,"259","w"],[19,5,1,1,"258","w"],[19,6,1,1,"257","p"],[19,7,1,1,"256-1","w"],[19,8,1,1,"256","w"],[19,9,1,1,"255","w"],[19,10,1,1,"254","w"],[19,11,1,1,"253","w"],[21,2,2,2,"260\n화장실","g"],[21,4,2,2,"262","w"],[21,6,2,3,"263","w"],[21,9,2,3,"264","w"],[21,12,2,2,"265","w"],[23,4,1,2,"261\n샤워실","g"]],"3":[[2,6,1,1,"326","p"],[2,7,1,1,"325","p"],[2,8,1,1,"324","p"],[2,9,1,1,"323-1","p"],[2,10,1,1,"323","p"],[2,11,1,1,"322","p"],[2,12,1,1,"321","p"],[2,13,1,1,"320","p"],[2,14,1,2,"319","p"],[2,16,1,1,"318","p"],[2,17,1,1,"317","p"],[2,18,1,1,"316","p"],[2,19,1,1,"315","p"],[2,20,1,1,"314","p"],[2,21,1,1,"313","p"],[4,4,2,2,"327\n화장실","g"],[4,6,2,2,"329","w"],[4,8,2,2,"330","p"],[4,10,2,1,"331","w"],[4,11,2,2,"332","w"],[4,13,2,1,"333","w"],[4,16,1,2,"화장실","g"],[4,18,2,1,"312","w"],[4,19,2,3,"311","p"],[5,23,2,2,"305-1","w"],[6,6,1,2,"328\n샤워실","g"],[6,12,2,2,"334","w"],[6,20,2,1,"309","w"],[6,21,2,1,"310","w"],[7,23,2,2,"305","w"],[8,12,3,2,"335","w"],[8,19,2,3,"308","w"],[9,23,2,2,"304","p"],[10,4,1,1,"343","p"],[10,5,1,1,"342","p"],[10,6,1,1,"341","p"],[10,7,1,1,"340","p"],[10,8,1,1,"339","p"],[10,9,1,1,"338","p"],[10,10,1,1,"337-1","w"],[10,11,2,1,"336","p"],[10,19,1,3,"307 화장실","g"],[11,10,1,1,"337","p"],[11,23,2,2,"303","w"],[12,2,2,2,"344\n화장실","g"],[12,4,2,3,"346","w"],[12,7,2,1,"347","w"],[12,8,2,2,"348","w"],[12,10,2,1,"348-1","w"],[12,11,2,1,"349","w"],[12,12,3,2,"350","w"],[13,19,2,3,"306","w"],[14,4,1,2,"345\n장애인화장실","g"],[14,23,3,2,"302","w"],[15,12,2,2,"351","w"],[16,18,4,4,"301","w"],[17,12,2,2,"352","w"],[19,4,1,1,"362","p"],[19,5,1,1,"361","p"],[19,6,1,1,"360","p"],[19,7,1,1,"359","p"],[19,8,1,1,"358","p"],[19,9,1,1,"357","p"],[19,10,1,1,"356","p"],[19,11,1,1,"355","p"],[19,12,1,1,"354","p"],[19,13,1,1,"353","p"],[21,2,2,2,"363\n화장실","g"],[21,4,2,2,"365","p"],[21,6,2,2,"365-1","w"],[21,8,2,2,"366","w"],[21,10,2,1,"366-1","w"],[21,11,2,2,"367","w"],[21,13,2,2,"367-1","w"],[23,4,1,2,"364\n샤워실","g"]],"4":[[2,6,1,1,"427","p"],[2,7,1,1,"426","p"],[2,8,1,1,"425","p"],[2,9,1,1,"424","p"],[2,10,1,1,"423","p"],[2,11,1,2,"422","p"],[2,13,1,1,"421","p"],[2,14,1,1,"420","p"],[2,15,1,1,"419","p"],[2,16,1,2,"418","p"],[2,18,1,1,"417","p"],[2,19,1,1,"416","p"],[2,20,1,1,"415","p"],[2,21,1,1,"414","p"],[4,4,2,2,"화장실","g"],[4,6,2,2,"430","w"],[4,8,2,2,"431","p"],[4,10,2,1,"432","w"],[4,11,2,2,"433","p"],[4,13,2,1,"434","w"],[4,16,1,2,"화장실","g"],[4,18,2,1,"413","w"],[4,19,2,3,"412","w"],[4,23,2,2,"406","w"],[6,6,1,2,"샤워실","g"],[6,12,2,2,"435","w"],[6,20,1,2,"411","w"],[6,23,2,2,"405","w"],[7,20,1,2,"410","w"],[8,12,3,2,"436","w"],[8,19,2,3,"409","w"],[8,23,3,2,"404","w"],[10,2,1,1,"446","p"],[10,3,1,1,"445","p"],[10,4,1,1,"444","p"],[10,5,1,1,"443","p"],[10,6,1,1,"442","p"],[10,7,1,1,"441","p"],[10,8,1,1,"440","p"],[10,9,1,1,"439","p"],[10,10,1,1,"438","p"],[10,11,1,1,"437","p"],[10,19,1,3,"화장실","g"],[12,2,2,2,"화장실","g"],[12,4,2,3,"449","w"],[12,7,2,3,"450","w"],[12,10,2,4,"451","w"],[13,23,4,2,"403","w"],[14,4,1,2,"장애인\n화장실","g"],[14,12,1,2,"452","p"],[14,19,2,3,"407","w"],[15,12,1,2,"453","w"],[16,12,1,2,"454","p"],[17,12,1,2,"455","p"],[17,18,2,2,"401","w"],[17,20,2,2,"402","w"],[18,12,2,2,"456","w"],[19,2,1,2,"461","p"],[19,4,1,2,"460","w"],[19,6,1,1,"459","p"],[19,7,1,1,"458-3","p"],[19,8,1,1,"458-2","p"],[19,9,1,1,"458-1","p"],[19,10,1,1,"458","p"],[19,11,1,1,"457","p"],[21,2,2,2,"화장실","g"],[21,4,2,2,"462","w"],[21,6,2,2,"463","p"],[21,8,2,1,"464","p"],[21,9,2,1,"464-1","p"],[21,10,2,2,"465","w"],[21,12,2,2,"466","w"]],"5":[[2,10,1,1,"522","p"],[2,11,1,1,"521","p"],[2,12,1,1,"520","p"],[2,13,1,1,"519","p"],[2,14,1,1,"518","p"],[2,15,1,2,"517","p"],[2,17,1,2,"516","p"],[2,19,1,1,"515","p"],[2,20,1,1,"514","p"],[2,21,1,2,"513","w"],[2,23,1,2,"512","w"],[4,8,2,2,"523\n화장실","g"],[4,10,2,3,"525-1","w"],[4,13,2,3,"525","w"],[4,17,1,2,"화장실","g"],[4,19,2,3,"511","w"],[5,23,2,2,"505","w"],[6,10,1,2,"524\n샤워실","g"],[6,20,2,2,"510","p"],[7,12,3,2,"526","w"],[7,23,2,2,"504","w"],[8,19,2,3,"509","w"],[9,23,2,2,"503","w"],[10,19,1,3,"508 화장실","g"],[12,23,3,2,"502","w"],[13,19,2,3,"507","w"],[15,18,2,2,"506","w"],[15,23,4,2,"501","w"]],"6":[[6,12,3,2,"607","w"],[6,19,2,3,"606-2","w"],[6,23,4,2,"602-1","w"],[8,19,2,3,"606-1","w"],[10,19,2,3,"606","w"],[10,23,4,2,"602","w"],[12,19,1,3,"605 화장실","g"],[14,19,2,3,"604","w"],[14,23,4,2,"601","w"],[16,19,2,3,"603","w"]]};
+  const FLOOR_MAP = {"1":[[2,8,1,2,"122","p"],[2,10,1,1,"121","p"],[2,11,1,1,"120","p"],[2,12,1,1,"119","p"],[2,13,1,1,"118","p"],[2,14,1,2,"117","w"],[2,16,1,2,"116","p"],[2,19,1,2,"화장실","g"],[2,21,1,1,"114","p"],[2,22,1,2,"113","w"],[4,8,4,2,"125-1","w"],[4,10,4,2,"125","p"],[4,12,4,3,"126","w"],[4,15,4,2,"127","w"],[4,19,4,5,"112","w"],[5,5,2,2,"화장실","g"],[5,25,1,1,"107","w"],[5,26,1,1,"106","w"],[6,25,4,2,"105","w"],[8,22,1,2,"111","w"],[9,22,2,2,"110","w"],[10,25,2,1,"104","w"],[10,26,2,1,"103","w"],[11,23,2,1,"E/V","g"],[12,4,3,1,"137","p"],[12,5,3,1,"136","p"],[12,6,3,1,"135","p"],[12,7,3,1,"134","p"],[12,8,3,1,"133","p"],[12,9,3,1,"132","w"],[12,10,3,1,"131-1","w"],[12,11,3,1,"131","p"],[12,12,3,1,"130","w"],[12,13,3,1,"129","w"],[12,14,2,4,"128","w"],[13,23,2,1,"↓","a"],[16,4,3,1,"140","p"],[16,5,3,3,"141","w"],[16,8,3,3,"142","w"],[16,11,3,1,"143","w"],[16,12,3,6,"144","w"],[17,1,2,2,"화장실","g"],[18,22,2,2,"108","w"],[18,25,3,2,"102","w"],[21,14,2,4,"145","w"],[21,20,3,4,"101","w"],[22,4,2,1,"154","p"],[22,5,2,1,"153","p"],[22,6,2,1,"152","p"],[22,7,2,1,"151","p"],[22,8,2,1,"150","p"],[22,9,2,1,"149","p"],[22,10,2,1,"148","p"],[22,11,2,1,"147","p"],[22,12,2,2,"146","w"],[25,4,3,5,"157","w"],[25,9,3,4,"158","w"],[25,13,3,5,"159","w"],[26,1,1,2,"화장실","g"]],"2":[[2,10,1,1,"227","p"],[2,11,1,1,"226","p"],[2,12,1,1,"225","p"],[2,13,1,1,"224","p"],[2,14,1,1,"223","p"],[2,15,1,1,"222","p"],[2,16,1,2,"221","p"],[2,18,1,2,"221-1","p"],[2,20,1,1,"220","w"],[2,21,1,1,"219","p"],[2,22,1,1,"218","p"],[2,23,1,2,"217","p"],[2,25,1,1,"216","p"],[2,26,1,2,"215","p"],[2,28,1,1,"214","p"],[4,10,4,1,"230","w"],[4,11,4,2,"231","p"],[4,13,4,1,"232","p"],[4,14,4,3,"233","p"],[4,17,4,2,"234","w"],[4,23,4,2,"213","w"],[4,25,4,3,"212","p"],[4,28,2,1,"212-2","w"],[5,7,3,2,"화장실","g"],[5,30,2,1,"206","w"],[6,28,2,1,"212-1","w"],[7,30,2,1,"205","p"],[8,16,2,4,"235","w"],[8,26,1,3,"210","w"],[9,26,3,3,"209","w"],[9,30,1,1,"204","w"],[10,16,4,4,"236","w"],[10,30,2,1,"203","w"],[11,23,2,2,"화장실","g"],[12,4,3,1,"243","p"],[12,5,3,1,"242","p"],[12,6,3,4,"241","p"],[12,10,3,1,"240","p"],[12,11,3,1,"239","p"],[12,12,3,1,"238-1","p"],[12,13,3,1,"238","p"],[12,14,3,2,"237","p"],[12,28,2,1,"E/V","g"],[14,28,2,1,"↓","a"],[17,4,3,6,"246","w"],[17,10,3,1,"247","w"],[17,11,3,3,"248","w"],[17,14,3,4,"249","w"],[17,18,3,2,"250","w"],[18,1,2,2,"화장실","g"],[19,27,2,2,"207","p"],[19,30,3,1,"202","p"],[20,16,2,4,"251","p"],[22,16,1,4,"251-1","w"],[22,24,4,5,"201","w"],[23,16,2,4,"252","w"],[24,4,2,1,"259","w"],[24,5,2,1,"258","w"],[24,6,2,2,"257","p"],[24,8,2,3,"256-1","w"],[24,11,2,2,"256","w"],[24,13,2,1,"255","w"],[24,14,2,1,"254","w"],[24,15,2,1,"253","w"],[27,4,2,1,"262","w"],[27,5,2,7,"263","w"],[27,12,2,4,"264","w"],[27,16,2,4,"265","w"],[28,1,1,2,"화장실","g"]],"3":[[2,11,1,1,"326","p"],[2,12,1,1,"325","p"],[2,13,1,1,"324","p"],[2,14,1,1,"323-1","p"],[2,15,1,1,"323","p"],[2,16,1,1,"322","p"],[2,17,1,2,"321","p"],[2,19,1,2,"320","p"],[2,21,1,1,"319","p"],[2,22,1,1,"318","p"],[2,23,1,1,"317","p"],[2,24,1,2,"316","p"],[2,26,1,2,"315","p"],[2,28,1,2,"314","p"],[2,30,1,1,"313","p"],[4,11,2,2,"329","w"],[4,13,2,2,"330","p"],[4,15,2,1,"331","w"],[4,16,2,2,"332","w"],[4,18,2,2,"333","w"],[4,24,2,2,"312","w"],[4,26,2,5,"311","p"],[5,8,1,2,"화장실","g"],[5,32,1,1,"305-1","w"],[6,17,3,4,"334","w"],[6,28,1,3,"310","w"],[6,32,1,1,"305","w"],[7,28,1,3,"309","w"],[7,32,3,1,"304","p"],[8,28,3,3,"308","w"],[9,17,4,4,"335","w"],[10,24,3,3,"화장실","g"],[10,32,7,1,"303","w"],[12,5,2,1,"343","p"],[12,6,2,1,"342","p"],[12,7,2,2,"341","p"],[12,9,2,2,"340","p"],[12,11,2,1,"339","p"],[12,12,2,1,"338","p"],[12,13,2,1,"337-1","w"],[12,14,2,1,"337","p"],[12,15,2,2,"336","p"],[12,30,1,1,"E/V","g"],[13,30,2,1,"↓","a"],[16,5,3,4,"346","w"],[16,9,3,2,"347","w"],[16,11,3,2,"348","w"],[16,13,3,2,"348-1","w"],[16,15,3,1,"349","w"],[16,16,3,5,"350","w"],[17,2,2,2,"화장실","g"],[17,32,4,1,"302","w"],[18,29,2,2,"306","w"],[19,17,3,4,"351","w"],[21,25,4,6,"301","w"],[22,17,2,4,"352","w"],[23,5,2,1,"362","p"],[23,6,2,1,"361","p"],[23,7,2,2,"360","p"],[23,9,2,2,"359","p"],[23,11,2,1,"358","p"],[23,12,2,1,"357","p"],[23,13,2,1,"356","p"],[23,14,2,1,"355","p"],[23,15,2,1,"354","p"],[23,16,2,1,"353","p"],[26,5,2,2,"365","p"],[26,7,2,4,"365-1","w"],[26,11,2,2,"366","w"],[26,13,2,2,"366-1","w"],[26,15,2,2,"367","w"],[26,17,2,4,"367-1","w"],[27,2,1,2,"화장실","g"]],"4":[[2,12,1,2,"427","p"],[2,14,1,1,"426","p"],[2,15,1,1,"425","p"],[2,16,1,2,"424","p"],[2,18,1,1,"423","p"],[2,19,1,3,"422","p"],[2,22,1,2,"421","p"],[2,24,1,1,"420","p"],[2,25,1,1,"419","p"],[2,26,1,1,"418","p"],[2,27,1,1,"417","p"],[2,28,1,1,"416","p"],[2,29,1,2,"415","p"],[2,31,1,1,"414","p"],[4,12,3,3,"430","w"],[4,15,3,3,"431","p"],[4,18,3,1,"432","w"],[4,19,3,2,"433","p"],[4,21,3,2,"434","w"],[4,27,3,1,"413","w"],[4,28,3,4,"412","w"],[5,34,3,3,"406","w"],[6,9,1,2,"화장실","g"],[7,20,3,4,"435","w"],[7,29,1,3,"411","w"],[8,29,1,3,"410","w"],[8,34,3,3,"405","w"],[9,29,3,3,"409","w"],[10,20,3,4,"436","w"],[11,26,2,2,"화장실","g"],[11,34,6,3,"404","w"],[12,4,2,4,"446","p"],[12,8,2,2,"445","p"],[12,10,2,1,"444","p"],[12,11,2,2,"443","p"],[12,13,2,1,"442","p"],[12,14,2,1,"441","p"],[12,15,2,1,"440","p"],[12,16,2,2,"439","p"],[12,18,2,1,"438","p"],[12,19,2,1,"437","p"],[12,30,1,1,"E/V","g"],[13,30,2,1,"↓","a"],[16,5,4,8,"449","w"],[16,13,4,5,"450","w"],[16,18,4,6,"451","w"],[17,34,5,3,"403","w"],[18,1,2,2,"화장실","g"],[19,29,2,2,"407","w"],[20,20,1,4,"452","p"],[21,20,1,4,"453","w"],[22,20,1,4,"454","p"],[22,27,2,2,"401","w"],[22,29,2,2,"402","w"],[23,20,1,4,"455","p"],[24,20,2,4,"456","w"],[25,7,1,4,"461","p"],[25,11,1,3,"460","w"],[25,14,1,1,"459","p"],[25,15,1,1,"458-3","p"],[25,16,1,1,"458-2","p"],[25,17,1,1,"458-1","p"],[25,18,1,1,"458","p"],[25,19,1,1,"457","p"],[27,8,2,3,"462","w"],[27,11,2,3,"463","p"],[27,14,2,1,"464","p"],[27,15,2,1,"464-1","p"],[27,16,2,3,"465","w"],[27,19,2,5,"466","w"],[28,3,1,3,"화장실","g"]],"5":[[2,4,1,1,"522","p"],[2,5,1,1,"521","p"],[2,6,1,1,"520","p"],[2,7,1,1,"519","p"],[2,8,1,1,"518","p"],[2,9,1,3,"517","p"],[2,12,1,2,"516","p"],[2,14,1,1,"515","p"],[2,15,1,1,"514","p"],[2,16,1,2,"513","w"],[2,18,1,2,"512","w"],[4,4,3,4,"525-1","w"],[4,8,3,3,"525","w"],[4,16,3,4,"511","w"],[5,1,2,2,"화장실","g"],[5,21,1,1,"505","w"],[6,21,2,1,"504","w"],[7,18,1,2,"510","p"],[8,18,2,2,"509","w"],[8,21,1,1,"503","w"],[9,15,3,2,"화장실","g"],[9,21,6,1,"502","w"],[11,10,2,3,"526","w"],[11,19,1,1,"E/V","g"],[12,19,2,1,"↓","a"],[15,21,3,1,"501","w"],[16,19,1,1,"507","w"],[17,18,1,2,"506","w"]],"6":[[2,2,2,1,"607","w"],[3,6,2,3,"606-2","w"],[3,10,3,1,"602-1","w"],[5,6,1,3,"606-1","w"],[6,6,2,3,"606","w"],[6,10,6,1,"602","w"],[7,3,3,2,"화장실","g"],[8,8,1,1,"E/V","g"],[9,8,2,1,"↓","a"],[12,10,3,1,"601","w"],[13,7,1,2,"604","w"],[14,6,1,3,"603","w"]]};
   let floorSel = '1';
   let floorPick = null;
   const floorTabsEl = document.getElementById('floorTabs');
@@ -1201,17 +1653,24 @@
   function renderFloorMap(){
     const cells = FLOOR_MAP[floorSel];
     const {day, ch} = nowDayPeriod();
-    const r0 = Math.min(...cells.map(c=>c[0])), c0 = Math.min(...cells.map(c=>c[1]));
-    const rN = Math.max(...cells.map(c=>c[0]+c[2]-1)), cN = Math.max(...cells.map(c=>c[1]+c[3]-1));
-    floorGridEl.style.gridTemplateColumns = 'repeat('+(cN-c0+1)+',38px)';
-    floorGridEl.style.gridTemplateRows = 'repeat('+(rN-r0+1)+',30px)';
+    // 모든 층에서 엘리베이터(E/V)가 동일한 위치(행 11, 열 29)에 고정되도록 상대 좌표계(35열 x 27행) 사용
+    const evCell = cells.find(c=>c[4]==='E/V') || [12,30,1,1];
+    const evR = evCell[0], evC = evCell[1];
+    const TOTAL_COLS = 36, TOTAL_ROWS = 27;
+    const TARGET_EV_R = 11, TARGET_EV_C = 30;
+    floorGridEl.style.gridTemplateColumns = 'repeat('+TOTAL_COLS+', minmax(0, 1fr))';
+    floorGridEl.style.gridTemplateRows = 'repeat('+TOTAL_ROWS+', clamp(15px, 3.6vw, 26px))';
     floorGridEl.innerHTML = '';
+    let evEl = null;
     cells.forEach(([r,c,h,w,t,k])=>{
       const el = document.createElement('div');
-      el.style.gridArea = (r-r0+1)+'/'+(c-c0+1)+'/span '+h+'/span '+w;
+      const gr = (r - evR) + TARGET_EV_R;
+      const gc = (c - evC) + TARGET_EV_C;
+      el.style.gridArea = gr+'/'+gc+'/span '+h+'/span '+w;
       let cls = 'fm-cell', inner = escapeHtml(t).replace(/\n/g,'<br>');
       if(k==='p') cls += ' office';
       else if(k==='g') cls += ' stair';
+      else if(k==='a') cls += ' arrow';
       else {
         const room = 'T'+t.split('\n')[0];
         if(ch===null) cls += ' off';
@@ -1222,8 +1681,15 @@
       }
       el.className = cls;
       el.innerHTML = inner;
+      if(t==='E/V') evEl = el;
       floorGridEl.appendChild(el);
     });
+    const sc = floorGridEl.parentElement;
+    if(sc && evEl && sc.scrollWidth > sc.clientWidth){
+      requestAnimationFrame(()=>{
+        sc.scrollLeft = Math.max(0, evEl.offsetLeft - sc.clientWidth/2 + evEl.offsetWidth/2);
+      });
+    }
     let info = '<span class="count-line">'+DAY_FULL[day]+' '+(ch===null ? '정규 교시 시간이 아니에요 (모든 강의실 비어있음 표시)' : periodLabel(ch)+' ('+periodTimeRangeExact(ch)+') 기준')+'</span>';
     if(floorPick){
       const m = ch===null ? null : findClassAt(floorPick, day, ch);
@@ -1536,10 +2002,13 @@
 
   // ===================== tab switching =====================
   const TAB_TITLES = {
-    rooms:'강의실별 수업현황',
+    rooms:'강의실 현황 조회',
     menu:'오늘의 학식',
     bus:'교통정보',
-    notice:'교내 공지'
+    notice:'교내 공지',
+    mytt:'내 시간표',
+    mycal:'내 캘린더',
+    remind:'미리알림'
   };
   const tabButtons = document.querySelectorAll('.tab-btn');
   const tabPanels = document.querySelectorAll('.tab-panel');
@@ -1554,6 +2023,711 @@
   tabButtons.forEach(b=>{
     b.addEventListener('click', ()=> switchTab(b.getAttribute('data-tab')));
   });
+
+
+  // ===================== 내 시간표 =====================
+  const TT_KEY = 'kit-mytt-v1';
+  const TT_COLORS = ['#2f6fd6','#2e9e6b','#c0562f','#8a4fc7','#b8861b','#d1478a','#1f8a9e','#6a7a2a'];
+  const courseMap = {};
+  SCHEDULE_DATA.forEach(r=>{
+    const key = r.code || (r.course+'|'+r.prof);
+    const c = courseMap[key] || (courseMap[key] = {key, code:r.code||'', course:r.course, prof:r.prof||'', dept:(r.dept||'').trim(), slots:[]});
+    if(!c.slots.some(s=>s.day===r.day && s.periods===r.periods && s.room===r.room)) c.slots.push({day:r.day, periods:r.periods, room:r.room});
+  });
+  const courseList = Object.values(courseMap);
+  courseList.forEach(c=>{
+    c.slots.sort((a,b)=>DAYS.indexOf(a.day)-DAYS.indexOf(b.day) || periodVal(a.periods[0])-periodVal(b.periods[0]));
+    c.hay = (c.course+' '+c.prof+' '+c.code+' '+c.dept).toLowerCase();
+  });
+  function colorOf(key){ let h=0; for(const ch of key) h=(h*31+ch.charCodeAt(0))>>>0; return TT_COLORS[h%TT_COLORS.length]; }
+  function slotText(s){
+    const ps = s.periods.split('').sort((a,b)=>periodVal(a)-periodVal(b));
+    const t = String(8+periodVal(ps[0])).padStart(2,'0')+':00-'+String(8+periodVal(ps[ps.length-1])).padStart(2,'0')+':50';
+    return s.day+' '+ps.map(p=>p.toUpperCase()).join('')+'('+t+') '+(s.room||'');
+  }
+
+  let myTT = [];
+  try { const a = JSON.parse(localStorage.getItem(TT_KEY)||'[]'); if(Array.isArray(a)) myTT = a.filter(k=>courseMap[k]); } catch(e){}
+  function saveTT(){ try{ localStorage.setItem(TT_KEY, JSON.stringify(myTT)); }catch(e){} }
+
+  const ttGrid = document.getElementById('ttGrid');
+  const ttInfo = document.getElementById('ttInfo');
+  const ttSearch = document.getElementById('ttSearch');
+  const ttResults = document.getElementById('ttResults');
+  const ttList = document.getElementById('ttList');
+
+  function slotsOverlap(a,b){
+    return a.day===b.day && a.periods.split('').some(p=>b.periods.includes(p));
+  }
+  function conflictsWith(key){
+    const c = courseMap[key];
+    return myTT.filter(k=>k!==key).filter(k=>courseMap[k].slots.some(s=>c.slots.some(t=>slotsOverlap(s,t))));
+  }
+
+  function renderTT(){
+    const mine = myTT.map(k=>courseMap[k]);
+    const used = new Set(); let maxDay = 4;
+    mine.forEach(c=>c.slots.forEach(s=>{ s.periods.split('').forEach(p=>used.add(periodVal(p))); maxDay=Math.max(maxDay, DAYS.indexOf(s.day)); }));
+    let pMax = 8; used.forEach(v=>{ if(v>pMax) pMax=v; });
+    const days = DAYS.slice(0, maxDay+1);
+    const periods = ALL_PERIODS.filter(p=>periodVal(p)<=pMax);
+    ttGrid.style.gridTemplateColumns = '34px repeat('+days.length+', minmax(48px,1fr))';
+    ttGrid.style.gridTemplateRows = '26px repeat('+periods.length+', 46px)';
+    const now = nowDayPeriod();
+    let h = '<div class="tt-h" style="grid-area:1/1"></div>';
+    days.forEach((d,i)=>{ h += '<div class="tt-h'+(d===now.day?' today':'')+'" style="grid-area:1/'+(i+2)+'">'+d+'</div>'; });
+    periods.forEach((p,r)=>{
+      h += '<div class="tt-p" style="grid-area:'+(r+2)+'/1">'+p.toUpperCase()+'<small>'+String(8+periodVal(p)).padStart(2,'0')+':00</small></div>';
+      days.forEach((d,i)=>{ h += '<div class="tt-bg'+(d===now.day&&p===now.ch?' now':'')+'" style="grid-area:'+(r+2)+'/'+(i+2)+'"></div>'; });
+    });
+    mine.forEach(c=>{
+      const conf = conflictsWith(c.key).length>0;
+      c.slots.forEach(s=>{
+        const di = days.indexOf(s.day); if(di<0) return;
+        const vals = s.periods.split('').map(periodVal).sort((a,b)=>a-b);
+        let st = vals[0], prev = vals[0];
+        const runs = [];
+        for(let i=1;i<=vals.length;i++){
+          if(i<vals.length && vals[i]===prev+1){ prev=vals[i]; continue; }
+          runs.push([st, prev]); st=vals[i]; prev=vals[i];
+        }
+        runs.forEach(([a,b])=>{
+          const r0 = periods.findIndex(p=>periodVal(p)===a);
+          if(r0<0) return;
+          h += '<div class="tt-blk'+(conf?' conf':'')+'" style="grid-area:'+(r0+2)+'/'+(di+2)+'/span '+(b-a+1)+'/span 1;background:'+colorOf(c.key)+'">'+
+            escapeHtml(c.course)+'<small>'+escapeHtml(s.room||'')+'</small></div>';
+        });
+      });
+    });
+    ttGrid.innerHTML = h;
+
+    const conflictCount = mine.filter(c=>conflictsWith(c.key).length).length;
+    ttInfo.textContent = mine.length ? ('담은 과목 '+mine.length+'개'+(conflictCount?' · ⚠ 시간이 겹치는 과목이 있어요 (노란 테두리)':'')) : '아직 담은 과목이 없어요. 아래에서 검색해서 추가해보세요.';
+
+    ttList.innerHTML = mine.length ? mine.map(c=>cardHTML(c,true)).join('') : '<p class="placeholder">추가한 과목이 여기에 표시돼요.</p>';
+    document.getElementById('ttClear').style.display = mine.length ? '' : 'none';
+    renderTTResults();
+  }
+
+  function cardHTML(c, inList){
+    const has = myTT.includes(c.key);
+    const btn = inList ? '<button class="tt-btn del" data-del="'+escapeHtml(c.key)+'">삭제</button>'
+      : (has ? '<button class="tt-btn done" disabled>추가됨</button>' : '<button class="tt-btn" data-add="'+escapeHtml(c.key)+'">추가</button>');
+    return '<div class="tt-card"><span class="tt-dot" style="background:'+colorOf(c.key)+'"></span><div class="tt-body">'+
+      '<div class="tt-name">'+escapeHtml(c.course)+'</div>'+
+      '<div class="tt-meta">'+escapeHtml(c.prof||'담당교수 미기재')+(c.dept?' · '+escapeHtml(c.dept):'')+(c.code?' · '+escapeHtml(c.code):'')+'</div>'+
+      '<div class="tt-slots">'+c.slots.map(s=>escapeHtml(slotText(s))).join('<br>')+'</div></div>'+btn+'</div>';
+  }
+
+  function renderTTResults(){
+    const q = ttSearch.value.trim().toLowerCase();
+    if(!q){ ttResults.innerHTML = '<p class="placeholder" style="margin-top:10px;">과목명이나 교수님 이름을 입력하세요.</p>'; return; }
+    const toks = q.split(/\s+/);
+    const res = courseList.filter(c=>toks.every(t=>c.hay.includes(t)));
+    const shown = res.slice(0,30);
+    ttResults.innerHTML = (res.length ? '<p class="count-line" style="margin-top:10px;">검색 결과 '+res.length+'개'+(res.length>30?' (상위 30개 표시)':'')+'</p>' : '<p class="placeholder" style="margin-top:10px;">검색 결과가 없어요.</p>')
+      + shown.map(c=>cardHTML(c,false)).join('');
+  }
+
+  function addCourse(key){
+    if(myTT.includes(key)) return;
+    const cf = conflictsWith(key);
+    myTT.push(key);
+    const bad = conflictsWith(key);
+    if(bad.length && !confirm('이미 담은 과목('+bad.map(k=>courseMap[k].course).join(', ')+')과 시간이 겹쳐요. 그래도 추가할까요?')){
+      myTT.pop(); return;
+    }
+    saveTT(); renderTT();
+  }
+  function delCourse(key){ myTT = myTT.filter(k=>k!==key); saveTT(); renderTT(); if(typeof renderRM==='function') renderRM(); }
+
+  ttSearch.addEventListener('input', renderTTResults);
+  document.getElementById('tabContents').addEventListener('click', e=>{
+    const a = e.target.closest && e.target.closest('[data-add]'); if(a){ addCourse(a.getAttribute('data-add')); return; }
+    const d = e.target.closest && e.target.closest('[data-del]'); if(d){ delCourse(d.getAttribute('data-del')); }
+  });
+  document.getElementById('ttClear').addEventListener('click', ()=>{ if(myTT.length && confirm('담은 과목을 모두 삭제할까요?')){ myTT=[]; saveTT(); renderTT(); } });
+  document.addEventListener('click', e=>{ const a = e.target.closest && e.target.closest('#sideMyTT'); if(a){ e.preventDefault(); switchTab('mytt'); renderTT(); } });
+  renderTT();
+
+  // ===================== 내 캘린더 =====================
+  const CAL_KEY = 'kit-mycal-v1';
+  const CAL_CAT_KEY = 'kit-mycal-cats-v1';
+  const DEFAULT_CATS = [
+    { id:'study', label:'학업·수업', color:'#3b82f6' },
+    { id:'task',  label:'과제·시험', color:'#ef4444' },
+    { id:'club',  label:'동아리·모임', color:'#10b981' },
+    { id:'life',  label:'개인·생활', color:'#f59e0b' },
+    { id:'work',  label:'알바·일정', color:'#8b5cf6' },
+    { id:'etc',   label:'기타',     color:'#ec4899' }
+  ];
+  let CAL_CATS = DEFAULT_CATS.map(c=>({...c}));
+  try{
+    const sc = JSON.parse(localStorage.getItem(CAL_CAT_KEY)||'null');
+    if(Array.isArray(sc) && sc.length) CAL_CATS = sc.filter(c=>c && c.id && c.label && /^#[0-9a-fA-F]{6}$/.test(c.color));
+    if(!CAL_CATS.length) CAL_CATS = DEFAULT_CATS.map(c=>({...c}));
+  }catch(e){}
+  let CAL_CAT_MAP = {};
+  function rebuildCatMap(){ CAL_CAT_MAP = {}; CAL_CATS.forEach(c=>{ CAL_CAT_MAP[c.id] = c; }); }
+  rebuildCatMap();
+  function saveCats(){ try{ localStorage.setItem(CAL_CAT_KEY, JSON.stringify(CAL_CATS)); }catch(e){} }
+  function catOf(id){ return CAL_CAT_MAP[id] || CAL_CATS[0]; }
+
+  function fmtYMD(y,m,d){
+    return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+  }
+  const todayInit = new Date();
+  let calYear = todayInit.getFullYear();
+  let calMonth = todayInit.getMonth() + 1;
+  let calSelDate = fmtYMD(calYear, calMonth, todayInit.getDate());
+  let calFilterCat = 'all';
+  let calEditId = null;
+  let calPickCat = CAL_CATS[0].id;
+  let calSheetOpen = false;
+
+  let calEvents = [];
+  try{
+    const saved = JSON.parse(localStorage.getItem(CAL_KEY)||'null');
+    if(Array.isArray(saved)) calEvents = saved;
+  }catch(e){}
+
+  function saveCal(){
+    try{ localStorage.setItem(CAL_KEY, JSON.stringify(calEvents)); }catch(e){}
+  }
+
+  const calWrapEl = document.getElementById('calWrap');
+  const calSheetEl = document.getElementById('calSheet');
+  const calYMEl = document.getElementById('calYM');
+  const calCatBarEl = document.getElementById('calCatBar');
+  const calMonthGridEl = document.getElementById('calMonthGrid');
+  const calDetailDateEl = document.getElementById('calDetailDate');
+  const calDetailSubEl = document.getElementById('calDetailSub');
+  const calEvListEl = document.getElementById('calEvList');
+  const calModalBg = document.getElementById('calModalBg');
+  const calInTitle = document.getElementById('calInTitle');
+  const calInDate = document.getElementById('calInDate');
+  const calInEndDate = document.getElementById('calInEndDate');
+  const calInAllDay = document.getElementById('calInAllDay');
+  const calTimeRow = document.getElementById('calTimeRow');
+  const calInStart = document.getElementById('calInStart');
+  const calInEnd = document.getElementById('calInEnd');
+  const calInMemo = document.getElementById('calInMemo');
+  const calCatPicker = document.getElementById('calCatPicker');
+  const calCatModalBg = document.getElementById('calCatModalBg');
+  const calCatMList = document.getElementById('calCatMList');
+
+  function renderCalCatBar(){
+    if(calFilterCat!=='all' && !CAL_CAT_MAP[calFilterCat]) calFilterCat = 'all';
+    let html = '<button type="button" class="cal-cat-chip'+(calFilterCat==='all'?' active':'')+'" data-cat="all">전체 보기</button>';
+    CAL_CATS.forEach(c=>{
+      html += '<button type="button" class="cal-cat-chip'+(calFilterCat===c.id?' active':'')+'" data-cat="'+escapeHtml(c.id)+'">'+
+        '<span class="cal-cat-dot" style="background:'+c.color+'"></span>'+escapeHtml(c.label)+'</button>';
+    });
+    html += '<button type="button" class="cal-cat-chip manage" id="calCatManageBtn">⚙ 분류 편집</button>';
+    calCatBarEl.innerHTML = html;
+  }
+
+  function evEnd(e){ return (e.endDate && e.endDate > e.date) ? e.endDate : e.date; }
+
+  function eventsForDate(ymd){
+    return calEvents
+      .filter(e=> e.date<=ymd && ymd<=evEnd(e) && (calFilterCat==='all' || e.cat===calFilterCat))
+      .sort((a,b)=>{
+        const am = evEnd(a)>a.date, bm = evEnd(b)>b.date;
+        if(am!==bm) return am?-1:1;
+        if(a.allDay && !b.allDay) return -1;
+        if(!a.allDay && b.allDay) return 1;
+        return (a.start||'').localeCompare(b.start||'');
+      });
+  }
+
+  const CAL_MAX_PILLS = 4;
+  function renderCalMonth(){
+    calYMEl.textContent = calYear+'년 '+calMonth+'월';
+    const firstDow = new Date(calYear, calMonth-1, 1).getDay();
+    const lastDate = new Date(calYear, calMonth, 0).getDate();
+    const prevLastDate = new Date(calYear, calMonth-1, 0).getDate();
+    const now = new Date();
+    const todayYMD = fmtYMD(now.getFullYear(), now.getMonth()+1, now.getDate());
+
+    const totalCells = Math.ceil((firstDow + lastDate) / 7) * 7;
+    let html = '';
+    for(let i=0; i<totalCells; i++){
+      let y = calYear, m = calMonth, d = i - firstDow + 1, other = false;
+      if(d < 1){
+        other = true; m = calMonth - 1;
+        if(m < 1){ m = 12; y--; }
+        d = prevLastDate + d;
+      } else if(d > lastDate){
+        other = true; m = calMonth + 1;
+        if(m > 12){ m = 1; y++; }
+        d = d - lastDate;
+      }
+      const ymd = fmtYMD(y, m, d);
+      const dow = i % 7;
+      const cls = ['cal-day'];
+      if(other) cls.push('other');
+      if(dow===0) cls.push('sun');
+      if(dow===6) cls.push('sat');
+      if(ymd===todayYMD) cls.push('today');
+      if(ymd===calSelDate && calSheetOpen) cls.push('sel');
+
+      const evs = eventsForDate(ymd);
+      const shown = evs.slice(0, CAL_MAX_PILLS);
+      const pills = shown.map(e=>{
+        const cat = catOf(e.cat);
+        const time = (!e.allDay && e.start && e.date===ymd) ? '<span class="pt">'+escapeHtml(e.start)+'</span>' : '';
+        return '<div class="cal-pill" style="background:'+cat.color+'38;border-left-color:'+cat.color+'">'+time+escapeHtml(e.title)+'</div>';
+      }).join('');
+      const more = evs.length > CAL_MAX_PILLS ? '<div class="cal-more">+'+(evs.length-CAL_MAX_PILLS)+'</div>' : '';
+
+      html += '<div class="'+cls.join(' ')+'" data-ymd="'+ymd+'">'+
+        '<div class="cal-day-num">'+d+'</div>'+pills+more+'</div>';
+    }
+    calMonthGridEl.innerHTML = html;
+  }
+
+  function fmtMD(ymd){ const p = ymd.split('-').map(Number); return p[1]+'/'+p[2]; }
+
+  function renderCalDetail(){
+    const [y,m,d] = calSelDate.split('-').map(Number);
+    const dowName = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'][new Date(y, m-1, d).getDay()];
+    calDetailDateEl.textContent = y+'년 '+m+'월 '+d+'일 ('+dowName+')';
+    const evs = eventsForDate(calSelDate);
+    calDetailSubEl.textContent = evs.length ? ('일정 '+evs.length+'개') : '등록된 일정이 없어요';
+
+    if(!evs.length){
+      calEvListEl.innerHTML = '<div class="cal-empty">이 날짜에는 일정이 없어요.</div>';
+      return;
+    }
+    calEvListEl.innerHTML = evs.map(e=>{
+      const cat = catOf(e.cat);
+      const multi = evEnd(e) > e.date;
+      const timeHtml = e.allDay
+        ? '<span class="t-all">종일</span>'
+        : '<span class="t-start">'+escapeHtml(e.start||'09:00')+'</span>'+(e.end?'<span class="t-end">~ '+escapeHtml(e.end)+'</span>':'');
+      return '<div class="cal-ev-item">'+
+        '<div class="cal-ev-time">'+timeHtml+'</div>'+
+        '<div class="cal-ev-bar" style="background:'+cat.color+'"></div>'+
+        '<div class="cal-ev-body">'+
+          '<div class="cal-ev-title">'+escapeHtml(e.title)+'</div>'+
+          '<div class="cal-ev-meta">'+
+            '<span class="cal-ev-cat-tag" style="background:'+cat.color+'">'+escapeHtml(cat.label)+'</span>'+
+            (multi ? '<span>'+fmtMD(e.date)+' ~ '+fmtMD(evEnd(e))+'</span>' : '')+
+            (e.memo ? '<span>'+escapeHtml(e.memo)+'</span>' : '')+
+          '</div>'+
+        '</div>'+
+        '<div class="cal-ev-actions">'+
+          '<button type="button" class="cal-icon-btn" data-caledit="'+escapeHtml(e.id)+'">수정</button>'+
+          '<button type="button" class="cal-icon-btn del" data-caldel="'+escapeHtml(e.id)+'">삭제</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function applySheetState(){
+    calSheetEl.classList.toggle('open', calSheetOpen);
+    calWrapEl.classList.toggle('sheet-open', calSheetOpen);
+  }
+
+  function renderCal(){
+    renderCalCatBar();
+    renderCalMonth();
+    renderCalDetail();
+    applySheetState();
+  }
+
+  function renderCalCatPicker(){
+    calCatPicker.innerHTML = CAL_CATS.map(c=>
+      '<button type="button" class="cal-cat-opt'+(calPickCat===c.id?' sel':'')+'" data-pickcat="'+escapeHtml(c.id)+'">'+
+      '<span class="cal-cat-dot" style="background:'+c.color+'"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escapeHtml(c.label)+'</span></button>'
+    ).join('');
+  }
+
+  function openCalModal(editEv){
+    if(editEv){
+      calEditId = editEv.id;
+      document.getElementById('calModalTitle').textContent = '일정 수정';
+      calInTitle.value = editEv.title || '';
+      calInDate.value = editEv.date || calSelDate;
+      calInEndDate.value = editEv.endDate && editEv.endDate > editEv.date ? editEv.endDate : '';
+      calPickCat = CAL_CAT_MAP[editEv.cat] ? editEv.cat : CAL_CATS[0].id;
+      calInAllDay.checked = !!editEv.allDay;
+      calInStart.value = editEv.start || '09:00';
+      calInEnd.value = editEv.end || '10:00';
+      calInMemo.value = editEv.memo || '';
+    } else {
+      calEditId = null;
+      document.getElementById('calModalTitle').textContent = '새 일정';
+      calInTitle.value = '';
+      calInDate.value = calSelDate;
+      calInEndDate.value = '';
+      calPickCat = (calFilterCat !== 'all' && CAL_CAT_MAP[calFilterCat]) ? calFilterCat : CAL_CATS[0].id;
+      calInAllDay.checked = false;
+      calInStart.value = '09:00';
+      calInEnd.value = '10:00';
+      calInMemo.value = '';
+    }
+    calTimeRow.style.display = calInAllDay.checked ? 'none' : '';
+    renderCalCatPicker();
+    calModalBg.classList.add('open');
+    setTimeout(()=>calInTitle.focus(), 50);
+  }
+
+  function closeCalModal(){ calModalBg.classList.remove('open'); }
+
+  calInAllDay.addEventListener('change', ()=>{
+    calTimeRow.style.display = calInAllDay.checked ? 'none' : '';
+  });
+  calCatPicker.addEventListener('click', e=>{
+    const b = e.target.closest && e.target.closest('[data-pickcat]');
+    if(b){ calPickCat = b.getAttribute('data-pickcat'); renderCalCatPicker(); }
+  });
+  document.getElementById('calAddOpenBtn').addEventListener('click', ()=> openCalModal(null));
+  document.getElementById('calModalClose').addEventListener('click', closeCalModal);
+  document.getElementById('calBtnCancel').addEventListener('click', closeCalModal);
+  calModalBg.addEventListener('click', e=>{ if(e.target===calModalBg) closeCalModal(); });
+  document.getElementById('calSheetClose').addEventListener('click', ()=>{ calSheetOpen = false; renderCal(); });
+
+  document.getElementById('calBtnSave').addEventListener('click', ()=>{
+    const title = calInTitle.value.trim();
+    if(!title){ alert('제목을 입력해주세요.'); calInTitle.focus(); return; }
+    const date = calInDate.value || calSelDate;
+    let endDate = calInEndDate.value || '';
+    if(endDate && endDate < date) endDate = date;
+    if(endDate === date) endDate = '';
+    const allDay = calInAllDay.checked;
+    const start = allDay ? '' : (calInStart.value || '09:00');
+    const end = allDay ? '' : (calInEnd.value || '');
+    const memo = calInMemo.value.trim();
+
+    if(calEditId){
+      const idx = calEvents.findIndex(x=>x.id===calEditId);
+      if(idx>=0) calEvents[idx] = { id:calEditId, title, date, endDate, cat:calPickCat, allDay, start, end, memo };
+    } else {
+      calEvents.push({ id:'ev-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), title, date, endDate, cat:calPickCat, allDay, start, end, memo });
+    }
+    calSelDate = date;
+    const [ny, nm] = date.split('-').map(Number);
+    calYear = ny; calMonth = nm;
+    calSheetOpen = true;
+    saveCal();
+    closeCalModal();
+    renderCal();
+  });
+
+  document.getElementById('calPrevBtn').addEventListener('click', ()=>{
+    calMonth--; if(calMonth<1){ calMonth=12; calYear--; }
+    calSheetOpen = false; renderCal();
+  });
+  document.getElementById('calNextBtn').addEventListener('click', ()=>{
+    calMonth++; if(calMonth>12){ calMonth=1; calYear++; }
+    calSheetOpen = false; renderCal();
+  });
+  document.getElementById('calTodayBtn').addEventListener('click', ()=>{
+    const now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth() + 1;
+    calSelDate = fmtYMD(calYear, calMonth, now.getDate());
+    calSheetOpen = true;
+    renderCal();
+  });
+  calCatBarEl.addEventListener('click', e=>{
+    if(e.target.closest && e.target.closest('#calCatManageBtn')){ openCatModal(); return; }
+    const b = e.target.closest && e.target.closest('[data-cat]');
+    if(b){ calFilterCat = b.getAttribute('data-cat'); renderCal(); }
+  });
+  calMonthGridEl.addEventListener('click', e=>{
+    const cell = e.target.closest && e.target.closest('[data-ymd]');
+    if(cell){
+      const ymd = cell.getAttribute('data-ymd');
+      calSelDate = ymd;
+      const [y,m] = ymd.split('-').map(Number);
+      calYear = y; calMonth = m;
+      calSheetOpen = true;
+      renderCal();
+      // 팝업에 가려지지 않도록 선택한 날짜 칸을 위로 스크롤
+      const selCell = calMonthGridEl.querySelector('.cal-day.sel');
+      if(selCell){
+        const r = selCell.getBoundingClientRect();
+        const limit = window.innerHeight - calSheetEl.offsetHeight - 78;
+        if(r.bottom > limit) window.scrollBy(0, r.bottom - limit + 6);
+      }
+    }
+  });
+  calEvListEl.addEventListener('click', e=>{
+    const ed = e.target.closest && e.target.closest('[data-caledit]');
+    if(ed){
+      const ev = calEvents.find(x=>x.id===ed.getAttribute('data-caledit'));
+      if(ev) openCalModal(ev);
+      return;
+    }
+    const dl = e.target.closest && e.target.closest('[data-caldel]');
+    if(dl){
+      const id = dl.getAttribute('data-caldel');
+      if(confirm('이 일정을 삭제할까요?')){
+        calEvents = calEvents.filter(x=>x.id!==id);
+        saveCal(); renderCal();
+      }
+    }
+  });
+
+  // ---- 분류(이름·색상) 직접 편집 ----
+  function renderCatManager(){
+    calCatMList.innerHTML = CAL_CATS.map(c=>
+      '<div class="cal-catm-row" data-id="'+escapeHtml(c.id)+'">'+
+        '<input type="color" value="'+c.color+'" data-catcolor="'+escapeHtml(c.id)+'" aria-label="색상">'+
+        '<input type="text" value="'+escapeHtml(c.label)+'" maxlength="12" data-catname="'+escapeHtml(c.id)+'" placeholder="분류 이름">'+
+        '<button type="button" class="cal-catm-del" data-catdel="'+escapeHtml(c.id)+'" aria-label="삭제">🗑</button>'+
+      '</div>'
+    ).join('');
+  }
+  function openCatModal(){ renderCatManager(); calCatModalBg.classList.add('open'); }
+  function closeCatModal(){
+    CAL_CATS.forEach(c=>{ if(!c.label.trim()) c.label = '분류'; });
+    saveCats(); rebuildCatMap();
+    calCatModalBg.classList.remove('open');
+    renderCal();
+  }
+  calCatMList.addEventListener('input', e=>{
+    const t = e.target;
+    const cid = t.getAttribute('data-catcolor') || t.getAttribute('data-catname');
+    const cat = CAL_CAT_MAP[cid];
+    if(!cat) return;
+    if(t.hasAttribute('data-catcolor')) cat.color = t.value;
+    else cat.label = t.value;
+    saveCats();
+  });
+  calCatMList.addEventListener('click', e=>{
+    const b = e.target.closest && e.target.closest('[data-catdel]');
+    if(!b) return;
+    if(CAL_CATS.length <= 1){ alert('분류는 최소 1개가 필요해요.'); return; }
+    const id = b.getAttribute('data-catdel');
+    const cat = CAL_CAT_MAP[id];
+    if(!confirm('"'+(cat?cat.label:'')+'" 분류를 삭제할까요?\n이 분류의 일정은 첫 번째 분류 색으로 표시돼요.')) return;
+    CAL_CATS = CAL_CATS.filter(c=>c.id!==id);
+    const fallback = CAL_CATS[0].id;
+    calEvents.forEach(ev=>{ if(ev.cat===id) ev.cat = fallback; });
+    rebuildCatMap(); saveCats(); saveCal();
+    renderCatManager();
+  });
+  document.getElementById('calCatMAdd').addEventListener('click', ()=>{
+    const palette = ['#06b6d4','#84cc16','#f97316','#a855f7','#14b8a6','#e11d48','#64748b'];
+    const id = 'c-'+Date.now().toString(36);
+    CAL_CATS.push({ id, label:'새 분류', color:palette[CAL_CATS.length % palette.length] });
+    rebuildCatMap(); saveCats();
+    renderCatManager();
+    const inp = calCatMList.querySelector('[data-catname="'+id+'"]');
+    if(inp){ inp.focus(); inp.select(); }
+  });
+  document.getElementById('calCatMDone').addEventListener('click', closeCatModal);
+  document.getElementById('calCatModalClose').addEventListener('click', closeCatModal);
+  calCatModalBg.addEventListener('click', e=>{ if(e.target===calCatModalBg) closeCatModal(); });
+
+  document.addEventListener('click', e=>{
+    const a = e.target.closest && e.target.closest('#sideMyCal');
+    if(a){ e.preventDefault(); switchTab('mycal'); calSheetOpen = false; renderCal(); }
+  });
+  renderCal();
+
+
+
+  // ===================== 미리알림 (수업 시작 / 버스 도착) =====================
+  const RM_KEY = 'kit-remind-v1';
+  const rm = { cls:{on:false, min:10, per:{}}, bus:[], fired:{} };
+  try{
+    const o = JSON.parse(localStorage.getItem(RM_KEY)||'null');
+    if(o && typeof o==='object'){ Object.assign(rm.cls, o.cls||{}); rm.bus = Array.isArray(o.bus)?o.bus:[]; rm.fired = o.fired||{}; }
+    if(!rm.cls.per || typeof rm.cls.per!=='object') rm.cls.per = {};
+  }catch(e){}
+  function saveRM(){
+    const cut = Date.now() - 2*86400000;
+    Object.keys(rm.fired).forEach(k=>{ if(rm.fired[k] < cut) delete rm.fired[k]; });
+    try{ localStorage.setItem(RM_KEY, JSON.stringify(rm)); }catch(e){}
+  }
+  const rmPerm = document.getElementById('rmPerm');
+  const rmClsOn = document.getElementById('rmClsOn');
+  const rmClsMin = document.getElementById('rmClsMin');
+  const rmClsInfo = document.getElementById('rmClsInfo');
+  const rmBusStop = document.getElementById('rmBusStop');
+  const rmBusRoute = document.getElementById('rmBusRoute');
+  const rmBusMin = document.getElementById('rmBusMin');
+  const rmBusList = document.getElementById('rmBusList');
+  const rmRouteList = document.getElementById('rmRouteList');
+  const RM_CLS_OPTS = [5,10,15,20,30,60];
+  const RM_BUS_OPTS = [1,3,5,7,10,15];
+  rmClsMin.innerHTML = RM_CLS_OPTS.map(m=>'<option value="'+m+'">수업 '+m+'분 전</option>').join('');
+  rmBusMin.innerHTML = RM_BUS_OPTS.map(m=>'<option value="'+m+'">도착 '+m+'분 전</option>').join('');
+
+  function rmSupported(){ return ('Notification' in window); }
+  async function rmAskPermission(){
+    if(!rmSupported()){ alert('이 브라우저는 알림을 지원하지 않아요.\n(아이폰은 홈 화면에 추가한 앱에서만 가능해요)'); return false; }
+    if(Notification.permission==='granted') return true;
+    if(Notification.permission==='denied'){ alert('알림이 차단돼 있어요. 브라우저/기기 설정에서 이 사이트의 알림을 허용해 주세요.'); return false; }
+    try{ const r = await Notification.requestPermission(); renderRM(); return r==='granted'; }catch(e){ return false; }
+  }
+  async function rmNotify(title, body, tag){
+    if(!rmSupported() || Notification.permission!=='granted') return false;
+    const opts = { body, tag:tag||('kit-'+Date.now()), renotify:true, icon:'icons/icon.svg', badge:'icons/icon.svg' };
+    try{
+      if(navigator.serviceWorker){
+        const reg = await navigator.serviceWorker.getRegistration();
+        if(reg){ await reg.showNotification(title, opts); return true; }
+      }
+    }catch(e){}
+    try{ new Notification(title, opts); return true; }catch(e){ return false; }
+  }
+
+  function dateKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function classStartsToday(){
+    const now = new Date();
+    const day = ['일','월','화','수','목','금','토'][now.getDay()];
+    const out = [];
+    myTT.forEach(k=>{
+      const c = courseMap[k];
+      c.slots.forEach(s=>{
+        if(s.day!==day) return;
+        const vals = s.periods.split('').map(periodVal).sort((a,b)=>a-b);
+        vals.forEach((v,i)=>{ if(i===0 || vals[i-1]!==v-1) out.push({key:k, course:c.course, room:s.room||'', v, startMin:(8+v)*60}); });
+      });
+    });
+    return out.sort((a,b)=>a.startMin-b.startMin);
+  }
+  // 과목별 설정이 있으면 우선, 없으면 전체 설정을 따른다. 0이면 알림 없음.
+  function clsMinFor(key){
+    const p = rm.cls.per[key];
+    if(p==='off') return 0;
+    if(typeof p==='number') return p;
+    return rm.cls.on ? rm.cls.min : 0;
+  }
+  function rmCheckClasses(){
+    const now = new Date(), nowMin = now.getHours()*60+now.getMinutes(), dk = dateKey(now);
+    classStartsToday().forEach(c=>{
+      const left = c.startMin - nowMin, mn = clsMinFor(c.key);
+      if(mn && left>0 && left<=mn){
+        const fk = 'c|'+dk+'|'+c.key+'|'+c.v;
+        if(!rm.fired[fk]){
+          rm.fired[fk] = Date.now(); saveRM();
+          rmNotify('📚 '+c.course, left+'분 후 수업이 시작돼요'+(c.room?' · '+c.room:''), fk);
+        }
+      }
+    });
+  }
+  function rmCheckBus(){
+    if(!rm.bus.length || !busData || !busData.groups) return;
+    const elapsed = Math.max(0, Math.round((Date.now()-new Date(busData.updatedAt).getTime())/1000));
+    if(elapsed>600) return;
+    rm.bus.forEach(r=>{
+      if(!r.on) return;
+      const g = busData.groups.find(x=>x.title===r.stop); if(!g) return;
+      const lefts = (g.arrivals||[]).filter(a=>String(a.routeNo)===String(r.route)).map(a=>a.sec-elapsed).filter(l=>l>0).sort((a,b)=>a-b);
+      if(!lefts.length) return;
+      const left = lefts[0], fk = 'b|'+r.id;
+      if(left<=r.min*60 && Date.now()-(rm.fired[fk]||0) > 8*60*1000){
+        rm.fired[fk] = Date.now(); saveRM();
+        rmNotify('🚌 '+r.route+'번 버스', '약 '+Math.max(1,Math.round(left/60))+'분 후 '+(g.stopName||g.title)+' 도착해요', fk);
+      }
+    });
+  }
+  function rmTick(){ try{ rmCheckClasses(); rmCheckBus(); }catch(e){} }
+
+  function fmtHM(m){ return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+  function renderRM(){
+    // 권한
+    if(!rmSupported()) rmPerm.innerHTML = '<span class="rm-warn">이 브라우저는 알림을 지원하지 않아요.</span>';
+    else if(Notification.permission==='granted') rmPerm.textContent = '✅ 알림이 허용돼 있어요.';
+    else if(Notification.permission==='denied') rmPerm.innerHTML = '<span class="rm-warn">⛔ 알림이 차단돼 있어요. 브라우저/기기 설정에서 허용해 주세요.</span>';
+    else rmPerm.textContent = '아직 알림 권한이 없어요. 아래 버튼으로 허용해 주세요.';
+    document.getElementById('rmAsk').style.display = (rmSupported() && Notification.permission==='default') ? '' : 'none';
+    // 수업
+    rmClsOn.checked = !!rm.cls.on;
+    rmClsMin.value = String(rm.cls.min);
+    if(!myTT.length) rmClsInfo.textContent = '내 시간표에 과목을 먼저 담아주세요.';
+    else {
+      const nowMin = new Date().getHours()*60+new Date().getMinutes();
+      const rest = classStartsToday().filter(c=>c.startMin>nowMin);
+      rmClsInfo.innerHTML = rest.length ? '오늘 남은 수업<br>'+rest.map(c=>{ const mn = clsMinFor(c.key); return escapeHtml(fmtHM(c.startMin)+' '+c.course)+' → '+(mn?fmtHM(c.startMin-mn)+' 알림':'알림 꺼짐'); }).join('<br>') : '오늘 남은 수업이 없어요.';
+    }
+    // 과목별 설정
+    const clsList = document.getElementById('rmClsList');
+    clsList.innerHTML = myTT.length ? myTT.map(k=>{
+      const c = courseMap[k], p = rm.cls.per[k];
+      const val = p==='off' ? 'off' : (typeof p==='number' ? String(p) : 'def');
+      const opts = '<option value="def"'+(val==='def'?' selected':'')+'>전체 설정 따름 ('+(rm.cls.on?rm.cls.min+'분 전':'꺼짐')+')</option>'+
+        '<option value="off"'+(val==='off'?' selected':'')+'>알림 끄기</option>'+
+        RM_CLS_OPTS.map(m=>'<option value="'+m+'"'+(val===String(m)?' selected':'')+'>'+m+'분 전</option>').join('');
+      return '<div class="tt-card"><span class="tt-dot" style="background:'+colorOf(k)+'"></span><div class="tt-body">'+
+        '<div class="tt-name">'+escapeHtml(c.course)+'</div>'+
+        '<div class="tt-slots">'+c.slots.map(x=>escapeHtml(slotText(x))).join('<br>')+'</div>'+
+        '<select class="tt-search" style="margin-top:8px;padding:8px 10px;font-size:13px;" data-rmper="'+escapeHtml(k)+'">'+opts+'</select></div></div>';
+    }).join('') : '';
+    // 버스 폼
+    const groups = (busData && busData.groups) || [];
+    if(rmBusStop.options.length !== groups.length || !groups.length){
+      const prev = rmBusStop.value;
+      rmBusStop.innerHTML = groups.length ? groups.map(g=>'<option value="'+escapeHtml(g.title)+'">'+escapeHtml(g.title+(g.stopName?' · '+g.stopName:''))+'</option>').join('') : '<option value="">버스 정보를 불러오는 중…</option>';
+      if(prev) rmBusStop.value = prev;
+    }
+    const g = groups.find(x=>x.title===rmBusStop.value);
+    rmRouteList.innerHTML = g ? [...new Set((g.arrivals||[]).map(a=>a.routeNo))].map(n=>'<option value="'+escapeHtml(String(n))+'">').join('') : '';
+    rmBusList.innerHTML = rm.bus.length ? rm.bus.map(r=>
+      '<div class="tt-card"><span class="tt-dot" style="background:'+(r.on?'var(--amber)':'var(--line)')+'"></span><div class="tt-body">'+
+      '<div class="tt-name">'+escapeHtml(r.route)+'번 · '+escapeHtml(r.stop)+'</div>'+
+      '<div class="tt-meta">도착 '+r.min+'분 전 알림'+(r.on?'':' (꺼짐)')+'</div></div>'+
+      '<button class="tt-btn ghost" data-rmtog="'+r.id+'">'+(r.on?'끄기':'켜기')+'</button>'+
+      '<button class="tt-btn del" data-rmdel="'+r.id+'">삭제</button></div>').join('')
+      : '<p class="placeholder" style="margin-top:10px;">설정한 버스 알림이 없어요.</p>';
+  }
+
+  rmClsOn.addEventListener('change', async ()=>{
+    if(rmClsOn.checked && !(await rmAskPermission())){ rmClsOn.checked = false; }
+    rm.cls.on = rmClsOn.checked; saveRM(); renderRM(); rmTick();
+  });
+  rmClsMin.addEventListener('change', ()=>{ rm.cls.min = Number(rmClsMin.value); saveRM(); renderRM(); });
+  rmBusStop.addEventListener('change', renderRM);
+  document.getElementById('rmClsList').addEventListener('change', async e=>{
+    const sel = e.target.closest && e.target.closest('[data-rmper]'); if(!sel) return;
+    const k = sel.getAttribute('data-rmper'), v = sel.value;
+    if(v==='def') delete rm.cls.per[k];
+    else if(v==='off') rm.cls.per[k] = 'off';
+    else {
+      if(!(await rmAskPermission())){ renderRM(); return; }
+      rm.cls.per[k] = Number(v);
+    }
+    saveRM(); renderRM(); rmTick();
+  });
+  document.getElementById('rmAsk').addEventListener('click', rmAskPermission);
+  document.getElementById('rmTest').addEventListener('click', async ()=>{
+    if(!(await rmAskPermission())) return;
+    const ok = await rmNotify('🔔 금오공대 미리알림', '알림이 정상적으로 도착했어요!', 'kit-test');
+    if(!ok) alert('알림을 보내지 못했어요. 기기 설정을 확인해 주세요.');
+  });
+  document.getElementById('rmBusAdd').addEventListener('click', async ()=>{
+    const stop = rmBusStop.value, route = rmBusRoute.value.trim(), min = Number(rmBusMin.value);
+    if(!stop){ alert('정류장 정보를 아직 불러오지 못했어요.'); return; }
+    if(!route){ alert('버스 번호를 입력해 주세요.'); return; }
+    if(!(await rmAskPermission())) return;
+    rm.bus.push({id:Date.now().toString(36), stop, route, min, on:true});
+    rmBusRoute.value = ''; saveRM(); renderRM(); rmTick();
+  });
+  document.getElementById('tabContents').addEventListener('click', e=>{
+    const t = e.target.closest && e.target.closest('[data-rmtog]');
+    if(t){ const r = rm.bus.find(x=>x.id===t.getAttribute('data-rmtog')); if(r){ r.on=!r.on; saveRM(); renderRM(); } return; }
+    const d = e.target.closest && e.target.closest('[data-rmdel]');
+    if(d){ rm.bus = rm.bus.filter(x=>x.id!==d.getAttribute('data-rmdel')); saveRM(); renderRM(); }
+  });
+  document.addEventListener('click', e=>{
+    const a = e.target.closest && e.target.closest('#sideRemind');
+    if(a){ e.preventDefault(); switchTab('remind'); renderRM(); }
+  });
+  setInterval(()=>{
+    rmTick();
+    const p = document.querySelector('[data-tab="remind"]');
+    if(p && p.classList.contains('active') && !(document.activeElement && p.contains(document.activeElement))) renderRM();
+  }, 20*1000);
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') rmTick(); });
+  setTimeout(()=>{ renderRM(); rmTick(); }, 0);
+  setTimeout(rmTick, 3000);
 
   // ===================== 날씨 (Open-Meteo, 키 불필요) =====================
   // 구미시 거의동 부근 좌표
@@ -1671,15 +2845,31 @@
     window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
   }
 </script>
+<div class="side-dim" id="sideDim"></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true">
+  <div class="side-head"><span>바로가기</span><button class="side-close" id="sideClose" type="button" aria-label="닫기">✕</button></div>
+  <a href="#" id="sideMyTT">🗓️ 내 시간표</a>
+  <a href="#" id="sideMyCal">📅 내 캘린더</a>
+  <a href="#" id="sideRemind">🔔 미리알림</a>
+  <a href="https://www.kumoh.ac.kr/ko/index.do" target="_blank" rel="noopener">🏫 학교 홈페이지<small>↗</small></a>
+  <a href="https://onekit.kumoh.ac.kr/login.jsp" target="_blank" rel="noopener">🔑 Onekit<small>↗</small></a>
+  <a href="https://biskit.kumoh.ac.kr/" target="_blank" rel="noopener">📚 Biskit<small>↗</small></a>
+  <div class="side-foot">
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="화면 모드 바꾸기">
+      <span class="t-icon" id="themeIcon">🌙</span><span id="themeLabel">다크 모드</span>
+    </button>
+  </div>
+</aside>
 <script>
   // 다크/라이트 전환
   (function(){
     const root = document.documentElement;
     const btn = document.getElementById('themeBtn');
+    if(!btn) return;
     function paint(){
       const light = root.getAttribute('data-theme') === 'light';
       document.getElementById('themeIcon').textContent = light ? '☀️' : '🌙';
-      document.getElementById('themeLabel').textContent = light ? '라이트' : '다크';
+      document.getElementById('themeLabel').textContent = light ? '라이트 모드' : '다크 모드';
       const m = document.querySelector('meta[name="theme-color"]');
       if (m) m.setAttribute('content', light ? '#f5f5f7' : '#0b0b0c');
     }
@@ -1692,13 +2882,6 @@
     paint();
   })();
 </script>
-<div class="side-dim" id="sideDim"></div>
-<aside class="side-menu" id="sideMenu" aria-hidden="true">
-  <div class="side-head"><span>바로가기</span><button class="side-close" id="sideClose" type="button" aria-label="닫기">✕</button></div>
-  <a href="https://www.kumoh.ac.kr/ko/index.do" target="_blank" rel="noopener">🏫 학교 홈페이지<small>↗</small></a>
-  <a href="https://onekit.kumoh.ac.kr/login.jsp" target="_blank" rel="noopener">🔑 Onekit<small>↗</small></a>
-  <a href="https://biskit.kumoh.ac.kr/" target="_blank" rel="noopener">📚 Biskit<small>↗</small></a>
-</aside>
 <script>
 (function(){
   const b=document.body,o=()=>{b.classList.add('side-open');document.getElementById('sideMenu').setAttribute('aria-hidden','false')},
