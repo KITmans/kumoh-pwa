@@ -640,7 +640,6 @@
 
   /* 교통 */
   .tab-panel[data-tab="bus"] section h2{position:relative;min-height:38px;}
-  #busRefreshBtn{position:absolute;right:0;top:50%;transform:translateY(-50%);}
   .fill-cols>.bus-stop,.bus-stop{padding:18px 16px;text-align:center;}
   .bus-stop .bs-title{font-size:19px;margin-bottom:4px;}
   .bus-stop .bs-sub{font-size:13px;margin-bottom:12px;}
@@ -888,15 +887,11 @@
     background:var(--paper-2) !important;
     box-shadow:none !important;
     font-size:16px;
-    font-weight:400 !important;
     letter-spacing:-0.02em;
     color:var(--ink);
     justify-content:center;
     text-align:center;
     gap:10px;
-  }
-  section > h2 span{
-    font-weight:400 !important;
   }
   section > h2::after{
     display:none !important;
@@ -905,11 +900,6 @@
   .tab-panel[data-tab="bus"] section > h2{
     display:inline-flex;
     align-items:center;
-  }
-  #busRefreshBtn{
-    position:static !important;
-    transform:none !important;
-    margin-left:6px;
   }
 
   /* ============================================================
@@ -1334,6 +1324,54 @@
   .tt-blk-del:active{
     background:rgba(226,104,92,.9);
   }
+
+  /* ============================================================
+     폰트: Flight Sans (index.html 과 같은 폴더에 ttf 두 개 필요)
+     - 모서리가 둥근 상자(카드·버튼·칩·제목 박스 등) 안의 글씨 = Bold
+     - 그 밖의 글씨 = Regular
+     - 도면(.fm-cell)의 강의실 숫자 = 항상 Regular
+     ============================================================ */
+  @font-face{font-family:'Flight Sans';src:url('FlightSans-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap;}
+  @font-face{font-family:'Flight Sans';src:url('FlightSans-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap;}
+  body,button,input,select,textarea{
+    font-family:'Flight Sans',"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕","Pretendard",-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  /* 기본: 전부 Regular (기존의 600/700/800 지정을 한 번에 덮어씀) */
+  body, body *{font-weight:400 !important;}
+  /* 둥근 상자 안: Bold */
+  header.top h1, header.top h1 *,
+  section > h2, section > h2 *,
+  header.top .weather, header.top .weather *, .weather, .weather *,
+  .refresh-btn, .load-more, .go-btn, .page-btn, .badge, .theme-btn, .menu-btn, .home-btn,
+  .bus-stop, .bus-stop *,
+  .status-card, .status-card *,
+  .free-item, .free-item *,
+  .floor-tab, .floor-tab *,
+  .mt-tool-btn, .mt-add-btn, .mt-course-item, .mt-course-item *, .mt-result-item, .mt-result-item *,
+  .menu-day-btn, .menu-card, .menu-card *,
+  .notice-cat-btn, .notice-item, .notice-item *, .notice-back-btn, .attach-item, .attach-item *,
+  .hall-col, .hall-col *,
+  select, input, textarea,
+  .tt-search, .tt-search *, .tt-card, .tt-card *, .tt-btn, .tt-clear, .tt-blk, .tt-blk *, .tt-blk-del,
+  .sh-tabs button, .sh-card, .sh-card *, .sh-next, .sh-stop, .sh-stop *,
+  .cal-nav-btn, .cal-cat-chip, .cal-pill, .cal-day.today .cal-day-num,
+  .cal-add-open-btn, .cal-ev-item, .cal-ev-item *, .cal-icon-btn, .cal-cat-edit-link, .cal-cat-opt,
+  .cal-catm-del, .cal-catm-add, .cal-modal-btns button, .cal-sheet-close, .tab-cfg-sel,
+  nav.tabbar, nav.tabbar *{
+    font-weight:700 !important;
+  }
+  /* 도면의 강의실 숫자: 절대 Bold 금지 (위 규칙보다 항상 우선) */
+  body .floor-scroll, body .floor-grid,
+  body .fm-cell, body .fm-cell *, body .floor-scroll .fm-cell, body .floor-scroll .fm-cell *{
+    font-weight:400 !important;
+  }
+  /* Flight Sans 의 고정폭(tabular) 숫자는 간격이 넓어 보여서 일반 숫자로 */
+  body *{font-variant-numeric:normal !important;}
+  header.top .clock-row, header.top .clock-row *, .bus-row .br-eta{letter-spacing:0 !important;}
+  /* 버스 도착정보: 새로고침 버튼은 제목 박스 밖, 목록 아래에 별도 배치 */
+  .tab-panel[data-tab="bus"] #busArea{flex:none;}
+  .bus-refresh-row{display:flex;justify-content:center;margin:14px 0 6px;}
+  .bus-refresh-row .refresh-btn{font-size:14px;padding:9px 20px;}
 </style>
 </head>
 <body>
@@ -1419,9 +1457,10 @@
     <!-- ===== TAB: 교통 ===== -->
     <div class="tab-panel fill" data-tab="bus">
       <section>
-        <h2><span>금오공대 버스 도착정보</span><button class="refresh-btn" id="busRefreshBtn">새로고침</button></h2>
+        <h2>🚍 금오공대 버스 도착정보</h2>
         <p class="count-line" id="busUpdated"></p>
         <div class="fill-cols" id="busArea"></div>
+        <div class="bus-refresh-row"><button type="button" class="refresh-btn" id="busRefreshBtn">🔄 새로고침</button></div>
         <p class="note-block">국토교통부 TAGO 버스도착정보 기준이며, 실제 도착 시간과 다를 수 있어요.</p>
       </section>
       <section id="shuttleSec">
