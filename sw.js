@@ -1,9 +1,11 @@
-const CACHE_NAME = 'kit-app-shell-v5';
+const CACHE_NAME = 'kit-app-shell-v6';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
-  './icons/icon.svg'
+  './icons/icon.svg',
+  './FlightSans-Regular.ttf',
+  './FlightSans-Bold.ttf'
 ];
 
 self.addEventListener('install', (event) => {
