@@ -2913,10 +2913,24 @@ document.addEventListener('click', e=>{
         }
         userBarTabs = picked;
         saveUserBarTabs();
-        
+      }
+      if(Array.isArray(tempSideOrder) && tempSideOrder.length){
+        userSideOrder = tempSideOrder.slice();
+        saveUserSideOrder();
+        renderSideMenu();
+      }
+      const vm = document.getElementById('viewModeSel');
+      if(vm){ userViewMode = vm.value; try{ localStorage.setItem(VIEW_MODE_KEY, userViewMode); }catch(e){} }
+      renderTabbar();
+      updateViewModeDisplay();
+      closeTabCfgModal();
+    }
+  });
+
   // 보기 모드 설정 (bar = 하단 탭바 모드, tile = 앱타일 배치 모드)
   const VIEW_MODE_KEY = 'kit-view-mode-v1';
-  let userViewMode = localStorage.getItem(VIEW_MODE_KEY) || 'bar';
+  let userViewMode = 'bar';
+  try{ userViewMode = localStorage.getItem(VIEW_MODE_KEY) || 'bar'; }catch(e){}
 
   const appTileView = document.getElementById('appTileView');
   const appTileGrid = document.getElementById('appTileGrid');
@@ -2971,18 +2985,9 @@ document.addEventListener('click', e=>{
     });
   }
 
+
   renderTabbar();
   updateViewModeDisplay();
-      }
-      if(Array.isArray(tempSideOrder) && tempSideOrder.length){
-        userSideOrder = tempSideOrder.slice();
-        saveUserSideOrder();
-        renderSideMenu();
-      }
-      closeTabCfgModal();
-    }
-  });
-  renderTabbar();
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', renderSideMenu);
   } else {
