@@ -1677,7 +1677,6 @@
       <span>👆 타일을 드래그하거나 다른 타일을 눌러 위치를 바꾸세요</span>
       <button type="button" class="tt-btn" id="appTileEditDoneBtn" style="padding:5px 12px;font-size:12.5px;">완료</button>
     </div>
-    <p class="count-line" id="appTileHint" style="margin-top:8px;">💡 아이폰처럼 앱 아이콘을 길게 꾹 누르면 위치를 자유롭게 바꿀 수 있어요.</p>
   </div>
   <main id="tabContents">
 
@@ -2867,8 +2866,6 @@ document.addEventListener('click', e=>{
     applyTileOrderStyles();
     appTileGrid.classList.toggle('editing', tileEditMode);
     if(appTileEditBar) appTileEditBar.style.display = tileEditMode ? 'flex' : 'none';
-    const hintEl = document.getElementById('appTileHint');
-    if(hintEl) hintEl.style.display = tileEditMode ? 'none' : '';
   }
 
   // 순서 배열(userSideOrder) → CSS order 로 반영 (DOM 노드를 옮기지 않으므로 포인터 캡처가 유지됨)
@@ -3143,8 +3140,17 @@ document.addEventListener('click', e=>{
     }
     appTileGrid.addEventListener('pointerup', endPointer);
     appTileGrid.addEventListener('pointercancel', endPointer);
+    // 드래그 카드 자신이 캡처를 잃었을 때만 종료 처리.
+    // (터치 시작 시 아이콘에 걸려 있던 암묵적 캡처가 카드로 넘어가며 발생하는 이벤트는 무시)
     appTileGrid.addEventListener('lostpointercapture', e=>{
-      if(drag && e.pointerId === drag.id) endPointer(e);
+      if(drag && e.pointerId === drag.id && e.target === drag.card) endPointer(e);
+    });
+    // 안전장치: 그리드 밖에서 손가락을 떼도 드래그가 남지 않도록
+    document.addEventListener('pointerup', e=>{
+      if((drag && e.pointerId === drag.id) || (pending && e.pointerId === pending.id)) endPointer(e);
+    });
+    document.addEventListener('pointercancel', e=>{
+      if((drag && e.pointerId === drag.id) || (pending && e.pointerId === pending.id)) endPointer(e);
     });
 
     // 우클릭/컨텍스트 메뉴 방지 (롱프레스 시 팝업 방지)
@@ -3186,10 +3192,13 @@ document.addEventListener('click', e=>{
 
     // 빈 곳을 누르면 편집 모드 종료 (아이폰처럼). 카드/편집바/사이드메뉴 외의 곳이면 해제
     document.addEventListener('pointerdown', e=>{
-      if(!tileEditMode || drag || !tileHomeActive) return;
+      if(!tileEditMode || !tileHomeActive) return;
       const t = e.target;
       if(!t || !t.closest) return;
       if(t.closest('.app-tile-card, .app-tile-edit-bar, #sideMenu')) return;
+      if(drag) dropDrag();
+      pending = null; clearTimeout(pressTimer);
+      suppressClick = false;
       setTileEditMode(false);
     });
 
