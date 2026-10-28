@@ -1357,6 +1357,7 @@
   .cal-nav-btn, .cal-cat-chip, .cal-pill, .cal-day.today .cal-day-num,
   .cal-add-open-btn, .cal-ev-item, .cal-ev-item *, .cal-icon-btn, .cal-cat-edit-link, .cal-cat-opt,
   .cal-catm-del, .cal-catm-add, .cal-modal-btns button, .cal-sheet-close, .tab-cfg-sel,
+  .rm-bus-tab, .lms-subtab, .lms-card, .lms-card *, .lms-course-badge, .lms-dday, .lms-act-btn, .lms-status-bar, .lms-status-bar *,
   nav.tabbar, nav.tabbar *{
     font-weight:700 !important;
   }
@@ -1372,6 +1373,38 @@
   .tab-panel[data-tab="bus"] #busArea{flex:none;}
   .bus-refresh-row{display:flex;justify-content:center;margin:14px 0 6px;}
   .bus-refresh-row .refresh-btn{font-size:14px;padding:9px 20px;}
+
+  /* 미리알림: 버스/통학버스 전환 탭 */
+  .rm-bus-tabs{display:flex;gap:6px;margin-bottom:10px;}
+  .rm-bus-tab{flex:1;padding:10px 6px;border:1px solid var(--line);background:var(--navy-2);color:var(--ink-dim);border-radius:var(--radius);font-size:13.5px;cursor:pointer;font-family:inherit;}
+  .rm-bus-tab.on{background:var(--amber);border-color:var(--amber);color:#000;}
+
+  /* 나의 LMS (Canvas 연동) */
+  .lms-status-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border:1px solid var(--line);background:var(--navy-2);border-radius:var(--radius);margin-bottom:12px;font-size:13px;}
+  .lms-status-bar .lms-st-txt{color:var(--ink);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .lms-dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--ink-dim);}
+  .lms-dot.ok{background:var(--free);}
+  .lms-dot.warn{background:var(--amber);}
+  .lms-dot.err{background:var(--busy);}
+  .lms-subtabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;}
+  .lms-subtab{flex:1;min-width:74px;padding:9px 8px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-dim);border-radius:999px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;text-align:center;}
+  .lms-subtab.on{background:var(--amber);border-color:var(--amber);color:#000;}
+  .lms-card{border:1px solid var(--line);background:var(--paper-2);border-radius:var(--radius-lg);padding:15px 16px;margin-bottom:10px;box-shadow:var(--shadow);text-align:left;}
+  .lms-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
+  .lms-course-badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;background:var(--amber-soft);color:var(--amber);}
+  .lms-dday{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;background:var(--navy-2);color:var(--ink-dim);}
+  .lms-dday.urgent{background:var(--busy-bg);color:var(--busy);}
+  .lms-dday.done{background:var(--free-bg);color:var(--free);}
+  .lms-title{font-size:16px;color:var(--ink);margin:4px 0;line-height:1.4;}
+  .lms-meta{font-size:12.5px;color:var(--ink-dim);display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;align-items:center;}
+  .lms-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .lms-act-btn{border:1px solid var(--line);background:var(--navy-2);color:var(--ink);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+  .lms-act-btn.pri{border-color:var(--amber);color:var(--amber);background:var(--amber-soft);}
+  .lms-cfg-box{border:1px solid var(--line);background:var(--paper-2);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;text-align:left;}
+  .lms-cfg-box label{display:block;font-size:12.5px;color:var(--ink-dim);margin:10px 0 4px;}
+  .lms-cfg-box label:first-child{margin-top:0;}
+  .lms-cfg-row{display:flex;gap:6px;align-items:center;}
+  .lms-cfg-row input{flex:1;min-width:0;padding:11px 12px;font-size:14px;border:1px solid var(--line);background:var(--navy-2);color:var(--ink);border-radius:var(--radius);font-family:inherit;}
 </style>
 </head>
 <body>
@@ -1602,13 +1635,16 @@
     <!-- ===== TAB: 미리알림 (사이드메뉴에서 진입) ===== -->
     <div class="tab-panel" data-tab="remind">
       <section>
-        <h2>알림 권한</h2>
-        <p class="count-line" id="rmPerm"></p>
+        <h2>📅 내 캘린더 일정 알림</h2>
+        <p class="count-line">내 캘린더에 등록된 일정을 자동으로 불러와 알림을 설정할 수 있어요.</p>
+        <label class="rm-sw"><input type="checkbox" id="rmCalOn"> 내 캘린더 전체 일정 알림</label>
         <div class="rm-row">
-          <button class="tt-btn" id="rmAsk" type="button">알림 허용하기</button>
-          <button class="tt-btn ghost" id="rmTest" type="button">테스트 알림 보내기</button>
+          <select class="tt-search" id="rmCalMin" title="시간 지정 일정 알림 시각"></select>
+          <select class="tt-search" id="rmCalAllDayHour" title="종일 일정 알림 시각"></select>
         </div>
-        <p class="note-block">앱이 열려 있거나 백그라운드에 있을 때 알려드려요. 앱을 완전히 종료하면 알림이 오지 않을 수 있어요.<br>아이폰은 Safari에서 "홈 화면에 추가"한 앱에서만 알림을 받을 수 있어요.</p>
+        <h3 style="font-size:14px;margin:16px 0 0;color:var(--ink);">다가오는 캘린더 일정별 설정</h3>
+        <div id="rmCalList"></div>
+        <p class="count-line" id="rmCalInfo" style="margin-top:12px;"></p>
       </section>
       <section>
         <h2>🎓 수업 시작 알림</h2>
@@ -1620,19 +1656,88 @@
         <p class="count-line" id="rmClsInfo" style="margin-top:12px;"></p>
       </section>
       <section>
-        <h2>🚌 버스 도착 알림</h2>
-        <div id="rmBusForm">
+        <h2>🚌 버스 · 통학버스 알림</h2>
+        <p class="count-line">학교에 오는 시내버스 노선이나 구미 통학버스 시간표를 목록에서 바로 선택하세요.</p>
+        <div class="rm-bus-tabs" id="rmBusModeTabs">
+          <button type="button" class="rm-bus-tab on" data-bmode="city">🚌 시내버스 도착 알림</button>
+          <button type="button" class="rm-bus-tab" data-bmode="shuttle">🚍 통학버스 출발 알림</button>
+        </div>
+        <div id="rmCityBusForm">
           <div class="rm-row">
             <select class="tt-search" id="rmBusStop"></select>
           </div>
           <div class="rm-row">
-            <input class="tt-search" id="rmBusRoute" list="rmRouteList" placeholder="버스 번호 (예: 190)" autocomplete="off">
-            <datalist id="rmRouteList"></datalist>
+            <select class="tt-search" id="rmBusRoute"></select>
             <select class="tt-search" id="rmBusMin"></select>
           </div>
-          <div class="rm-row"><button class="tt-btn" id="rmBusAdd" type="button">알림 추가</button></div>
+          <div class="rm-row"><button class="tt-btn" id="rmBusAdd" type="button">시내버스 알림 추가</button></div>
+        </div>
+        <div id="rmShuttleForm" style="display:none;">
+          <div class="rm-row">
+            <select class="tt-search" id="rmShPeriod"></select>
+            <select class="tt-search" id="rmShType"></select>
+          </div>
+          <div class="rm-row">
+            <select class="tt-search" id="rmShRoute"></select>
+          </div>
+          <div class="rm-row">
+            <select class="tt-search" id="rmShStop"></select>
+            <select class="tt-search" id="rmShMin"></select>
+          </div>
+          <div class="rm-row"><button class="tt-btn" id="rmShAdd" type="button">통학버스 알림 추가</button></div>
         </div>
         <div id="rmBusList"></div>
+      </section>
+      <section>
+        <h2>🔔 알림 권한</h2>
+        <p class="count-line" id="rmPerm"></p>
+        <div class="rm-row">
+          <button class="tt-btn" id="rmAsk" type="button">알림 허용하기</button>
+          <button class="tt-btn ghost" id="rmTest" type="button">테스트 알림 보내기</button>
+        </div>
+        <p class="note-block">앱이 열려 있거나 백그라운드에 있을 때 알려드려요. 앱을 완전히 종료하면 알림이 오지 않을 수 있어요.<br>아이폰은 Safari에서 "홈 화면에 추가"한 앱에서만 알림을 받을 수 있어요.</p>
+      </section>
+    </div>
+
+    <!-- ===== TAB: 나의 LMS (사이드메뉴에서 진입) ===== -->
+    <div class="tab-panel" data-tab="mylms">
+      <section>
+        <h2>💻 나의 LMS (Canvas 연동)</h2>
+        <div class="lms-status-bar">
+          <div class="lms-st-txt">
+            <span class="lms-dot" id="lmsDot"></span>
+            <span id="lmsStatusTxt">LMS 데이터 확인 중…</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="refresh-btn" id="lmsSyncBtn">🔄 동기화</button>
+            <button type="button" class="refresh-btn" id="lmsCfgToggleBtn">⚙️ 연동 설정</button>
+          </div>
+        </div>
+
+        <div class="lms-cfg-box" id="lmsCfgBox" style="display:none;">
+          <label for="lmsInToken">내 Canvas 액세스 토큰</label>
+          <div class="lms-cfg-row">
+            <input type="password" id="lmsInToken" placeholder="토큰을 붙여넣으세요" autocomplete="off">
+            <button type="button" class="lms-act-btn" id="lmsTokenVisBtn">보기</button>
+          </div>
+          <p class="note-block" style="margin-top:10px;padding-top:10px;text-align:left;">
+            🔑 LMS 로그인 → 계정 → 설정 → <b>+ 새 액세스 토큰</b>에서 발급받을 수 있어요.<br>
+            토큰은 이 기기의 브라우저에만 저장되고, 요청 때 연동용 프록시를 거쳐 LMS로 전달만 돼요. 공용 기기에서는 사용 후 <b>토큰 삭제</b>를 눌러 주세요.
+          </p>
+          <div class="rm-row" style="margin-top:10px;">
+            <button type="button" class="tt-btn" id="lmsCfgSaveBtn">저장 후 연동</button>
+            <button type="button" class="tt-btn del" id="lmsLogoutBtn">토큰 삭제</button>
+          </div>
+        </div>
+
+        <div class="lms-subtabs" id="lmsSubTabs">
+          <button type="button" class="lms-subtab on" data-lsub="todo">📝 할 일·과제</button>
+          <button type="button" class="lms-subtab" data-lsub="courses">📚 수강 과목</button>
+          <button type="button" class="lms-subtab" data-lsub="ann">📢 과목 공지</button>
+          <button type="button" class="lms-subtab" data-lsub="cal">🗓️ 예정 일정</button>
+        </div>
+
+        <div id="lmsContentArea"></div>
       </section>
     </div>
 
@@ -2345,6 +2450,7 @@
     mytt:     { id:'mytt',     icon:'🗓️', label:'내 시간표',  sideLabel:'내 시간표',   type:'tab' },
     mycal:    { id:'mycal',    icon:'📅', label:'내 캘린더',  sideLabel:'내 캘린더',   type:'tab' },
     remind:   { id:'remind',   icon:'🔔', label:'미리알림',   sideLabel:'미리알림',    type:'tab' },
+    mylms:    { id:'mylms',    icon:'💻', label:'나의 LMS',   sideLabel:'나의 LMS',    type:'tab' },
     home_web: { id:'home_web', icon:'🌐', label:'학교홈피',   sideLabel:'학교 홈페이지', type:'link', url:'https://www.kumoh.ac.kr/ko/index.do' },
     onekit:   { id:'onekit',   icon:'🔑', label:'Onekit',     sideLabel:'Onekit',      type:'link', url:'https://onekit.kumoh.ac.kr/login.jsp' },
     biskit:   { id:'biskit',   icon:'📚', label:'Biskit',     sideLabel:'Biskit',      type:'link', url:'https://biskit.kumoh.ac.kr/' }
@@ -2412,6 +2518,7 @@
     if(name === 'mytt' && typeof renderTT === 'function') renderTT();
     if(name === 'mycal' && typeof renderCal === 'function'){ calSheetOpen = false; renderCal(); }
     if(name === 'remind' && typeof renderRM === 'function') renderRM();
+    if(name === 'mylms' && typeof initAndLoadLMS === 'function') initAndLoadLMS();
     window.scrollTo({top:0});
   }
 
@@ -2683,6 +2790,7 @@
 
   function saveCal(){
     try{ localStorage.setItem(CAL_KEY, JSON.stringify(calEvents)); }catch(e){}
+    if(typeof renderRM === 'function') renderRM();
   }
 
   const calWrapEl = document.getElementById('calWrap');
@@ -3029,32 +3137,176 @@
 
 
 
-  // ===================== 미리알림 (수업 시작 / 버스 도착) =====================
+  // ===================== 미리알림 (캘린더 일정 / 수업 시작 / 시내버스·통학버스) =====================
   const RM_KEY = 'kit-remind-v1';
-  const rm = { cls:{on:false, min:10, per:{}}, bus:[], fired:{} };
+  const rm = {
+    cal:{ on:true, min:30, allDayHour:9, per:{} },
+    cls:{ on:false, min:10, per:{} },
+    bus:[],
+    fired:{}
+  };
   try{
     const o = JSON.parse(localStorage.getItem(RM_KEY)||'null');
-    if(o && typeof o==='object'){ Object.assign(rm.cls, o.cls||{}); rm.bus = Array.isArray(o.bus)?o.bus:[]; rm.fired = o.fired||{}; }
+    if(o && typeof o==='object'){
+      if(o.cal && typeof o.cal==='object') Object.assign(rm.cal, o.cal);
+      if(o.cls && typeof o.cls==='object') Object.assign(rm.cls, o.cls);
+      rm.bus = Array.isArray(o.bus) ? o.bus : [];
+      rm.fired = o.fired || {};
+    }
+    if(!rm.cal.per || typeof rm.cal.per!=='object') rm.cal.per = {};
     if(!rm.cls.per || typeof rm.cls.per!=='object') rm.cls.per = {};
   }catch(e){}
+
   function saveRM(){
     const cut = Date.now() - 2*86400000;
     Object.keys(rm.fired).forEach(k=>{ if(rm.fired[k] < cut) delete rm.fired[k]; });
     try{ localStorage.setItem(RM_KEY, JSON.stringify(rm)); }catch(e){}
   }
+
+  // 금오공대 경유 주요 시내버스 고정 노선 목록 (수기 입력 불필요, 오타 방지)
+  const KIT_CITY_BUS_ROUTES = [
+    { no:'190',   desc:'구미역·터미널 ↔ 신평 ↔ 금오공대 ↔ 옥계' },
+    { no:'190-1', desc:'구미역·터미널 ↔ 금오공대' },
+    { no:'190-2', desc:'구미역·터미널 ↔ 금오공대' },
+    { no:'190-3', desc:'금오공대 ↔ 신평 ↔ 터미널 ↔ 구미역' },
+    { no:'191',   desc:'구미역 ↔ 형곡 ↔ 신평 ↔ 금오공대 ↔ 옥계' },
+    { no:'192',   desc:'구미역·터미널 ↔ 금오공대 ↔ 산동·해평' },
+    { no:'193',   desc:'구미역 ↔ 신평 ↔ 금오공대 ↔ 4공단 ↔ 장천' },
+    { no:'193-1', desc:'구미역·터미널 ↔ 금오공대 ↔ 장천' },
+    { no:'193-2', desc:'구미역 ↔ 금오공대 ↔ 4공단 ↔ 경운대·장천' },
+    { no:'195',   desc:'구미역 ↔ 공단본부 ↔ 금오공대 ↔ 4공단' },
+    { no:'196',   desc:'구미역 ↔ 금오공대 ↔ 경운대' },
+    { no:'51-1',  desc:'구미역·터미널 ↔ 금오공대' },
+    { no:'57',    desc:'구미역·터미널 ↔ 금오공대' },
+    { no:'557',   desc:'구미역·터미널 ↔ 금오공대 (좌석)' },
+    { no:'91',    desc:'금오공대 ↔ 옥계 ↔ 구포 ↔ 인동·황상' },
+    { no:'97',    desc:'금오공대 ↔ 옥계 ↔ 4공단 ↔ 장천' },
+    { no:'404',   desc:'금오공대 ↔ 옥계우미린 ↔ 공단 순환' },
+    { no:'404-1', desc:'금오공대 ↔ 옥계 ↔ 산동 ↔ 5공단 순환' },
+    { no:'5200',  desc:'김천구미역 ↔ 구미터미널 ↔ 금오공대 ↔ 양포동' }
+  ];
+
+  // 구미 통학버스 시간표 데이터 (교통 탭과 동일 데이터 연동)
+  const SHUTTLE_SCHEDULE = {
+    '학기 중':[
+      ['등교','08시','구미역·터미널','구미역(08:15)>버스터미널(08:20)>양호캠퍼스(08:50)'],
+      ['등교','08시','신평·옥계','신평캠퍼스 후문(08:00)>양호캠퍼스(08:25)>양포동행정복지센터(08:35)>옥계대우아파트(08:38)>양호캠퍼스(08:50)'],
+      ['등교','09시','구미역·터미널','양호캠퍼스(09:00)>구미역(09:15)>버스터미널(09:20)>양호캠퍼스(09:45)'],
+      ['등교','09시','신평캠퍼스','양호캠퍼스(09:15)>신평캠퍼스 후문(09:25)>양호캠퍼스(09:45)'],
+      ['등교','10시','구미역·터미널','양호캠퍼스(10:00)>구미역(10:15)>버스터미널(10:20)>신평캠퍼스 후문(10:25)>양호캠퍼스(10:45)'],
+      ['등교','11시','신평캠퍼스','양호캠퍼스(11:10)>신평캠퍼스 후문(11:20)>양호캠퍼스(11:40)'],
+      ['하교','13시','구미역·터미널','양호캠퍼스(13:00)>구미역(13:15)>버스터미널(13:20)>신평캠퍼스 후문(13:25)>양호캠퍼스(13:45)'],
+      ['하교','15시','신평캠퍼스','양호캠퍼스(15:10)>신평캠퍼스 후문(15:20)>양호캠퍼스(15:40)'],
+      ['하교','16시','구미역·터미널','양호캠퍼스(16:10)>구미역(16:25)>버스터미널(16:30)>신평캠퍼스 후문(16:35)>양호캠퍼스(17:00)'],
+      ['하교','18시','옥계','양호캠퍼스(18:10)>옥계대우아파트(18:20)>양포동행정복지센터(18:25)>양호캠퍼스(18:40)'],
+      ['하교','18시','신평·터미널·구미역','양호캠퍼스(18:10)>신평캠퍼스 후문(18:20)>버스터미널(18:25)>구미역(18:30)>양호캠퍼스(18:50)']
+    ],
+    '계절학기':[
+      ['등교','08시','구미역·터미널·신평','구미역(08:15)>버스터미널(08:20)>신평캠퍼스 후문(08:25)>양호캠퍼스(08:45)'],
+      ['등교','08시','옥계','양포동행정복지센터(08:30)>옥계대우아파트(08:33)>양호캠퍼스(08:45)'],
+      ['등교','09시','구미역·터미널·신평','양호캠퍼스(09:00)>구미역(09:15)>버스터미널(09:20)>신평캠퍼스 후문(09:25)>양호캠퍼스(09:45)'],
+      ['하교','16시','구미역·터미널·신평','양호캠퍼스(16:10)>구미역(16:25)>버스터미널(16:30)>신평캠퍼스 후문(16:35)>양호캠퍼스(17:00)'],
+      ['하교','18시','옥계','양호캠퍼스(18:10)>옥계대우아파트(18:15)>양포동행정복지센터(18:20)>양호캠퍼스(18:40)'],
+      ['하교','18시','구미역·터미널·신평','양호캠퍼스(18:10)>신평캠퍼스 후문(18:18)>버스터미널(18:23)>구미역(18:28)>양호캠퍼스(18:50)']
+    ],
+    '방학':[
+      ['등교','08시','구미역·터미널·신평','구미역(08:15)>버스터미널(08:20)>신평캠퍼스 후문(08:25)>양호캠퍼스(08:45)'],
+      ['등교','08시','옥계','양포동행정복지센터(08:30)>옥계대우아파트(08:33)>양호캠퍼스(08:45)'],
+      ['하교','18시','옥계','양호캠퍼스(18:10)>옥계대우아파트(18:15)>양포동행정복지센터(18:20)>양호캠퍼스(18:40)'],
+      ['하교','18시','구미역·터미널·신평','양호캠퍼스(18:10)>신평캠퍼스 후문(18:18)>버스터미널(18:23)>구미역(18:28)>양호캠퍼스(18:50)']
+    ]
+  };
+  function parseShuttleStops(str){
+    return str.split('>').map(x=>{
+      const m = x.trim().match(/^(.+)\((\d\d:\d\d)\)$/);
+      return m ? { stop:m[1].trim(), time:m[2] } : null;
+    }).filter(Boolean);
+  }
+
   const rmPerm = document.getElementById('rmPerm');
+  const rmCalOn = document.getElementById('rmCalOn');
+  const rmCalMin = document.getElementById('rmCalMin');
+  const rmCalAllDayHour = document.getElementById('rmCalAllDayHour');
+  const rmCalList = document.getElementById('rmCalList');
+  const rmCalInfo = document.getElementById('rmCalInfo');
+
   const rmClsOn = document.getElementById('rmClsOn');
   const rmClsMin = document.getElementById('rmClsMin');
   const rmClsInfo = document.getElementById('rmClsInfo');
+
+  const rmBusModeTabs = document.getElementById('rmBusModeTabs');
+  const rmCityBusForm = document.getElementById('rmCityBusForm');
+  const rmShuttleForm = document.getElementById('rmShuttleForm');
   const rmBusStop = document.getElementById('rmBusStop');
   const rmBusRoute = document.getElementById('rmBusRoute');
   const rmBusMin = document.getElementById('rmBusMin');
+  const rmShPeriod = document.getElementById('rmShPeriod');
+  const rmShType = document.getElementById('rmShType');
+  const rmShRoute = document.getElementById('rmShRoute');
+  const rmShStop = document.getElementById('rmShStop');
+  const rmShMin = document.getElementById('rmShMin');
   const rmBusList = document.getElementById('rmBusList');
-  const rmRouteList = document.getElementById('rmRouteList');
+
+  const RM_CAL_OPTS = [
+    { v:0,    l:'정각 (시작 시각)' },
+    { v:5,    l:'일정 5분 전' },
+    { v:10,   l:'일정 10분 전' },
+    { v:15,   l:'일정 15분 전' },
+    { v:30,   l:'일정 30분 전' },
+    { v:60,   l:'일정 1시간 전' },
+    { v:120,  l:'일정 2시간 전' },
+    { v:1440, l:'하루 전 (24시간 전)' }
+  ];
+  const RM_ALLDAY_HOURS = [7,8,9,10,12,18,21];
   const RM_CLS_OPTS = [5,10,15,20,30,60];
   const RM_BUS_OPTS = [1,3,5,7,10,15];
+  const RM_SH_OPTS  = [5,10,15,20,30];
+
+  rmCalMin.innerHTML = RM_CAL_OPTS.map(o=>'<option value="'+o.v+'">시간 일정: '+o.l+'</option>').join('');
+  rmCalAllDayHour.innerHTML = RM_ALLDAY_HOURS.map(h=>'<option value="'+h+'">종일 일정: 당일 '+String(h).padStart(2,'0')+':00 알림</option>').join('');
   rmClsMin.innerHTML = RM_CLS_OPTS.map(m=>'<option value="'+m+'">수업 '+m+'분 전</option>').join('');
   rmBusMin.innerHTML = RM_BUS_OPTS.map(m=>'<option value="'+m+'">도착 '+m+'분 전</option>').join('');
+  rmShMin.innerHTML  = RM_SH_OPTS.map(m=>'<option value="'+m+'">출발 '+m+'분 전</option>').join('');
+
+  // 통학버스 드롭다운 초기화
+  rmShPeriod.innerHTML = Object.keys(SHUTTLE_SCHEDULE).map(k=>'<option value="'+escapeHtml(k)+'">'+escapeHtml(k)+'</option>').join('');
+  rmShType.innerHTML = '<option value="등교">🌅 등교 (학교행)</option><option value="하교">🌇 하교 (학교출발)</option>';
+
+  function updateShuttleSelectors(){
+    const period = rmShPeriod.value || '학기 중';
+    const type = rmShType.value || '등교';
+    const list = (SHUTTLE_SCHEDULE[period] || []).filter(r=>r[0]===type);
+    rmShRoute.innerHTML = list.map((r,idx)=>{
+      const stops = parseShuttleStops(r[3]);
+      const firstT = stops.length ? stops[0].time : r[1];
+      return '<option value="'+idx+'">['+escapeHtml(r[1])+'] '+escapeHtml(r[2])+' 방면 ('+firstT+' 출발)</option>';
+    }).join('');
+    updateShuttleStopSelector();
+  }
+  function updateShuttleStopSelector(){
+    const period = rmShPeriod.value || '학기 중';
+    const type = rmShType.value || '등교';
+    const list = (SHUTTLE_SCHEDULE[period] || []).filter(r=>r[0]===type);
+    const row = list[Number(rmShRoute.value) || 0];
+    if(!row){ rmShStop.innerHTML = '<option value="">노선 없음</option>'; return; }
+    const stops = parseShuttleStops(row[3]);
+    const boardStops = stops.length > 1 ? stops.slice(0, -1) : stops;
+    rmShStop.innerHTML = boardStops.map((s,i)=>'<option value="'+i+'">'+escapeHtml(s.stop)+' ('+s.time+' 출발)</option>').join('');
+  }
+  rmShPeriod.addEventListener('change', updateShuttleSelectors);
+  rmShType.addEventListener('change', updateShuttleSelectors);
+  rmShRoute.addEventListener('change', updateShuttleStopSelector);
+  updateShuttleSelectors();
+
+  let rmBusMode = 'city';
+  rmBusModeTabs.addEventListener('click', e=>{
+    const btn = e.target.closest && e.target.closest('[data-bmode]');
+    if(!btn) return;
+    rmBusMode = btn.getAttribute('data-bmode');
+    rmBusModeTabs.querySelectorAll('.rm-bus-tab').forEach(b=>b.classList.toggle('on', b===btn));
+    rmCityBusForm.style.display = rmBusMode === 'city' ? '' : 'none';
+    rmShuttleForm.style.display = rmBusMode === 'shuttle' ? '' : 'none';
+  });
 
   function rmSupported(){ return ('Notification' in window); }
   async function rmAskPermission(){
@@ -3065,7 +3317,7 @@
   }
   async function rmNotify(title, body, tag){
     if(!rmSupported() || Notification.permission!=='granted') return false;
-    const opts = { body, tag:tag||('kit-'+Date.now()), renotify:true, icon:'data:image/png;base64,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', badge:'data:image/png;base64,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' };
+    const opts = { body, tag:tag||('kit-'+Date.now()), renotify:true };
     try{
       if(navigator.serviceWorker){
         const reg = await navigator.serviceWorker.getRegistration();
@@ -3076,12 +3328,60 @@
   }
 
   function dateKey(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function fmtHM(m){ return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+
+  // ---- 1) 내 캘린더 일정 알림 계산 및 체크 ----
+  function calMinFor(evId){
+    const p = rm.cal.per[evId];
+    if(p === 'off') return null;
+    if(typeof p === 'number') return p;
+    return rm.cal.on ? rm.cal.min : null;
+  }
+  function getUpcomingCalEvents(){
+    const now = new Date();
+    const todayYMD = fmtYMD(now.getFullYear(), now.getMonth()+1, now.getDate());
+    return calEvents
+      .filter(e => (e.endDate && e.endDate >= todayYMD) || e.date >= todayYMD)
+      .sort((a,b)=> a.date.localeCompare(b.date) || (a.start||'00:00').localeCompare(b.start||'00:00'));
+  }
+  function getEventTargetTimeMs(ev){
+    const [y,m,d] = ev.date.split('-').map(Number);
+    if(ev.allDay){
+      const hr = Number(rm.cal.allDayHour) || 9;
+      return new Date(y, m-1, d, hr, 0, 0).getTime();
+    }
+    const [hh,mm] = (ev.start || '09:00').split(':').map(Number);
+    return new Date(y, m-1, d, hh||9, mm||0, 0).getTime();
+  }
+  function rmCheckCalendar(){
+    const nowMs = Date.now();
+    const upcoming = getUpcomingCalEvents();
+    upcoming.forEach(ev=>{
+      const mn = calMinFor(ev.id);
+      if(mn === null) return;
+      const eventMs = getEventTargetTimeMs(ev);
+      const notifyMs = ev.allDay ? (eventMs - (typeof rm.cal.per[ev.id]==='number' ? mn*60000 : 0)) : (eventMs - mn*60000);
+      const diffMin = (eventMs - nowMs) / 60000;
+      if(nowMs >= notifyMs && nowMs <= eventMs + 15*60000){
+        const fk = 'cal|'+ev.id+'|'+ev.date+'|'+mn;
+        if(!rm.fired[fk]){
+          rm.fired[fk] = nowMs; saveRM();
+          const cat = catOf(ev.cat);
+          const timeDesc = ev.allDay ? '오늘 종일 일정이에요' : (diffMin <= 1 ? '곧 시작해요 ('+(ev.start||'')+')' : Math.round(diffMin)+'분 후 시작해요 ('+(ev.start||'')+')');
+          rmNotify('📅 ['+cat.label+'] '+ev.title, timeDesc + (ev.memo ? ' · '+ev.memo : ''), fk);
+        }
+      }
+    });
+  }
+
+  // ---- 2) 수업 시작 알림 체크 ----
   function classStartsToday(){
     const now = new Date();
     const day = ['일','월','화','수','목','금','토'][now.getDay()];
     const out = [];
     myTT.forEach(k=>{
       const c = courseMap[k];
+      if(!c) return;
       c.slots.forEach(s=>{
         if(s.day!==day) return;
         const vals = s.periods.split('').map(periodVal).sort((a,b)=>a-b);
@@ -3090,7 +3390,6 @@
     });
     return out.sort((a,b)=>a.startMin-b.startMin);
   }
-  // 과목별 설정이 있으면 우선, 없으면 전체 설정을 따른다. 0이면 알림 없음.
   function clsMinFor(key){
     const p = rm.cls.per[key];
     if(p==='off') return 0;
@@ -3110,33 +3409,117 @@
       }
     });
   }
+
+  // ---- 3) 시내버스 도착 & 통학버스 출발 알림 체크 ----
   function rmCheckBus(){
-    if(!rm.bus.length || !busData || !busData.groups) return;
-    const elapsed = Math.max(0, Math.round((Date.now()-new Date(busData.updatedAt).getTime())/1000));
-    if(elapsed>600) return;
+    if(!rm.bus.length) return;
+    const now = new Date();
+    const dow = now.getDay();
+    const nowMin = now.getHours()*60 + now.getMinutes();
+    const dk = dateKey(now);
+
     rm.bus.forEach(r=>{
       if(!r.on) return;
+      if(r.kind === 'shuttle'){
+        if(dow === 0 || dow === 6) return;
+        const [sh, sm] = (r.depTime || '08:00').split(':').map(Number);
+        const depMin = sh*60 + sm;
+        const leftMin = depMin - nowMin;
+        if(leftMin > 0 && leftMin <= r.min){
+          const fk = 'sh|'+dk+'|'+r.id;
+          if(!rm.fired[fk]){
+            rm.fired[fk] = Date.now(); saveRM();
+            rmNotify('🚍 통학버스 ('+r.dir+')', leftMin+'분 후('+r.depTime+') '+r.stop+'에서 출발해요!', fk);
+          }
+        }
+        return;
+      }
+      if(!busData || !busData.groups) return;
+      const elapsed = Math.max(0, Math.round((Date.now()-new Date(busData.updatedAt).getTime())/1000));
+      if(elapsed > 600) return;
       const g = busData.groups.find(x=>x.title===r.stop); if(!g) return;
       const lefts = (g.arrivals||[]).filter(a=>String(a.routeNo)===String(r.route)).map(a=>a.sec-elapsed).filter(l=>l>0).sort((a,b)=>a-b);
       if(!lefts.length) return;
       const left = lefts[0], fk = 'b|'+r.id;
       if(left<=r.min*60 && Date.now()-(rm.fired[fk]||0) > 8*60*1000){
         rm.fired[fk] = Date.now(); saveRM();
-        rmNotify('🚌 '+r.route+'번 버스', '약 '+Math.max(1,Math.round(left/60))+'분 후 '+(g.stopName||g.title)+' 도착해요', fk);
+        rmNotify('🚌 '+r.route+'번 시내버스', '약 '+Math.max(1,Math.round(left/60))+'분 후 '+(g.stopName||g.title)+' 도착해요', fk);
       }
     });
   }
-  function rmTick(){ try{ rmCheckClasses(); rmCheckBus(); }catch(e){} }
 
-  function fmtHM(m){ return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+  function rmTick(){ try{ rmCheckCalendar(); rmCheckClasses(); rmCheckBus(); }catch(e){} }
+
+  function populateBusRouteSelect(){
+    const groups = (busData && busData.groups) || [];
+    const defaultStops = [
+      { title:'학교 앞 (옥계·시내 방면)', stopName:'금오공대입구' },
+      { title:'학교 종점', stopName:'금오공대종점' }
+    ];
+    const stopPool = groups.length ? groups : defaultStops;
+    const prevStop = rmBusStop.value;
+    rmBusStop.innerHTML = stopPool.map(g=>'<option value="'+escapeHtml(g.title)+'">'+escapeHtml(g.title+(g.stopName?' · '+g.stopName:''))+'</option>').join('');
+    if(prevStop && stopPool.some(g=>g.title===prevStop)) rmBusStop.value = prevStop;
+
+    const g = groups.find(x=>x.title===rmBusStop.value);
+    const liveRoutes = new Map();
+    if(g && g.arrivals){
+      g.arrivals.forEach(a=>{
+        const no = String(a.routeNo);
+        if(!liveRoutes.has(no)) liveRoutes.set(no, Math.max(1, Math.round(a.sec/60))+'분 후 도착예정');
+      });
+    }
+
+    const prevRoute = rmBusRoute.value;
+    let html = '';
+    if(liveRoutes.size){
+      html += '<optgroup label="🟢 현재 도착 예정 버스">';
+      liveRoutes.forEach((eta, no)=>{
+        const preset = KIT_CITY_BUS_ROUTES.find(r=>r.no===no);
+        html += '<option value="'+escapeHtml(no)+'">'+escapeHtml(no)+'번 ('+eta+(preset?' · '+preset.desc:'')+')</option>';
+      });
+      html += '</optgroup>';
+    }
+    html += '<optgroup label="🚌 금오공대 경유 전체 시내버스 목록">';
+    KIT_CITY_BUS_ROUTES.forEach(r=>{
+      const liveTag = liveRoutes.has(r.no) ? ' [운행중]' : '';
+      html += '<option value="'+escapeHtml(r.no)+'">'+escapeHtml(r.no)+'번 · '+escapeHtml(r.desc)+liveTag+'</option>';
+    });
+    html += '</optgroup>';
+    rmBusRoute.innerHTML = html;
+    if(prevRoute) rmBusRoute.value = prevRoute;
+  }
+
   function renderRM(){
-    // 권한
-    if(!rmSupported()) rmPerm.innerHTML = '<span class="rm-warn">이 브라우저는 알림을 지원하지 않아요.</span>';
-    else if(Notification.permission==='granted') rmPerm.textContent = '✅ 알림이 허용돼 있어요.';
-    else if(Notification.permission==='denied') rmPerm.innerHTML = '<span class="rm-warn">⛔ 알림이 차단돼 있어요. 브라우저/기기 설정에서 허용해 주세요.</span>';
-    else rmPerm.textContent = '아직 알림 권한이 없어요. 아래 버튼으로 허용해 주세요.';
-    document.getElementById('rmAsk').style.display = (rmSupported() && Notification.permission==='default') ? '' : 'none';
-    // 수업
+    // 1. 내 캘린더 일정 알림
+    rmCalOn.checked = !!rm.cal.on;
+    rmCalMin.value = String(rm.cal.min);
+    rmCalAllDayHour.value = String(rm.cal.allDayHour || 9);
+    const upcoming = getUpcomingCalEvents();
+    if(!upcoming.length){
+      rmCalList.innerHTML = '<p class="placeholder" style="margin-top:8px;">내 캘린더에 등록된 다가오는 일정이 없어요.<br>내 캘린더 또는 나의 LMS에서 일정을 추가해보세요!</p>';
+      rmCalInfo.textContent = '';
+    } else {
+      rmCalList.innerHTML = upcoming.slice(0, 15).map(ev=>{
+        const cat = catOf(ev.cat);
+        const p = rm.cal.per[ev.id];
+        const val = p==='off' ? 'off' : (typeof p==='number' ? String(p) : 'def');
+        const defText = rm.cal.on
+          ? (ev.allDay ? '당일 '+String(rm.cal.allDayHour||9).padStart(2,'0')+':00' : (RM_CAL_OPTS.find(o=>o.v===rm.cal.min)||{l:rm.cal.min+'분 전'}).l)
+          : '꺼짐';
+        const opts = '<option value="def"'+(val==='def'?' selected':'')+'>전체 설정 따름 ('+defText+')</option>'+
+          '<option value="off"'+(val==='off'?' selected':'')+'>알림 끄기</option>'+
+          RM_CAL_OPTS.map(o=>'<option value="'+o.v+'"'+(val===String(o.v)?' selected':'')+'>'+o.l+'</option>').join('');
+        const whenTxt = ev.date + (ev.endDate && ev.endDate>ev.date ? ' ~ '+ev.endDate : '') + ' · ' + (ev.allDay ? '종일' : (ev.start||'09:00')+(ev.end?'~'+ev.end:''));
+        return '<div class="tt-card"><span class="tt-dot" style="background:'+cat.color+'"></span><div class="tt-body">'+
+          '<div class="tt-name">['+escapeHtml(cat.label)+'] '+escapeHtml(ev.title)+'</div>'+
+          '<div class="tt-meta">'+escapeHtml(whenTxt)+(ev.memo?' · '+escapeHtml(ev.memo):'')+'</div>'+
+          '<select class="tt-search" style="margin-top:8px;padding:8px 10px;font-size:13px;" data-rmcalper="'+escapeHtml(ev.id)+'">'+opts+'</select></div></div>';
+      }).join('');
+      rmCalInfo.textContent = '다가오는 일정 총 '+upcoming.length+'개 자동 연동됨';
+    }
+
+    // 2. 수업 시작 알림
     rmClsOn.checked = !!rm.cls.on;
     rmClsMin.value = String(rm.cls.min);
     if(!myTT.length) rmClsInfo.textContent = '내 시간표에 과목을 먼저 담아주세요.';
@@ -3145,7 +3528,6 @@
       const rest = classStartsToday().filter(c=>c.startMin>nowMin);
       rmClsInfo.innerHTML = rest.length ? '오늘 남은 수업<br>'+rest.map(c=>{ const mn = clsMinFor(c.key); return escapeHtml(fmtHM(c.startMin)+' '+c.course)+' → '+(mn?fmtHM(c.startMin-mn)+' 알림':'알림 꺼짐'); }).join('<br>') : '오늘 남은 수업이 없어요.';
     }
-    // 과목별 설정
     const clsList = document.getElementById('rmClsList');
     clsList.innerHTML = myTT.length ? myTT.map(k=>{
       const c = courseMap[k], p = rm.cls.per[k];
@@ -3158,30 +3540,56 @@
         '<div class="tt-slots">'+c.slots.map(x=>escapeHtml(slotText(x))).join('<br>')+'</div>'+
         '<select class="tt-search" style="margin-top:8px;padding:8px 10px;font-size:13px;" data-rmper="'+escapeHtml(k)+'">'+opts+'</select></div></div>';
     }).join('') : '';
-    // 버스 폼
-    const groups = (busData && busData.groups) || [];
-    if(rmBusStop.options.length !== groups.length || !groups.length){
-      const prev = rmBusStop.value;
-      rmBusStop.innerHTML = groups.length ? groups.map(g=>'<option value="'+escapeHtml(g.title)+'">'+escapeHtml(g.title+(g.stopName?' · '+g.stopName:''))+'</option>').join('') : '<option value="">버스 정보를 불러오는 중…</option>';
-      if(prev) rmBusStop.value = prev;
-    }
-    const g = groups.find(x=>x.title===rmBusStop.value);
-    rmRouteList.innerHTML = g ? [...new Set((g.arrivals||[]).map(a=>a.routeNo))].map(n=>'<option value="'+escapeHtml(String(n))+'">').join('') : '';
-    rmBusList.innerHTML = rm.bus.length ? rm.bus.map(r=>
-      '<div class="tt-card"><span class="tt-dot" style="background:'+(r.on?'var(--amber)':'var(--line)')+'"></span><div class="tt-body">'+
-      '<div class="tt-name">'+escapeHtml(r.route)+'번 · '+escapeHtml(r.stop)+'</div>'+
-      '<div class="tt-meta">도착 '+r.min+'분 전 알림'+(r.on?'':' (꺼짐)')+'</div></div>'+
-      '<button class="tt-btn ghost" data-rmtog="'+r.id+'">'+(r.on?'끄기':'켜기')+'</button>'+
-      '<button class="tt-btn del" data-rmdel="'+r.id+'">삭제</button></div>').join('')
-      : '<p class="placeholder" style="margin-top:10px;">설정한 버스 알림이 없어요.</p>';
+
+    // 3. 시내버스 & 통학버스 알림 목록
+    populateBusRouteSelect();
+    rmBusList.innerHTML = rm.bus.length ? rm.bus.map(r=>{
+      if(r.kind === 'shuttle'){
+        return '<div class="tt-card"><span class="tt-dot" style="background:'+(r.on?'#4fbf8b':'var(--line)')+'"></span><div class="tt-body">'+
+          '<div class="tt-name">🚍 통학버스 ['+escapeHtml(r.period)+'·'+escapeHtml(r.shType)+'] '+escapeHtml(r.dir)+'</div>'+
+          '<div class="tt-meta">'+escapeHtml(r.stop)+' ('+escapeHtml(r.depTime)+' 출발) · '+r.min+'분 전 알림'+(r.on?'':' (꺼짐)')+'</div></div>'+
+          '<button class="tt-btn ghost" data-rmtog="'+r.id+'">'+(r.on?'끄기':'켜기')+'</button>'+
+          '<button class="tt-btn del" data-rmdel="'+r.id+'">삭제</button></div>';
+      }
+      return '<div class="tt-card"><span class="tt-dot" style="background:'+(r.on?'var(--amber)':'var(--line)')+'"></span><div class="tt-body">'+
+        '<div class="tt-name">🚌 '+escapeHtml(r.route)+'번 시내버스 · '+escapeHtml(r.stop)+'</div>'+
+        '<div class="tt-meta">도착 '+r.min+'분 전 알림'+(r.on?'':' (꺼짐)')+'</div></div>'+
+        '<button class="tt-btn ghost" data-rmtog="'+r.id+'">'+(r.on?'끄기':'켜기')+'</button>'+
+        '<button class="tt-btn del" data-rmdel="'+r.id+'">삭제</button></div>';
+    }).join('') : '<p class="placeholder" style="margin-top:10px;">설정한 버스·통학버스 알림이 없어요.</p>';
+
+    // 4. 알림 권한 상태 (하단)
+    if(!rmSupported()) rmPerm.innerHTML = '<span class="rm-warn">이 브라우저는 알림을 지원하지 않아요.</span>';
+    else if(Notification.permission==='granted') rmPerm.textContent = '✅ 알림이 허용돼 있어요.';
+    else if(Notification.permission==='denied') rmPerm.innerHTML = '<span class="rm-warn">⛔ 알림이 차단돼 있어요. 브라우저/기기 설정에서 허용해 주세요.</span>';
+    else rmPerm.textContent = '아직 알림 권한이 없어요. 아래 버튼으로 허용해 주세요.';
+    document.getElementById('rmAsk').style.display = (rmSupported() && Notification.permission==='default') ? '' : 'none';
   }
+
+  rmCalOn.addEventListener('change', async ()=>{
+    if(rmCalOn.checked && !(await rmAskPermission())){ rmCalOn.checked = false; }
+    rm.cal.on = rmCalOn.checked; saveRM(); renderRM(); rmTick();
+  });
+  rmCalMin.addEventListener('change', ()=>{ rm.cal.min = Number(rmCalMin.value); saveRM(); renderRM(); rmTick(); });
+  rmCalAllDayHour.addEventListener('change', ()=>{ rm.cal.allDayHour = Number(rmCalAllDayHour.value); saveRM(); renderRM(); rmTick(); });
+  rmCalList.addEventListener('change', async e=>{
+    const sel = e.target.closest && e.target.closest('[data-rmcalper]'); if(!sel) return;
+    const id = sel.getAttribute('data-rmcalper'), v = sel.value;
+    if(v==='def') delete rm.cal.per[id];
+    else if(v==='off') rm.cal.per[id] = 'off';
+    else {
+      if(!(await rmAskPermission())){ renderRM(); return; }
+      rm.cal.per[id] = Number(v);
+    }
+    saveRM(); renderRM(); rmTick();
+  });
 
   rmClsOn.addEventListener('change', async ()=>{
     if(rmClsOn.checked && !(await rmAskPermission())){ rmClsOn.checked = false; }
     rm.cls.on = rmClsOn.checked; saveRM(); renderRM(); rmTick();
   });
   rmClsMin.addEventListener('change', ()=>{ rm.cls.min = Number(rmClsMin.value); saveRM(); renderRM(); });
-  rmBusStop.addEventListener('change', renderRM);
+  rmBusStop.addEventListener('change', populateBusRouteSelect);
   document.getElementById('rmClsList').addEventListener('change', async e=>{
     const sel = e.target.closest && e.target.closest('[data-rmper]'); if(!sel) return;
     const k = sel.getAttribute('data-rmper'), v = sel.value;
@@ -3193,19 +3601,43 @@
     }
     saveRM(); renderRM(); rmTick();
   });
+
+  document.getElementById('rmBusAdd').addEventListener('click', async ()=>{
+    const stop = rmBusStop.value, route = rmBusRoute.value, min = Number(rmBusMin.value);
+    if(!stop || !route){ alert('정류장과 버스 노선을 선택해 주세요.'); return; }
+    if(!(await rmAskPermission())) return;
+    rm.bus.push({ id:Date.now().toString(36), kind:'city', stop, route, min, on:true });
+    saveRM(); renderRM(); rmTick();
+  });
+  document.getElementById('rmShAdd').addEventListener('click', async ()=>{
+    const period = rmShPeriod.value || '학기 중';
+    const shType = rmShType.value || '등교';
+    const list = (SHUTTLE_SCHEDULE[period] || []).filter(r=>r[0]===shType);
+    const row = list[Number(rmShRoute.value) || 0];
+    if(!row){ alert('통학버스 노선을 선택해 주세요.'); return; }
+    const stops = parseShuttleStops(row[3]);
+    const stObj = stops[Number(rmShStop.value) || 0] || stops[0];
+    const min = Number(rmShMin.value) || 10;
+    if(!(await rmAskPermission())) return;
+    rm.bus.push({
+      id:'sh-'+Date.now().toString(36),
+      kind:'shuttle',
+      period,
+      shType,
+      dir:row[2]+' 방면',
+      stop:stObj.stop,
+      depTime:stObj.time,
+      min,
+      on:true
+    });
+    saveRM(); renderRM(); rmTick();
+  });
+
   document.getElementById('rmAsk').addEventListener('click', rmAskPermission);
   document.getElementById('rmTest').addEventListener('click', async ()=>{
     if(!(await rmAskPermission())) return;
     const ok = await rmNotify('🔔 금오공대 미리알림', '알림이 정상적으로 도착했어요!', 'kit-test');
     if(!ok) alert('알림을 보내지 못했어요. 기기 설정을 확인해 주세요.');
-  });
-  document.getElementById('rmBusAdd').addEventListener('click', async ()=>{
-    const stop = rmBusStop.value, route = rmBusRoute.value.trim(), min = Number(rmBusMin.value);
-    if(!stop){ alert('정류장 정보를 아직 불러오지 못했어요.'); return; }
-    if(!route){ alert('버스 번호를 입력해 주세요.'); return; }
-    if(!(await rmAskPermission())) return;
-    rm.bus.push({id:Date.now().toString(36), stop, route, min, on:true});
-    rmBusRoute.value = ''; saveRM(); renderRM(); rmTick();
   });
   document.getElementById('tabContents').addEventListener('click', e=>{
     const t = e.target.closest && e.target.closest('[data-rmtog]');
@@ -3225,6 +3657,356 @@
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') rmTick(); });
   setTimeout(()=>{ renderRM(); rmTick(); }, 0);
   setTimeout(rmTick, 3000);
+
+  // ===================== 나의 LMS (GitHub Actions data/lms.json + Canvas API 연동) =====================
+  const LMS_CFG_KEY = 'kit-lms-cfg-v1';
+  const LMS_CACHE_KEY = 'kit-lms-cache-v1';
+  const LMS_PROXY = 'https://kumoh-lms-proxy.kangdongwan7.workers.dev'; // ← Worker 주소
+  let lmsCfg = { host: 'https://lms.kumoh.ac.kr', token: '' };
+  try{
+    const sc = JSON.parse(localStorage.getItem(LMS_CFG_KEY)||'null');
+    if(sc && typeof sc.token === 'string') lmsCfg.token = sc.token;
+  }catch(e){}
+  function saveLmsCfg(){ try{ localStorage.setItem(LMS_CFG_KEY, JSON.stringify({ token: lmsCfg.token })); }catch(e){} }
+
+  let lmsSubTab = 'todo';
+  let lmsState = {
+    user: null,
+    courses: [],
+    todos: [],
+    announcements: [],
+    upcoming: [],
+    updatedAt: null
+  };
+  try{
+    const cachedLms = JSON.parse(localStorage.getItem(LMS_CACHE_KEY)||'null');
+    if(cachedLms && cachedLms.courses) lmsState = cachedLms;
+  }catch(e){}
+
+  function buildDemoLmsData(){
+    const now = Date.now();
+    const dPlus = (days, hh='23:59')=>{
+      const d = new Date(now + days*86400000);
+      return fmtYMD(d.getFullYear(), d.getMonth()+1, d.getDate())+'T'+hh+':00+09:00';
+    };
+    const myTaken = myTT.map(k=>courseMap[k]).filter(Boolean);
+    const baseCourses = myTaken.length ? myTaken.map((c,i)=>({
+      id: 1001+i,
+      name: c.course,
+      course_code: c.code || ('KIT-'+(i+1)),
+      term: '2026학년도 2학기',
+      prof: c.prof || '담당교수',
+      html_url: lmsCfg.host+'/courses/'+(1001+i)
+    })) : [
+      { id:1001, name:'정역학', course_code:'CA0003-01', term:'2026학년도 2학기', prof:'담당교수', html_url:lmsCfg.host },
+      { id:1002, name:'대학수학2', course_code:'LA0505-05', term:'2026학년도 2학기', prof:'담당교수', html_url:lmsCfg.host },
+      { id:1003, name:'일반물리학2', course_code:'LA0506-02', term:'2026학년도 2학기', prof:'담당교수', html_url:lmsCfg.host },
+      { id:1004, name:'디지털문해력', course_code:'LA0366-01', term:'2026학년도 2학기', prof:'담당교수', html_url:lmsCfg.host }
+    ];
+    return {
+      user: { name:'금오공대 학생' },
+      courses: baseCourses,
+      todos: [
+        { id:'td-1', title:'단원별 연습문제 풀이 과제 #4 제출', courseName:baseCourses[0].name, due_at:dPlus(2,'23:59'), points:20, submitted:false, html_url:baseCourses[0].html_url },
+        { id:'td-2', title:'주차별 온라인 강의 영상 수강 (출석 인정)', courseName:baseCourses[1]?baseCourses[1].name:baseCourses[0].name, due_at:dPlus(4,'23:59'), points:10, submitted:false, html_url:lmsCfg.host },
+        { id:'td-3', title:'실험 보고서 및 데이터 분석 리포트 제출', courseName:baseCourses[2]?baseCourses[2].name:baseCourses[0].name, due_at:dPlus(6,'18:00'), points:30, submitted:false, html_url:lmsCfg.host }
+      ],
+      announcements: [
+        { id:'an-1', title:'[공지] 과제 제출 기한 및 성적 확인 안내', courseName:baseCourses[0].name, posted_at:dPlus(-1,'14:20'), summary:'이번 주 마감되는 과제 제출 기한을 엄수해 주시기 바랍니다.', html_url:lmsCfg.host },
+        { id:'an-2', title:'[안내] 다음 주 실습 강의실 및 준비물 공지', courseName:baseCourses[1]?baseCourses[1].name:baseCourses[0].name, posted_at:dPlus(-3,'10:00'), summary:'실습 자료를 LMS 강의자료실에서 미리 다운로드해 오세요.', html_url:lmsCfg.host }
+      ],
+      upcoming: [
+        { id:'up-1', title:'단원별 연습문제 풀이 과제 #4 마감', courseName:baseCourses[0].name, start_at:dPlus(2,'23:59'), html_url:lmsCfg.host },
+        { id:'up-2', title:'팀 프로젝트 발표자료 제출', courseName:baseCourses[1]?baseCourses[1].name:baseCourses[0].name, start_at:dPlus(5,'23:59'), html_url:lmsCfg.host }
+      ],
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  const lmsDot = document.getElementById('lmsDot');
+  const lmsStatusTxt = document.getElementById('lmsStatusTxt');
+  const lmsContentArea = document.getElementById('lmsContentArea');
+  const lmsCfgBox = document.getElementById('lmsCfgBox');
+  const lmsInToken = document.getElementById('lmsInToken');
+
+  function fmtDday(isoStr){
+    if(!isoStr) return { text:'기한 없음', cls:'' };
+    const due = new Date(isoStr).getTime();
+    if(isNaN(due)) return { text:'기한 없음', cls:'' };
+    const diffH = (due - Date.now()) / 3600000;
+    if(diffH < 0) return { text:'마감됨', cls:'' };
+    if(diffH < 24) return { text:'D-Day ('+Math.max(1,Math.floor(diffH))+'시간 남음)', cls:'urgent' };
+    const days = Math.ceil(diffH / 24);
+    return { text:'D-'+days, cls: days<=3 ? 'urgent' : '' };
+  }
+  function fmtKorDateTime(isoStr){
+    if(!isoStr) return '-';
+    const d = new Date(isoStr);
+    if(isNaN(d.getTime())) return isoStr;
+    return (d.getMonth()+1)+'월 '+d.getDate()+'일 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+
+  function renderLMS(){
+    if(!lmsState.courses.length && !lmsState.todos.length){
+      lmsContentArea.innerHTML = '<div class="notice-loading">LMS 데이터를 불러오는 중이에요…</div>';
+      return;
+    }
+
+    if(lmsSubTab === 'todo'){
+      const list = lmsState.todos || [];
+      if(!list.length){
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">🎉</span>현재 제출할 과제나 할 일이 없어요!</div>';
+        return;
+      }
+      lmsContentArea.innerHTML = list.map(t=>{
+        const dd = t.submitted ? { text:'제출완료', cls:'done' } : fmtDday(t.due_at);
+        const dObj = t.due_at ? new Date(t.due_at) : null;
+        const ymd = (dObj && !isNaN(dObj.getTime())) ? fmtYMD(dObj.getFullYear(), dObj.getMonth()+1, dObj.getDate()) : '';
+        const hm = (dObj && !isNaN(dObj.getTime())) ? (String(dObj.getHours()).padStart(2,'0')+':'+String(dObj.getMinutes()).padStart(2,'0')) : '23:59';
+        return '<div class="lms-card">'+
+          '<div class="lms-card-top">'+
+            '<span class="lms-course-badge">'+escapeHtml(t.courseName||'수강 과목')+'</span>'+
+            '<span class="lms-dday '+dd.cls+'">'+escapeHtml(dd.text)+'</span>'+
+          '</div>'+
+          '<div class="lms-title">'+escapeHtml(t.title)+'</div>'+
+          '<div class="lms-meta">'+
+            '<span>⏰ 마감: '+escapeHtml(fmtKorDateTime(t.due_at))+'</span>'+
+            (t.points != null ? '<span>· 배점 '+escapeHtml(t.points)+'점</span>' : '')+
+          '</div>'+
+          '<div class="lms-actions">'+
+            (ymd ? '<button type="button" class="lms-act-btn pri" data-lmsaddcal="'+escapeHtml(t.title)+'" data-course="'+escapeHtml(t.courseName||'')+'" data-date="'+ymd+'" data-time="'+hm+'">📅 내 캘린더·알림에 추가</button>' : '')+
+            '<a class="lms-act-btn" href="'+escapeHtml(t.html_url||lmsCfg.host)+'" target="_blank" rel="noopener">🔗 LMS에서 열기 ↗</a>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+    } else if(lmsSubTab === 'courses'){
+      const list = lmsState.courses || [];
+      lmsContentArea.innerHTML = list.map(c=>
+        '<div class="lms-card">'+
+          '<div class="lms-card-top">'+
+            '<span class="lms-course-badge">'+escapeHtml(c.term||'수강중')+'</span>'+
+            '<span class="lms-dday">'+escapeHtml(c.course_code||'')+'</span>'+
+          '</div>'+
+          '<div class="lms-title">'+escapeHtml(c.name)+'</div>'+
+          (c.prof ? '<div class="lms-meta"><span>👨‍🏫 '+escapeHtml(c.prof)+'</span></div>' : '')+
+          '<div class="lms-actions">'+
+            '<a class="lms-act-btn pri" href="'+escapeHtml(c.html_url||(lmsCfg.host+'/courses/'+c.id))+'" target="_blank" rel="noopener">📚 강의실 바로가기 ↗</a>'+
+          '</div>'+
+        '</div>'
+      ).join('');
+    } else if(lmsSubTab === 'ann'){
+      const list = lmsState.announcements || [];
+      if(!list.length){
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">📢</span>최근 등록된 과목 공지사항이 없어요.</div>';
+        return;
+      }
+      lmsContentArea.innerHTML = list.map(a=>
+        '<div class="lms-card">'+
+          '<div class="lms-card-top">'+
+            '<span class="lms-course-badge">'+escapeHtml(a.courseName||'공지')+'</span>'+
+            '<span class="lms-dday">'+escapeHtml(fmtKorDateTime(a.posted_at))+'</span>'+
+          '</div>'+
+          '<div class="lms-title">'+escapeHtml(a.title)+'</div>'+
+          (a.summary ? '<div class="lms-meta" style="line-height:1.5;">'+escapeHtml(a.summary)+'</div>' : '')+
+          '<div class="lms-actions">'+
+            '<a class="lms-act-btn" href="'+escapeHtml(a.html_url||lmsCfg.host)+'" target="_blank" rel="noopener">🔗 원문 보기 ↗</a>'+
+          '</div>'+
+        '</div>'
+      ).join('');
+    } else if(lmsSubTab === 'cal'){
+      const list = lmsState.upcoming || [];
+      if(!list.length){
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">🗓️</span>예정된 LMS 일정이 없어요.</div>';
+        return;
+      }
+      lmsContentArea.innerHTML = list.map(u=>{
+        const d = u.start_at ? new Date(u.start_at) : null;
+        const ymd = (d && !isNaN(d.getTime())) ? fmtYMD(d.getFullYear(), d.getMonth()+1, d.getDate()) : '';
+        const hm = (d && !isNaN(d.getTime())) ? (String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')) : '23:59';
+        return '<div class="lms-card">'+
+          '<div class="lms-card-top">'+
+            '<span class="lms-course-badge">'+escapeHtml(u.courseName||'LMS 일정')+'</span>'+
+            '<span class="lms-dday">'+escapeHtml(fmtKorDateTime(u.start_at))+'</span>'+
+          '</div>'+
+          '<div class="lms-title">'+escapeHtml(u.title)+'</div>'+
+          '<div class="lms-actions">'+
+            (ymd ? '<button type="button" class="lms-act-btn pri" data-lmsaddcal="'+escapeHtml(u.title)+'" data-course="'+escapeHtml(u.courseName||'')+'" data-date="'+ymd+'" data-time="'+hm+'">📅 내 캘린더·알림에 추가</button>' : '')+
+            '<a class="lms-act-btn" href="'+escapeHtml(u.html_url||lmsCfg.host)+'" target="_blank" rel="noopener">🔗 상세 보기 ↗</a>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+    }
+  }
+
+  const LMS_HDR = ()=>({ 'Authorization':'Bearer '+lmsCfg.token, 'Accept':'application/json' });
+  async function lmsFetchAll(path, maxPages){
+    let out = [], url = LMS_PROXY + path;
+    for(let i=0; i<(maxPages||5); i++){
+      const res = await fetch(url, { headers: LMS_HDR() });
+      if(res.status === 401) throw new Error('AUTH');
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const j = await res.json();
+      out = out.concat(Array.isArray(j) ? j : [j]);
+      const m = (res.headers.get('Link')||'').match(/<([^>]+)>;\s*rel="next"/);
+      if(!m || !m[1].startsWith(LMS_PROXY)) break;
+      url = m[1];
+    }
+    return out;
+  }
+
+  async function syncLMS(){
+    if(!lmsCfg.token){
+      lmsDot.className = 'lms-dot';
+      lmsStatusTxt.textContent = '토큰을 입력하면 LMS와 연동돼요';
+      lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">🔑</span>위의 <b>⚙️ 연동 설정</b>에서<br>내 Canvas 액세스 토큰을 입력해 주세요.</div>';
+      lmsCfgBox.style.display = '';
+      return;
+    }
+    lmsDot.className = 'lms-dot warn';
+    lmsStatusTxt.textContent = 'LMS 데이터를 불러오는 중…';
+    try{
+      const courses = (await lmsFetchAll('/api/v1/courses?enrollment_state=active&include[]=term&per_page=50'))
+        .filter(c=>c && c.name);
+      const nameOf = {};
+      courses.forEach(c=>{ nameOf[c.id] = c.name; });
+
+      const since = new Date(Date.now() - 30*86400000);
+      const sinceStr = fmtYMD(since.getFullYear(), since.getMonth()+1, since.getDate());
+      const ctx = courses.slice(0,20).map(c=>'context_codes[]=course_'+c.id).join('&');
+
+      const [todoR, upR, annR] = await Promise.allSettled([
+        lmsFetchAll('/api/v1/users/self/todo?per_page=50', 2),
+        lmsFetchAll('/api/v1/users/self/upcoming_events?per_page=50', 2),
+        courses.length ? lmsFetchAll('/api/v1/announcements?'+ctx+'&start_date='+sinceStr+'&per_page=30', 2) : Promise.resolve([])
+      ]);
+      const val = r => r.status === 'fulfilled' ? r.value : [];
+
+      lmsState = {
+        user: { name: '' },
+        courses: courses.map(c=>({
+          id: c.id, name: c.name, course_code: c.course_code || '',
+          term: (c.term && c.term.name) || '수강 과목',
+          html_url: lmsCfg.host + '/courses/' + c.id
+        })),
+        todos: val(todoR).map((t,i)=>{
+          const a = t.assignment || {};
+          return {
+            id: a.id || ('todo-'+i),
+            title: a.name || t.title || '과제',
+            courseName: nameOf[t.course_id] || t.context_name || '수강 과목',
+            due_at: a.due_at || '',
+            points: a.points_possible,
+            submitted: false,
+            html_url: t.html_url || a.html_url || lmsCfg.host
+          };
+        }),
+        announcements: val(annR).map(a=>{
+          const cid = String(a.context_code||'').replace('course_','');
+          return {
+            id: a.id, title: a.title || '공지',
+            courseName: nameOf[cid] || '과목 공지',
+            posted_at: a.posted_at || '',
+            summary: String(a.message||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,120),
+            html_url: a.html_url || lmsCfg.host
+          };
+        }),
+        upcoming: val(upR).map(u=>({
+          id: u.id, title: u.title || '일정',
+          courseName: u.context_name || 'LMS 일정',
+          start_at: u.start_at || (u.assignment && u.assignment.due_at) || '',
+          html_url: u.html_url || lmsCfg.host
+        })),
+        updatedAt: new Date().toISOString()
+      };
+      try{ localStorage.setItem(LMS_CACHE_KEY, JSON.stringify(lmsState)); }catch(e){}
+      lmsDot.className = 'lms-dot ok';
+      lmsStatusTxt.textContent = 'LMS 연동됨 · 수강 과목 '+lmsState.courses.length+'개';
+      if(!lmsState.courses.length){
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">📚</span>수강 중인 과목이 없어요.</div>';
+      } else renderLMS();
+    }catch(err){
+      lmsDot.className = 'lms-dot err';
+      if(err.message === 'AUTH'){
+        lmsStatusTxt.textContent = '토큰이 올바르지 않거나 만료됐어요';
+        lmsCfgBox.style.display = '';
+      } else if(err.message.startsWith('HTTP')){
+        lmsStatusTxt.textContent = 'LMS 서버 오류 ('+err.message+')';
+      } else {
+        lmsStatusTxt.textContent = '프록시에 연결하지 못했어요 (Worker 주소를 확인해 주세요)';
+      }
+      if(lmsState.courses.length) renderLMS();
+    }
+  }
+
+  let lmsInitialized = false;
+  function initAndLoadLMS(){
+    lmsInToken.value = lmsCfg.token;
+    if(!lmsInitialized){ lmsInitialized = true; syncLMS(); }
+    else renderLMS();
+  }
+
+  document.getElementById('lmsSubTabs').addEventListener('click', e=>{
+    const b = e.target.closest && e.target.closest('[data-lsub]');
+    if(!b) return;
+    lmsSubTab = b.getAttribute('data-lsub');
+    document.querySelectorAll('#lmsSubTabs .lms-subtab').forEach(x=>x.classList.toggle('on', x===b));
+    renderLMS();
+  });
+  document.getElementById('lmsSyncBtn').addEventListener('click', syncLMS);
+  document.getElementById('lmsCfgToggleBtn').addEventListener('click', ()=>{
+    lmsCfgBox.style.display = lmsCfgBox.style.display === 'none' ? '' : 'none';
+  });
+  document.getElementById('lmsTokenVisBtn').addEventListener('click', e=>{
+    const isPw = lmsInToken.type === 'password';
+    lmsInToken.type = isPw ? 'text' : 'password';
+    e.target.textContent = isPw ? '숨김' : '보기';
+  });
+  document.getElementById('lmsCfgSaveBtn').addEventListener('click', ()=>{
+    const t = lmsInToken.value.trim();
+    if(!t){ alert('액세스 토큰을 입력해 주세요.'); return; }
+    lmsCfg.token = t; saveLmsCfg();
+    lmsCfgBox.style.display = 'none';
+    syncLMS();
+  });
+  document.getElementById('lmsLogoutBtn').addEventListener('click', ()=>{
+    if(!confirm('이 기기에 저장된 토큰과 LMS 데이터를 삭제할까요?')) return;
+    lmsCfg.token = ''; lmsInToken.value = '';
+    try{ localStorage.removeItem(LMS_CFG_KEY); localStorage.removeItem(LMS_CACHE_KEY); }catch(e){}
+    lmsState = { user:null, courses:[], todos:[], announcements:[], upcoming:[], updatedAt:null };
+    syncLMS();
+  });
+  lmsContentArea.addEventListener('click', e=>{
+    const btn = e.target.closest && e.target.closest('[data-lmsaddcal]');
+    if(!btn) return;
+    const title = btn.getAttribute('data-lmsaddcal');
+    const course = btn.getAttribute('data-course');
+    const date = btn.getAttribute('data-date');
+    const time = btn.getAttribute('data-time') || '23:59';
+    const fullTitle = (course ? '['+course+'] ' : '') + title;
+    if(calEvents.some(ev=>ev.title===fullTitle && ev.date===date)){
+      alert('이미 내 캘린더에 등록된 일정이에요!');
+      return;
+    }
+    const taskCat = CAL_CATS.find(c=>c.id==='task') || CAL_CATS[0];
+    calEvents.push({
+      id: 'lms-'+Date.now().toString(36),
+      title: fullTitle,
+      date,
+      endDate: '',
+      cat: taskCat.id,
+      allDay: false,
+      start: time,
+      end: '',
+      memo: '나의 LMS 연동 과제·일정'
+    });
+    saveCal();
+    btn.textContent = '✅ 캘린더·알림 등록됨';
+    btn.disabled = true;
+  });
+  document.addEventListener('click', e=>{
+    const a = e.target.closest && e.target.closest('#sideMyLMS');
+    if(a){ e.preventDefault(); switchTab('mylms'); }
+  });
 
   // ===================== 날씨 (Open-Meteo, 키 불필요) =====================
   // 구미시 거의동 부근 좌표
@@ -3313,6 +4095,7 @@
       }
       busData = await res.json();
       renderBus();
+      if(typeof populateBusRouteSelect === 'function') populateBusRouteSelect();
     }catch(e){
       if(!busData) busArea.innerHTML = '<div class="empty-state"><span class="es-icon">🚌</span>교통 정보를 불러오지 못했어요.<br>잠시 후 다시 시도해주세요.</div>';
     }
@@ -3353,6 +4136,7 @@
     <a href="#" id="sideMyTT" data-nav="mytt">🗓️ 내 시간표</a>
     <a href="#" id="sideMyCal" data-nav="mycal">📅 내 캘린더</a>
     <a href="#" id="sideRemind" data-nav="remind">🔔 미리알림</a>
+    <a href="#" id="sideMyLMS" data-nav="mylms">💻 나의 LMS</a>
     <a href="https://www.kumoh.ac.kr/ko/index.do" target="_blank" rel="noopener" data-nav="home_web">🌐 학교 홈페이지<small>↗</small></a>
     <a href="https://onekit.kumoh.ac.kr/login.jsp" target="_blank" rel="noopener" data-nav="onekit">🔑 Onekit<small>↗</small></a>
     <a href="https://biskit.kumoh.ac.kr/" target="_blank" rel="noopener" data-nav="biskit">📚 Biskit<small>↗</small></a>
