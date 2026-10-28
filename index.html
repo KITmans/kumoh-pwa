@@ -587,8 +587,8 @@
   /* 섹션 제목 */
   section{padding:20px 16px;}
   section h2{font-size:15px;letter-spacing:0;color:var(--ink);justify-content:center;text-align:center;margin:0 0 14px;font-weight:700;}
-  .count-line{font-size:13px;text-align:center;}
-  .note-block{font-size:13px;text-align:center;}
+  .count-line{font-size:12.5px;text-align:center;word-break:keep-all;overflow-wrap:break-word;line-height:1.45;letter-spacing:-0.02em;}
+  .note-block{font-size:12.5px;text-align:center;word-break:keep-all;overflow-wrap:break-word;line-height:1.5;}
   .placeholder{font-size:15px;line-height:1.7;}
 
   /* 입력/버튼 (iOS는 16px 미만이면 입력 시 화면이 확대됨) */
@@ -1529,35 +1529,49 @@
   .lms-menu-chk{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);background:var(--navy-2);border-radius:10px;font-size:13.5px;color:var(--ink);cursor:pointer;}
   .lms-menu-chk input{width:18px;height:18px;accent-color:var(--amber);margin:0;flex-shrink:0;}
 
-  /* 앱타일 배치 모드 스타일 (사진 스타일) */
+  /* 앱타일 모드 스타일 (아이폰 홈화면 롱프레스 & 드래그 위치 변경 지원) */
+  .app-tile-edit-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 14px;
+    margin-bottom:12px;
+    border-radius:14px;
+    background:var(--amber-soft);
+    border:1px solid var(--amber);
+    font-size:12.5px;
+    color:var(--ink);
+  }
   .app-tile-grid{
     display:grid;
-    grid-template-columns:repeat(3, minmax(0, 1fr));
-    gap:12px;
-    padding:4px 0 20px;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:14px 10px;
+    padding:6px 0 14px;
+    user-select:none;
+    -webkit-user-select:none;
   }
-  @media (min-width:600px){
-    .app-tile-grid{grid-template-columns:repeat(4, minmax(0, 1fr));gap:16px;}
+  @media (max-width:360px){
+    .app-tile-grid{grid-template-columns:repeat(3, minmax(0, 1fr));}
   }
   .app-tile-card{
-    background:var(--paper-2);
-    border:1px solid var(--line);
-    border-radius:20px;
-    padding:18px 10px;
+    position:relative;
+    background:transparent;
+    border:none;
+    padding:4px 2px;
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
-    gap:10px;
+    justify-content:flex-start;
+    gap:7px;
     cursor:pointer;
-    box-shadow:var(--shadow);
-    transition:transform .15s, border-color .15s, background .15s;
     text-decoration:none;
     color:var(--ink);
     -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
   }
-  .app-tile-card:active{
-    transform:scale(0.96);
+  .app-tile-card:active .app-tile-icon{
+    transform:scale(0.93);
   }
   .app-tile-icon{
     font-size:32px;
@@ -1565,13 +1579,16 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    width:56px;
-    height:56px;
-    border-radius:16px;
-    background:var(--amber-soft);
+    width:68px;
+    height:68px;
+    border-radius:20px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    transition:transform .16s, border-color .16s, box-shadow .16s;
   }
   .app-tile-lbl{
-    font-size:13.5px;
+    font-size:12.5px;
     font-weight:700 !important;
     text-align:center;
     word-break:keep-all;
@@ -1579,6 +1596,24 @@
     text-overflow:ellipsis;
     white-space:nowrap;
     width:100%;
+    color:var(--ink);
+  }
+  @keyframes tileJiggle {
+    0%   { transform: rotate(-2.2deg); }
+    50%  { transform: rotate(2.2deg); }
+    100% { transform: rotate(-2.2deg); }
+  }
+  .app-tile-grid.editing .app-tile-card{
+    animation: tileJiggle 0.28s infinite ease-in-out;
+  }
+  .app-tile-grid.editing .app-tile-card:nth-child(even){
+    animation-delay: 0.12s;
+  }
+  .app-tile-card.tile-selected .app-tile-icon,
+  .app-tile-card.tile-dragging .app-tile-icon{
+    border:2px solid var(--amber);
+    box-shadow:0 0 0 3px var(--amber-soft), var(--shadow);
+    transform:scale(1.07);
   }
 </style>
 </head>
@@ -1605,7 +1640,14 @@
     </div>
   </header>
 
-  <div id="appTileView" style="display:none;padding:16px;flex:1;"><div class="app-tile-grid" id="appTileGrid"></div></div>
+  <div id="appTileView" style="display:none;padding:16px 14px 28px;flex:1;">
+    <div class="app-tile-edit-bar" id="appTileEditBar" style="display:none;">
+      <span>👆 타일을 드래그하거나 다른 타일을 눌러 위치를 바꾸세요</span>
+      <button type="button" class="tt-btn" id="appTileEditDoneBtn" style="padding:5px 12px;font-size:12.5px;">완료</button>
+    </div>
+    <div class="app-tile-grid" id="appTileGrid"></div>
+    <p class="count-line" id="appTileHint" style="margin-top:8px;">💡 아이폰처럼 앱 아이콘을 길게 꾹 누르면 위치를 자유롭게 바꿀 수 있어요.</p>
+  </div>
   <main id="tabContents">
 
     <!-- ===== TAB: 강의실 현황 조회 ===== -->
@@ -1808,8 +1850,18 @@
       </div>
     </div>
 
-    <!-- ===== TAB: 미리알림 (사이드메뉴에서 진입) ===== -->
+    <!-- ===== TAB: 알림 (사이드메뉴에서 진입) ===== -->
     <div class="tab-panel" data-tab="remind">
+      <section>
+        <h2>💻 나의 LMS 새 공지 · 과제 알림</h2>
+        <p class="count-line">LMS에 새로운 과목 공지나 과제가 올라오면 푸시 알림으로 바로 알려드려요.</p>
+        <label class="rm-sw"><input type="checkbox" id="rmLmsAnnOn"> 📢 새로운 과목 공지 알림 받기</label>
+        <label class="rm-sw" style="margin-top:8px;"><input type="checkbox" id="rmLmsAsgOn"> 📝 새로운 과제 등록 알림 받기</label>
+        <div class="rm-row" style="margin-top:10px;">
+          <button class="tt-btn ghost" id="rmLmsCheckNowBtn" type="button" style="font-size:12.5px;padding:6px 12px;">🔄 지금 LMS 새 소식 확인</button>
+        </div>
+        <p class="count-line" id="rmLmsInfo" style="margin-top:10px;"></p>
+      </section>
       <section>
         <h2>📅 내 캘린더 일정 알림</h2>
         <p class="count-line">내 캘린더에 등록된 일정을 자동으로 불러와 알림을 설정할 수 있어요.</p>
@@ -1894,13 +1946,13 @@
               <button type="button" class="refresh-btn" id="lmsCfgToggleBtn">⚙️ 연동 설정</button>
             </div>
 
-            <!-- LMS 메뉴(표시할 항목) 커스터마이징 박스 -->
+            <!-- LMS 메뉴(표시할 항목 + 순서) 커스터마이징 박스 -->
             <div class="lms-cfg-box" id="lmsMenuCfgBox" style="display:none;">
-              <label style="margin-top:0;">표시할 LMS 메뉴 선택 (원하는 항목만 체크하세요)</label>
-              <div class="lms-menu-chk-grid" id="lmsMenuChkGrid"></div>
-              <div class="rm-row" style="margin-top:12px;">
+              <label style="margin-top:0;">표시할 LMS 메뉴 선택 및 순서 변경 (체크박스 선택 · 우측 ▲/▼ 버튼으로 순서 변경)</label>
+              <div class="side-order-list" id="lmsMenuChkGrid" style="max-height:300px;margin-top:8px;"></div>
+              <div class="rm-row" style="margin-top:12px;justify-content:center;">
                 <button type="button" class="tt-btn" id="lmsMenuCfgSaveBtn">적용하기</button>
-                <button type="button" class="tt-btn ghost" id="lmsMenuCfgResetBtn">전체 표시</button>
+                <button type="button" class="tt-btn ghost" id="lmsMenuCfgResetBtn">기본 순서·전체 표시</button>
               </div>
             </div>
 
@@ -2286,27 +2338,7 @@
     floorInfoEl.innerHTML = info;
   }
   
-  document.addEventListener('change', e=>{
-    if(e.target && e.target.id === 'viewModeSel'){
-      const val = e.target.value;
-      const isTile = (val === 'tile');
-      const barCfgSecTitle = document.getElementById('barCfgSecTitle');
-      const barCfgHint = document.getElementById('barCfgHint');
-      const tabCfgList = document.getElementById('tabCfgList');
-      if(barCfgSecTitle) barCfgSecTitle.style.display = isTile ? 'none' : '';
-      if(barCfgHint) barCfgHint.style.display = isTile ? 'none' : '';
-      if(tabCfgList && tabCfgList.parentElement) {
-        const lbl = tabCfgList.previousElementSibling?.previousElementSibling?.previousElementSibling;
-        // toggle visibility of bar tab config rows
-        let el = tabCfgList.previousElementSibling;
-        while(el && el.id !== 'barCfgSecTitle'){
-          el.style.display = isTile ? 'none' : '';
-          el = el.previousElementSibling;
-        }
-        tabCfgList.style.display = isTile ? 'none' : '';
-      }
-    }
-  });
+
 
 document.addEventListener('click', e=>{
     if(!floorPick) return;
@@ -2669,7 +2701,7 @@ document.addEventListener('click', e=>{
     }, {passive:true});
   })();
 
-  // ===================== tab switching & 사용자 설정 (하단 4개 탭 커스텀) =====================
+  // ===================== tab switching & 사용자 설정 (탭바 모드 / 앱타일 모드 + 12개 앱타일) =====================
   const TAB_ITEMS = {
     rooms:    { id:'rooms',    icon:'🏫', label:'강의실현황', sideLabel:'강의실 현황', type:'tab' },
     menu:     { id:'menu',     icon:'🍽️', label:'식단',       sideLabel:'식단',        type:'tab' },
@@ -2677,18 +2709,31 @@ document.addEventListener('click', e=>{
     notice:   { id:'notice',   icon:'📢', label:'공지',       sideLabel:'교내 공지',   type:'tab' },
     mytt:     { id:'mytt',     icon:'🗓️', label:'내 시간표',  sideLabel:'내 시간표',   type:'tab' },
     mycal:    { id:'mycal',    icon:'📅', label:'내 캘린더',  sideLabel:'내 캘린더',   type:'tab' },
-    remind:   { id:'remind',   icon:'🔔', label:'미리알림',   sideLabel:'미리알림',    type:'tab' },
+    remind:   { id:'remind',   icon:'🔔', label:'알림',       sideLabel:'알림',        type:'tab' },
     mylms:    { id:'mylms',    icon:'💻', label:'나의 LMS',   sideLabel:'나의 LMS',    type:'tab' },
     home_web: { id:'home_web', icon:'🌐', label:'학교홈피',   sideLabel:'학교 홈페이지', type:'link', url:'https://www.kumoh.ac.kr/ko/index.do' },
     onekit:   { id:'onekit',   icon:'🔑', label:'Onekit',     sideLabel:'Onekit',      type:'link', url:'https://onekit.kumoh.ac.kr/login.jsp' },
-    biskit:   { id:'biskit',   icon:'📚', label:'Biskit',     sideLabel:'Biskit',      type:'link', url:'https://biskit.kumoh.ac.kr/' }
+    biskit:   { id:'biskit',   icon:'📚', label:'Biskit',     sideLabel:'Biskit',      type:'link', url:'https://biskit.kumoh.ac.kr/' },
+    settings: { id:'settings', icon:'⚙️', label:'사용자설정', sideLabel:'사용자 설정', type:'action', action:'settings' }
   };
   const DEFAULT_BAR_TABS = ['rooms','menu','bus','notice'];
-  const DEFAULT_SIDE_ORDER = ['rooms','menu','bus','notice','mytt','mycal','remind','mylms','home_web','onekit','biskit'];
+  const DEFAULT_SIDE_ORDER = ['rooms','menu','bus','notice','mytt','mycal','remind','mylms','home_web','onekit','biskit','settings'];
   const TAB_CFG_KEY = 'kit-custom-tabs-v1';
-  const SIDE_ORDER_KEY = 'kit-side-order-v1';
+  const SIDE_ORDER_KEY = 'kit-side-order-v2';
+  const VIEW_MODE_KEY = 'kit-view-mode-v1';
+
   let userBarTabs = DEFAULT_BAR_TABS.slice();
   let userSideOrder = DEFAULT_SIDE_ORDER.slice();
+  let userViewMode = 'bar'; // 'bar' (탭바 모드) | 'tile' (앱타일 모드)
+  let tileHomeActive = false; // 앱타일 모드일 때 현재 타일 홈 화면을 보고 있는지 여부
+  let tileEditMode = false;   // 아이폰처럼 타일 꾹 눌러서 위치 편집 중인지 여부
+  let tileSelectedKey = null; // 편집 모드에서 선택된 타일 키
+
+  try{
+    const savedVm = localStorage.getItem(VIEW_MODE_KEY);
+    if(savedVm === 'tile' || savedVm === 'bar') userViewMode = savedVm;
+    tileHomeActive = (userViewMode === 'tile');
+  }catch(e){}
   try{
     const savedTabs = JSON.parse(localStorage.getItem(TAB_CFG_KEY)||'null');
     if(Array.isArray(savedTabs) && savedTabs.length === 4 && savedTabs.every(k=>TAB_ITEMS[k])){
@@ -2696,13 +2741,14 @@ document.addEventListener('click', e=>{
     }
   }catch(e){}
   try{
-    const savedSide = JSON.parse(localStorage.getItem(SIDE_ORDER_KEY)||'null');
+    const savedSide = JSON.parse(localStorage.getItem(SIDE_ORDER_KEY) || localStorage.getItem('kit-side-order-v1') || 'null');
     if(Array.isArray(savedSide) && savedSide.length){
       const valid = savedSide.filter(k=>TAB_ITEMS[k]);
       DEFAULT_SIDE_ORDER.forEach(k=>{ if(!valid.includes(k)) valid.push(k); });
       userSideOrder = valid;
     }
   }catch(e){}
+
   function saveUserBarTabs(){
     try{ localStorage.setItem(TAB_CFG_KEY, JSON.stringify(userBarTabs)); }catch(e){}
   }
@@ -2714,7 +2760,7 @@ document.addEventListener('click', e=>{
     const navListEl = document.getElementById('sideNavList');
     if(!navListEl) return;
     const idAttrMap = { mytt:' id="sideMyTT"', mycal:' id="sideMyCal"', remind:' id="sideRemind"', mylms:' id="sideMyLMS"' };
-    navListEl.innerHTML = userSideOrder.map(k=>{
+    navListEl.innerHTML = userSideOrder.filter(k=>k!=='settings').map(k=>{
       const it = TAB_ITEMS[k];
       if(!it) return '';
       const extraId = idAttrMap[k] || '';
@@ -2729,6 +2775,10 @@ document.addEventListener('click', e=>{
   const tabbarEl = document.getElementById('tabbar');
   const tabPanels = document.querySelectorAll('.tab-panel');
   const homeBtn = document.getElementById('homeBtn');
+  const appTileView = document.getElementById('appTileView');
+  const appTileGrid = document.getElementById('appTileGrid');
+  const appTileEditBar = document.getElementById('appTileEditBar');
+  const tabContents = document.getElementById('tabContents');
 
   function getHomeTabId(){
     for(const k of userBarTabs){
@@ -2739,7 +2789,11 @@ document.addEventListener('click', e=>{
 
   function updateHomeBtnVisibility(){
     if(!homeBtn) return;
-    // 현재 열려있는 탭이 하단 4개 탭에 없는 메뉴(사이드메뉴에서 진입한 메뉴)이거나 기본 홈('rooms')이 아닐 때 홈 버튼 표시
+    if(userViewMode === 'tile'){
+      // 앱타일 모드에서는 타일 홈 화면이 아닐 때(특정 메뉴 안에 들어와 있을 때) 항상 🏠 홈 버튼 표시 -> 누르면 타일 홈으로 복귀!
+      homeBtn.style.display = tileHomeActive ? 'none' : 'inline-flex';
+      return;
+    }
     const inBottomBar = userBarTabs.includes(currentActiveTab);
     const homeTab = getHomeTabId();
     if(!inBottomBar || currentActiveTab !== homeTab){
@@ -2747,6 +2801,50 @@ document.addEventListener('click', e=>{
     } else {
       homeBtn.style.display = 'none';
     }
+  }
+
+  function renderAppTiles(){
+    if(!appTileGrid) return;
+    // 11개 메뉴 + 사용자 설정('settings') = 총 12개 보장
+    DEFAULT_SIDE_ORDER.forEach(k=>{ if(!userSideOrder.includes(k)) userSideOrder.push(k); });
+    appTileGrid.classList.toggle('editing', tileEditMode);
+    if(appTileEditBar) appTileEditBar.style.display = tileEditMode ? 'flex' : 'none';
+    appTileGrid.innerHTML = userSideOrder.map((k, idx)=>{
+      const it = TAB_ITEMS[k];
+      if(!it) return '';
+      const selCls = (tileEditMode && tileSelectedKey === k) ? ' tile-selected' : '';
+      return '<div class="app-tile-card'+selCls+'" data-tile-key="'+escapeHtml(k)+'" data-tile-idx="'+idx+'">'+
+        '<div class="app-tile-icon">'+it.icon+'</div>'+
+        '<div class="app-tile-lbl">'+escapeHtml(it.sideLabel)+'</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function setTileEditMode(on){
+    tileEditMode = !!on;
+    if(!tileEditMode) tileSelectedKey = null;
+    renderAppTiles();
+  }
+
+  function updateViewModeDisplay(){
+    if(userViewMode === 'tile'){
+      if(tabbarEl) tabbarEl.style.display = 'none';
+      if(tileHomeActive){
+        if(appTileView) appTileView.style.display = '';
+        if(tabContents) tabContents.style.display = 'none';
+        renderAppTiles();
+      } else {
+        if(appTileView) appTileView.style.display = 'none';
+        if(tabContents) tabContents.style.display = '';
+      }
+    } else {
+      tileHomeActive = false;
+      tileEditMode = false;
+      if(appTileView) appTileView.style.display = 'none';
+      if(tabContents) tabContents.style.display = '';
+      if(tabbarEl) tabbarEl.style.display = '';
+    }
+    updateHomeBtnVisibility();
   }
 
   function renderTabbar(){
@@ -2762,15 +2860,18 @@ document.addEventListener('click', e=>{
 
   function switchTab(name){
     const it = TAB_ITEMS[name];
-    if(it && it.type === 'link'){
+    if(!it) return;
+    if(it.type === 'link'){
       window.open(it.url, '_blank', 'noopener');
       return;
     }
-    if(userViewMode === 'tile'){
-      userViewMode = 'bar';
-      updateViewModeDisplay();
+    if(it.type === 'action' && it.action === 'settings'){
+      openTabCfgModal();
+      return;
     }
+    tileHomeActive = false;
     currentActiveTab = name;
+    updateViewModeDisplay();
     if(tabbarEl){
       tabbarEl.querySelectorAll('.tab-btn').forEach(b=> b.classList.toggle('active', b.getAttribute('data-tab')===name));
     }
@@ -2791,11 +2892,133 @@ document.addEventListener('click', e=>{
   }
   if(homeBtn){
     homeBtn.addEventListener('click', ()=>{
-      switchTab(getHomeTabId());
+      if(userViewMode === 'tile'){
+        tileHomeActive = true;
+        tileEditMode = false;
+        updateViewModeDisplay();
+        window.scrollTo({top:0});
+      } else {
+        switchTab(getHomeTabId());
+      }
     });
   }
 
-  // 사이드메뉴 항목 클릭 처리 (기존 4개 탭 + 사이드메뉴 항목 모두 진입 가능)
+  // 아이폰 스타일 앱타일 롱프레스(꾹 누르기) + 드래그/탭 위치 교환 구현
+  (function initAppTileInteractions(){
+    if(!appTileGrid) return;
+    let pressTimer = null;
+    let draggingKey = null;
+    let startX = 0, startY = 0;
+    let movedDuringPress = false;
+    let longPressTriggered = false;
+
+    function swapOrMoveTile(fromKey, toKey){
+      if(!fromKey || !toKey || fromKey === toKey) return;
+      const fromIdx = userSideOrder.indexOf(fromKey);
+      const toIdx = userSideOrder.indexOf(toKey);
+      if(fromIdx < 0 || toIdx < 0) return;
+      // 아이폰 홈화면처럼 두 타일의 순서를 부드럽게 재배치
+      userSideOrder.splice(fromIdx, 1);
+      userSideOrder.splice(toIdx, 0, fromKey);
+      saveUserSideOrder();
+      renderSideMenu();
+      renderAppTiles();
+    }
+
+    appTileGrid.addEventListener('pointerdown', e=>{
+      const card = e.target.closest && e.target.closest('.app-tile-card');
+      if(!card) return;
+      const key = card.getAttribute('data-tile-key');
+      startX = e.clientX;
+      startY = e.clientY;
+      movedDuringPress = false;
+      longPressTriggered = false;
+      clearTimeout(pressTimer);
+      if(tileEditMode){
+        draggingKey = key;
+        card.classList.add('tile-dragging');
+      } else {
+        pressTimer = setTimeout(()=>{
+          longPressTriggered = true;
+          tileEditMode = true;
+          tileSelectedKey = key;
+          draggingKey = key;
+          if(navigator.vibrate) try{ navigator.vibrate(35); }catch(_){}
+          renderAppTiles();
+        }, 480);
+      }
+    });
+
+    appTileGrid.addEventListener('pointermove', e=>{
+      const dx = Math.abs(e.clientX - startX);
+      const dy = Math.abs(e.clientY - startY);
+      if(dx > 10 || dy > 10){
+        movedDuringPress = true;
+        if(!tileEditMode){
+          clearTimeout(pressTimer);
+        }
+      }
+      if(tileEditMode && draggingKey && (dx > 6 || dy > 6)){
+        const elUnder = document.elementFromPoint(e.clientX, e.clientY);
+        const overCard = elUnder && elUnder.closest && elUnder.closest('.app-tile-card');
+        if(overCard){
+          const overKey = overCard.getAttribute('data-tile-key');
+          if(overKey && overKey !== draggingKey){
+            swapOrMoveTile(draggingKey, overKey);
+          }
+        }
+      }
+    });
+
+    const endPointer = ()=>{
+      clearTimeout(pressTimer);
+      draggingKey = null;
+      appTileGrid.querySelectorAll('.tile-dragging').forEach(el=>el.classList.remove('tile-dragging'));
+    };
+    appTileGrid.addEventListener('pointerup', endPointer);
+    appTileGrid.addEventListener('pointercancel', endPointer);
+
+    // 우클릭/컨텍스트 메뉴 방지 (아이폰/안드로이드 롱프레스 시 팝업 방지)
+    appTileGrid.addEventListener('contextmenu', e=>{
+      if(e.target.closest && e.target.closest('.app-tile-card')) e.preventDefault();
+    });
+
+    appTileGrid.addEventListener('click', e=>{
+      const card = e.target.closest && e.target.closest('.app-tile-card');
+      if(!card) return;
+      e.preventDefault();
+      if(longPressTriggered){
+        longPressTriggered = false;
+        return;
+      }
+      const key = card.getAttribute('data-tile-key');
+      if(tileEditMode){
+        // 편집 모드에서 한 타일을 탭한 뒤 다른 타일을 탭해도 두 타일 위치가 서로 바뀌도록 지원
+        if(!tileSelectedKey){
+          tileSelectedKey = key;
+          renderAppTiles();
+        } else if(tileSelectedKey === key){
+          tileSelectedKey = null;
+          renderAppTiles();
+        } else {
+          const prevKey = tileSelectedKey;
+          tileSelectedKey = null;
+          swapOrMoveTile(prevKey, key);
+        }
+        return;
+      }
+      switchTab(key);
+    });
+
+    const doneBtn = document.getElementById('appTileEditDoneBtn');
+    if(doneBtn){
+      doneBtn.addEventListener('click', ()=>{
+        setTileEditMode(false);
+      });
+    }
+  })();
+
+  // 사이드메뉴 항목 클릭 처리
   document.addEventListener('click', e=>{
     const navA = e.target.closest && e.target.closest('#sideMenu a[data-nav]');
     if(!navA) return;
@@ -2807,7 +3030,7 @@ document.addEventListener('click', e=>{
     }
   });
 
-  // 사용자 설정 모달 동작 (하단 4개 탭 배치 + 사이드메뉴 순서 변경)
+  // 사용자 설정 모달 동작 (탭바 모드 / 앱타일 모드 + 순서 변경)
   let tempSideOrder = [];
   function renderSideOrderModalList(){
     const sideOrderEl = document.getElementById('sideOrderList');
@@ -2829,21 +3052,24 @@ document.addEventListener('click', e=>{
     }).join('');
   }
 
+  function syncModalViewModeUI(modeVal){
+    const isTile = (modeVal === 'tile');
+    const barCfgSecTitle = document.getElementById('barCfgSecTitle');
+    const barCfgHint = document.getElementById('barCfgHint');
+    const listEl = document.getElementById('tabCfgList');
+    if(barCfgSecTitle) barCfgSecTitle.style.display = isTile ? 'none' : '';
+    if(barCfgHint) barCfgHint.style.display = isTile ? 'none' : '';
+    if(listEl) listEl.style.display = isTile ? 'none' : '';
+  }
+
   function openTabCfgModal(){
     const modalBg = document.getElementById('tabCfgModalBg');
     const listEl = document.getElementById('tabCfgList');
     const viewModeSel = document.getElementById('viewModeSel');
-    const barCfgSecTitle = document.getElementById('barCfgSecTitle');
-    const barCfgHint = document.getElementById('barCfgHint');
     if(!modalBg || !listEl) return;
     if(viewModeSel) viewModeSel.value = userViewMode;
-    const isTile = (userViewMode === 'tile');
-    if(barCfgSecTitle) barCfgSecTitle.style.display = isTile ? 'none' : '';
-    if(barCfgHint) barCfgHint.style.display = isTile ? 'none' : '';
-    if(listEl.parentElement) {
-      const rowEl = listEl.previousElementSibling?.previousElementSibling;
-      // hide/show tab slot config based on mode if needed
-    }
+    syncModalViewModeUI(userViewMode);
+    DEFAULT_SIDE_ORDER.forEach(k=>{ if(!userSideOrder.includes(k)) userSideOrder.push(k); });
     const allKeys = userSideOrder.slice();
     listEl.innerHTML = [0,1,2,3].map(idx=>{
       const curKey = userBarTabs[idx] || DEFAULT_BAR_TABS[idx];
@@ -2860,7 +3086,6 @@ document.addEventListener('click', e=>{
     }).join('');
     tempSideOrder = userSideOrder.slice();
     renderSideOrderModalList();
-    // 사이드메뉴 닫고 모달 열기
     document.body.classList.remove('side-open');
     const sm = document.getElementById('sideMenu');
     if(sm) sm.setAttribute('aria-hidden','true');
@@ -2870,6 +3095,11 @@ document.addEventListener('click', e=>{
     const modalBg = document.getElementById('tabCfgModalBg');
     if(modalBg) modalBg.classList.remove('open');
   }
+  document.addEventListener('change', e=>{
+    if(e.target && e.target.id === 'viewModeSel'){
+      syncModalViewModeUI(e.target.value);
+    }
+  });
   document.addEventListener('click', e=>{
     const modalBg = document.getElementById('tabCfgModalBg');
     const listEl = document.getElementById('tabCfgList');
@@ -2920,71 +3150,17 @@ document.addEventListener('click', e=>{
         renderSideMenu();
       }
       const vm = document.getElementById('viewModeSel');
-      if(vm){ userViewMode = vm.value; try{ localStorage.setItem(VIEW_MODE_KEY, userViewMode); }catch(e){} }
+      if(vm){
+        userViewMode = vm.value;
+        tileHomeActive = (userViewMode === 'tile');
+        tileEditMode = false;
+        try{ localStorage.setItem(VIEW_MODE_KEY, userViewMode); }catch(e){}
+      }
       renderTabbar();
       updateViewModeDisplay();
       closeTabCfgModal();
     }
   });
-
-  // 보기 모드 설정 (bar = 하단 탭바 모드, tile = 앱타일 배치 모드)
-  const VIEW_MODE_KEY = 'kit-view-mode-v1';
-  let userViewMode = 'bar';
-  try{ userViewMode = localStorage.getItem(VIEW_MODE_KEY) || 'bar'; }catch(e){}
-
-  const appTileView = document.getElementById('appTileView');
-  const appTileGrid = document.getElementById('appTileGrid');
-  const tabContents = document.getElementById('tabContents');
-
-  function renderAppTiles(){
-    if(!appTileGrid) return;
-    // 사이드메뉴 순서 또는 userSideOrder에 따라 타일 카드 생성
-    appTileGrid.innerHTML = userSideOrder.map(k=>{
-      const it = TAB_ITEMS[k];
-      if(!it) return '';
-      return '<a href="#" class="app-tile-card" data-tile-key="'+escapeHtml(k)+'">'+
-        '<div class="app-tile-icon">'+it.icon+'</div>'+
-        '<div class="app-tile-lbl">'+escapeHtml(it.sideLabel)+'</div>'+
-      '</a>';
-    }).join('');
-  }
-
-  function updateViewModeDisplay(){
-    if(userViewMode === 'tile'){
-      if(appTileView) appTileView.style.display = '';
-      if(tabContents) tabContents.style.display = 'none';
-      if(tabbarEl) tabbarEl.style.display = 'none';
-      renderAppTiles();
-    } else {
-      if(appTileView) appTileView.style.display = 'none';
-      if(tabContents) tabContents.style.display = '';
-      if(tabbarEl) tabbarEl.style.display = '';
-    }
-  }
-
-  // 타일 카드 클릭 이벤트 리스너
-  if(appTileGrid){
-    appTileGrid.addEventListener('click', e=>{
-      const card = e.target.closest && e.target.closest('[data-tile-key]');
-      if(!card) return;
-      e.preventDefault();
-      const k = card.getAttribute('data-tile-key');
-      const it = TAB_ITEMS[k];
-      if(!it) return;
-      if(it.type === 'link'){
-        window.open(it.url, '_blank', 'noopener');
-      } else if(it.type === 'action' && it.action === 'settings'){
-        openTabCfgModal();
-      } else {
-        // 타일 모드에서 해당 탭으로 진입할 때 일시적으로 tabContents 표시 후 해당 탭 열기
-        userViewMode = 'bar';
-        updateViewModeDisplay();
-        switchTab(k);
-        userViewMode = 'tile';
-      }
-    });
-  }
-
 
   renderTabbar();
   updateViewModeDisplay();
@@ -2993,7 +3169,6 @@ document.addEventListener('click', e=>{
   } else {
     renderSideMenu();
   }
-
 
   // ===================== 내 시간표 ======================
   const TT_KEY = 'kit-mytt-v1';
@@ -3550,6 +3725,7 @@ document.addEventListener('click', e=>{
   // ===================== 미리알림 (캘린더 일정 / 수업 시작 / 시내버스·통학버스) =====================
   const RM_KEY = 'kit-remind-v1';
   const rm = {
+    lms:{ annOn:true, asgOn:true, seenAnn:[], seenAsg:[], inited:false },
     cal:{ on:true, min:30, allDayHour:9, per:{} },
     cls:{ on:false, min:10, per:{} },
     bus:[],
@@ -3558,11 +3734,14 @@ document.addEventListener('click', e=>{
   try{
     const o = JSON.parse(localStorage.getItem(RM_KEY)||'null');
     if(o && typeof o==='object'){
+      if(o.lms && typeof o.lms==='object') Object.assign(rm.lms, o.lms);
       if(o.cal && typeof o.cal==='object') Object.assign(rm.cal, o.cal);
       if(o.cls && typeof o.cls==='object') Object.assign(rm.cls, o.cls);
       rm.bus = Array.isArray(o.bus) ? o.bus : [];
       rm.fired = o.fired || {};
     }
+    if(!Array.isArray(rm.lms.seenAnn)) rm.lms.seenAnn = [];
+    if(!Array.isArray(rm.lms.seenAsg)) rm.lms.seenAsg = [];
     if(!rm.cal.per || typeof rm.cal.per!=='object') rm.cal.per = {};
     if(!rm.cls.per || typeof rm.cls.per!=='object') rm.cls.per = {};
   }catch(e){}
@@ -3858,7 +4037,7 @@ document.addEventListener('click', e=>{
     });
   }
 
-  function rmTick(){ try{ rmCheckCalendar(); rmCheckClasses(); rmCheckBus(); }catch(e){} }
+  function rmTick(){ try{ rmCheckCalendar(); rmCheckClasses(); rmCheckBus(); if(typeof rmCheckLMS==='function') rmCheckLMS(); }catch(e){} }
 
   function populateBusRouteSelect(){
     const groups = (busData && busData.groups) || [];
@@ -3900,7 +4079,25 @@ document.addEventListener('click', e=>{
     if(prevRoute) rmBusRoute.value = prevRoute;
   }
 
+  const rmLmsAnnOn = document.getElementById('rmLmsAnnOn');
+  const rmLmsAsgOn = document.getElementById('rmLmsAsgOn');
+  const rmLmsInfo = document.getElementById('rmLmsInfo');
+  const rmLmsCheckNowBtn = document.getElementById('rmLmsCheckNowBtn');
+
   function renderRM(){
+    // 0. 나의 LMS 새 공지 · 과제 알림
+    if(rmLmsAnnOn) rmLmsAnnOn.checked = !!rm.lms.annOn;
+    if(rmLmsAsgOn) rmLmsAsgOn.checked = !!rm.lms.asgOn;
+    if(rmLmsInfo){
+      if(typeof lmsCfg !== 'undefined' && !lmsCfg.token){
+        rmLmsInfo.innerHTML = '💡 나의 LMS 탭에서 액세스 토큰을 연동하면 새로운 공지·과제 등록 시 푸시 알림을 보내드려요.';
+      } else if(typeof lmsState !== 'undefined' && lmsState.courses && lmsState.courses.length){
+        rmLmsInfo.textContent = '연동 중 · 과목 '+lmsState.courses.length+'개 (공지 '+(lmsState.announcements||[]).length+'건 · 과제 '+(lmsState.assignments||[]).length+'건 감시 중)';
+      } else {
+        rmLmsInfo.textContent = '나의 LMS 동기화 대기 중이에요.';
+      }
+    }
+
     // 1. 내 캘린더 일정 알림
     rmCalOn.checked = !!rm.cal.on;
     rmCalMin.value = String(rm.cal.min);
@@ -3976,6 +4173,31 @@ document.addEventListener('click', e=>{
     document.getElementById('rmAsk').style.display = (rmSupported() && Notification.permission==='default') ? '' : 'none';
   }
 
+  if(rmLmsAnnOn){
+    rmLmsAnnOn.addEventListener('change', async ()=>{
+      if(rmLmsAnnOn.checked && !(await rmAskPermission())){ rmLmsAnnOn.checked = false; }
+      rm.lms.annOn = rmLmsAnnOn.checked; saveRM(); renderRM();
+    });
+  }
+  if(rmLmsAsgOn){
+    rmLmsAsgOn.addEventListener('change', async ()=>{
+      if(rmLmsAsgOn.checked && !(await rmAskPermission())){ rmLmsAsgOn.checked = false; }
+      rm.lms.asgOn = rmLmsAsgOn.checked; saveRM(); renderRM();
+    });
+  }
+  if(rmLmsCheckNowBtn){
+    rmLmsCheckNowBtn.addEventListener('click', async ()=>{
+      if(typeof syncLMS === 'function'){
+        rmLmsCheckNowBtn.disabled = true;
+        rmLmsCheckNowBtn.textContent = '⏳ 확인 중…';
+        try{ await syncLMS(true); }catch(_){}
+        rmLmsCheckNowBtn.disabled = false;
+        rmLmsCheckNowBtn.textContent = '🔄 지금 LMS 새 소식 확인';
+        renderRM();
+      }
+    });
+  }
+
   rmCalOn.addEventListener('change', async ()=>{
     if(rmCalOn.checked && !(await rmAskPermission())){ rmCalOn.checked = false; }
     rm.cal.on = rmCalOn.checked; saveRM(); renderRM(); rmTick();
@@ -4046,7 +4268,7 @@ document.addEventListener('click', e=>{
   document.getElementById('rmAsk').addEventListener('click', rmAskPermission);
   document.getElementById('rmTest').addEventListener('click', async ()=>{
     if(!(await rmAskPermission())) return;
-    const ok = await rmNotify('🔔 금오공대 미리알림', '알림이 정상적으로 도착했어요!', 'kit-test');
+    const ok = await rmNotify('🔔 금오공대 알림', '알림이 정상적으로 도착했어요!', 'kit-test');
     if(!ok) alert('알림을 보내지 못했어요. 기기 설정을 확인해 주세요.');
   });
   document.getElementById('tabContents').addEventListener('click', e=>{
@@ -4080,7 +4302,7 @@ document.addEventListener('click', e=>{
   }catch(e){}
   function saveLmsCfg(){ try{ localStorage.setItem(LMS_CFG_KEY, JSON.stringify({ token: lmsCfg.token })); }catch(e){} }
 
-  // 사용자 커스터마이징 가능한 LMS 서브메뉴 전체 목록
+  // 사용자 커스터마이징 가능한 LMS 서브메뉴 전체 목록 (표시 여부 + 순서 변경 지원)
   const LMS_MENU_DEFS = [
     { id:'assignments', label:'📝 전체 과제·제출현황' },
     { id:'feedback',    label:'💯 성적·최근 피드백' },
@@ -4089,7 +4311,17 @@ document.addEventListener('click', e=>{
     { id:'cal',         label:'🗓️ 캘린더 이벤트 전체' },
     { id:'ann',         label:'📢 과목 공지' }
   ];
+  const LMS_ORDER_KEY = 'kit-lms-order-v1';
+  let lmsMenuOrder = LMS_MENU_DEFS.map(m=>m.id);
   let lmsVisibleMenus = LMS_MENU_DEFS.map(m=>m.id);
+  try{
+    const so = JSON.parse(localStorage.getItem(LMS_ORDER_KEY)||'null');
+    if(Array.isArray(so) && so.length){
+      const validOrder = so.filter(id=>LMS_MENU_DEFS.some(d=>d.id===id));
+      LMS_MENU_DEFS.forEach(d=>{ if(!validOrder.includes(d.id)) validOrder.push(d.id); });
+      lmsMenuOrder = validOrder;
+    }
+  }catch(e){}
   try{
     const sm = JSON.parse(localStorage.getItem(LMS_MENU_KEY)||'null');
     if(Array.isArray(sm) && sm.length){
@@ -4097,7 +4329,12 @@ document.addEventListener('click', e=>{
       if(valid.length) lmsVisibleMenus = valid;
     }
   }catch(e){}
-  function saveLmsMenus(){ try{ localStorage.setItem(LMS_MENU_KEY, JSON.stringify(lmsVisibleMenus)); }catch(e){} }
+  function saveLmsMenus(){
+    try{
+      localStorage.setItem(LMS_ORDER_KEY, JSON.stringify(lmsMenuOrder));
+      localStorage.setItem(LMS_MENU_KEY, JSON.stringify(lmsVisibleMenus));
+    }catch(e){}
+  }
 
   let lmsSubTab = lmsVisibleMenus[0] || 'assignments';
   let lmsFilterCourse = 'all';
@@ -4151,20 +4388,46 @@ document.addEventListener('click', e=>{
     return (bytes/1048576).toFixed(1)+' MB';
   }
 
+  function getOrderedVisibleLmsMenus(){
+    return lmsMenuOrder.filter(id => lmsVisibleMenus.includes(id));
+  }
+
   function renderLmsSubTabs(){
-    if(!lmsVisibleMenus.includes(lmsSubTab)){
-      lmsSubTab = lmsVisibleMenus[0] || 'assignments';
+    const orderedVis = getOrderedVisibleLmsMenus();
+    if(!orderedVis.includes(lmsSubTab)){
+      lmsSubTab = orderedVis[0] || 'assignments';
     }
-    lmsSubTabsEl.innerHTML = LMS_MENU_DEFS
-      .filter(m => lmsVisibleMenus.includes(m.id))
-      .map(m => '<button type="button" class="lms-subtab'+(m.id===lmsSubTab?' on':'')+'" data-lsub="'+escapeHtml(m.id)+'">'+escapeHtml(m.label)+'</button>')
+    lmsSubTabsEl.innerHTML = orderedVis
+      .map(id => {
+        const m = LMS_MENU_DEFS.find(d=>d.id===id);
+        if(!m) return '';
+        return '<button type="button" class="lms-subtab'+(m.id===lmsSubTab?' on':'')+'" data-lsub="'+escapeHtml(m.id)+'">'+escapeHtml(m.label)+'</button>';
+      })
       .join('');
   }
 
-  function renderLmsMenuCheckboxes(){
-    lmsMenuChkGrid.innerHTML = LMS_MENU_DEFS.map(m=>{
-      const chk = lmsVisibleMenus.includes(m.id) ? ' checked' : '';
-      return '<label class="lms-menu-chk"><input type="checkbox" value="'+escapeHtml(m.id)+'"'+chk+'><span>'+escapeHtml(m.label)+'</span></label>';
+  let tempLmsOrder = [];
+  let tempLmsChecked = new Set();
+  function renderLmsMenuCheckboxes(resetFromCurrent){
+    if(resetFromCurrent){
+      tempLmsOrder = lmsMenuOrder.slice();
+      tempLmsChecked = new Set(lmsVisibleMenus);
+    }
+    lmsMenuChkGrid.innerHTML = tempLmsOrder.map((id, idx)=>{
+      const m = LMS_MENU_DEFS.find(d=>d.id===id);
+      if(!m) return '';
+      const chk = tempLmsChecked.has(m.id) ? ' checked' : '';
+      return '<div class="side-order-row" data-lms-mkey="'+escapeHtml(m.id)+'">'+
+        '<label class="side-order-name" style="cursor:pointer;">'+
+          '<span class="side-order-num">'+(idx+1)+'</span>'+
+          '<input type="checkbox" data-lms-chk="'+escapeHtml(m.id)+'" value="'+escapeHtml(m.id)+'"'+chk+' style="width:18px;height:18px;accent-color:var(--amber);margin:0;">'+
+          '<span>'+escapeHtml(m.label)+'</span>'+
+        '</label>'+
+        '<div class="side-order-btns">'+
+          '<button type="button" class="side-order-btn" data-lms-move="up" data-lidx="'+idx+'" '+(idx===0?'disabled':'')+' aria-label="위로 이동">▲</button>'+
+          '<button type="button" class="side-order-btn" data-lms-move="down" data-lidx="'+idx+'" '+(idx===tempLmsOrder.length-1?'disabled':'')+' aria-label="아래로 이동">▼</button>'+
+        '</div>'+
+      '</div>';
     }).join('');
   }
 
@@ -4695,6 +4958,34 @@ document.addEventListener('click', e=>{
         return tb - ta;
       });
 
+      // 새로 추가된 과목 공지 / 과제 감지 및 푸시 알림 발송
+      const curAnnKeys = announcements.map(a=>String(a.courseId+'|'+a.id));
+      const curAsgKeys = allAssignments.map(a=>String(a.courseId+'|'+a.id));
+      if(!rm.lms.inited){
+        rm.lms.seenAnn = curAnnKeys;
+        rm.lms.seenAsg = curAsgKeys;
+        rm.lms.inited = true;
+        saveRM();
+      } else {
+        const seenAnnSet = new Set(rm.lms.seenAnn || []);
+        const seenAsgSet = new Set(rm.lms.seenAsg || []);
+        const newAnns = announcements.filter(a=>!seenAnnSet.has(String(a.courseId+'|'+a.id)));
+        const newAsgs = allAssignments.filter(a=>!seenAsgSet.has(String(a.courseId+'|'+a.id)));
+        if(rm.lms.annOn && newAnns.length){
+          newAnns.slice(0, 3).forEach(a=>{
+            rmNotify('📢 [LMS 새 공지] '+(a.courseName||'과목'), a.title, 'lms-ann-'+a.courseId+'-'+a.id);
+          });
+        }
+        if(rm.lms.asgOn && newAsgs.length){
+          newAsgs.slice(0, 3).forEach(a=>{
+            rmNotify('📝 [LMS 새 과제] '+(a.courseName||'과목'), a.title + (a.due_at ? ' · 마감: '+fmtKorDateTime(a.due_at) : ''), 'lms-asg-'+a.courseId+'-'+a.id);
+          });
+        }
+        rm.lms.seenAnn = Array.from(new Set([...(rm.lms.seenAnn||[]), ...curAnnKeys])).slice(-500);
+        rm.lms.seenAsg = Array.from(new Set([...(rm.lms.seenAsg||[]), ...curAsgKeys])).slice(-500);
+        saveRM();
+      }
+
       lmsState = {
         user: { name: '' },
         courses,
@@ -4709,6 +5000,7 @@ document.addEventListener('click', e=>{
       lmsDot.className = 'lms-dot ok';
       lmsStatusTxt.textContent = '동기화 완료 · 과목 '+courses.length+'개 · 과제 '+allAssignments.length+'건';
       renderLMS();
+      if(typeof renderRM === 'function') renderRM();
     }catch(err){
       lmsDot.className = 'lms-dot err';
       if(err.message === 'AUTH'){
@@ -4777,34 +5069,71 @@ document.addEventListener('click', e=>{
   }
 
   document.getElementById('lmsSyncBtn').addEventListener('click', syncLMS);
+  lmsMenuChkGrid.addEventListener('change', e=>{
+    const chk = e.target.closest && e.target.closest('[data-lms-chk]');
+    if(!chk) return;
+    const id = chk.getAttribute('data-lms-chk');
+    if(chk.checked) tempLmsChecked.add(id);
+    else tempLmsChecked.delete(id);
+  });
+  lmsMenuChkGrid.addEventListener('click', e=>{
+    const moveBtn = e.target.closest && e.target.closest('[data-lms-move]');
+    if(!moveBtn) return;
+    const dir = moveBtn.getAttribute('data-lms-move');
+    const idx = parseInt(moveBtn.getAttribute('data-lidx'), 10);
+    if(dir === 'up' && idx > 0){
+      const tmp = tempLmsOrder[idx - 1];
+      tempLmsOrder[idx - 1] = tempLmsOrder[idx];
+      tempLmsOrder[idx] = tmp;
+      renderLmsMenuCheckboxes(false);
+    } else if(dir === 'down' && idx < tempLmsOrder.length - 1){
+      const tmp = tempLmsOrder[idx + 1];
+      tempLmsOrder[idx + 1] = tempLmsOrder[idx];
+      tempLmsOrder[idx] = tmp;
+      renderLmsMenuCheckboxes(false);
+    }
+  });
   document.getElementById('lmsMenuCustomBtn').addEventListener('click', ()=>{
     applyLmsSyncCollapse(false);
     const open = lmsMenuCfgBox.style.display === 'none';
     if(open){
       lmsCfgBox.style.display = 'none';
-      renderLmsMenuCheckboxes();
+      renderLmsMenuCheckboxes(true);
       lmsMenuCfgBox.style.display = '';
     } else {
       lmsMenuCfgBox.style.display = 'none';
     }
   });
   document.getElementById('lmsMenuCfgSaveBtn').addEventListener('click', ()=>{
-    const chks = Array.from(lmsMenuChkGrid.querySelectorAll('input[type="checkbox"]:checked')).map(c=>c.value);
-    if(!chks.length){
+    const pickedVis = tempLmsOrder.filter(id => tempLmsChecked.has(id));
+    if(!pickedVis.length){
       alert('최소 1개 이상의 메뉴를 선택해 주세요.');
       return;
     }
-    lmsVisibleMenus = chks;
+    lmsMenuOrder = tempLmsOrder.slice();
+    lmsVisibleMenus = pickedVis;
     saveLmsMenus();
     lmsMenuCfgBox.style.display = 'none';
     renderLMS();
   });
   document.getElementById('lmsMenuCfgResetBtn').addEventListener('click', ()=>{
+    lmsMenuOrder = LMS_MENU_DEFS.map(m=>m.id);
     lmsVisibleMenus = LMS_MENU_DEFS.map(m=>m.id);
     saveLmsMenus();
-    renderLmsMenuCheckboxes();
+    renderLmsMenuCheckboxes(true);
     renderLMS();
   });
+
+  // 백그라운드/주기적 LMS 새 공지·과제 알림 폴링 (5분 간격 & 토큰 있을 때 자동 체크)
+  let lastLmsPollMs = Date.now();
+  function rmCheckLMS(){
+    if(!lmsCfg.token || (!rm.lms.annOn && !rm.lms.asgOn)) return;
+    if(Date.now() - lastLmsPollMs > 5 * 60 * 1000){
+      lastLmsPollMs = Date.now();
+      syncLMS().catch(()=>{});
+    }
+  }
+  setTimeout(()=>{ if(lmsCfg.token) syncLMS().catch(()=>{}); }, 2500);
 
   document.getElementById('lmsCfgToggleBtn').addEventListener('click', ()=>{
     applyLmsSyncCollapse(false);
@@ -5041,7 +5370,7 @@ document.addEventListener('click', e=>{
     <a href="#" data-nav="notice">📢 교내 공지</a>
     <a href="#" id="sideMyTT" data-nav="mytt">🗓️ 내 시간표</a>
     <a href="#" id="sideMyCal" data-nav="mycal">📅 내 캘린더</a>
-    <a href="#" id="sideRemind" data-nav="remind">🔔 미리알림</a>
+    <a href="#" id="sideRemind" data-nav="remind">🔔 알림</a>
     <a href="#" id="sideMyLMS" data-nav="mylms">💻 나의 LMS</a>
     <a href="https://www.kumoh.ac.kr/ko/index.do" target="_blank" rel="noopener" data-nav="home_web">🌐 학교 홈페이지<small>↗</small></a>
     <a href="https://onekit.kumoh.ac.kr/login.jsp" target="_blank" rel="noopener" data-nav="onekit">🔑 Onekit<small>↗</small></a>
@@ -5066,8 +5395,8 @@ document.addEventListener('click', e=>{
     <div class="tab-cfg-row" style="margin-top:6px;">
       <span class="tab-cfg-lbl">보기 모드</span>
       <select class="tab-cfg-sel" id="viewModeSel">
-        <option value="bar">하단 탭바 모드 (기본)</option>
-        <option value="tile">앱타일 배치 모드 (사진 스타일)</option>
+        <option value="bar">탭바 모드</option>
+        <option value="tile">앱타일 모드</option>
       </select>
     </div>
     <div class="cfg-sec-title" id="barCfgSecTitle"><span>📌 하단 4개 탭 배치</span></div>
