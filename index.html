@@ -1530,7 +1530,7 @@
       <section>
         <h2>테크노관 층별 강의실 현황</h2>
         <div class="floor-tabs" id="floorTabs"></div>
-        <p class="floor-legend"><span><i style="background:#2e9e6b"></i>비어있음</span><span><i style="background:#2f6fd6"></i>강의중</span><span><i style="background:#e0605a"></i>교수실·연구실</span><span><i style="background:#8a8a8a"></i>엘리베이터·화장실 등</span></p>
+        <p class="floor-legend"><span><i style="background:#2e9e6b"></i>비어있음</span><span><i style="background:#2f6fd6"></i>강의중</span><span><i style="background:#e0605a"></i>교수실·연구실·학사지원실</span><span><i style="background:#8a8a8a"></i>엘리베이터·화장실 등</span></p>
         <div class="floor-scroll"><div class="floor-grid" id="floorGrid"></div></div>
         <div class="floor-info" id="floorInfo"></div>
       </section>
@@ -1796,46 +1796,51 @@
     <div class="tab-panel" data-tab="mylms">
       <section>
         <h2>💻 나의 LMS</h2>
-        <div class="lms-status-bar">
-          <div class="lms-st-txt">
-            <span class="lms-dot" id="lmsDot"></span>
-            <span id="lmsStatusTxt">LMS 데이터 확인 중…</span>
+        <div class="lms-sync-panel" id="lmsSyncPanel">
+          <div class="lms-status-bar" id="lmsStatusHeader" role="button" tabindex="0" aria-expanded="true" title="클릭하여 동기화 메뉴 접기/펼치기" style="cursor:pointer;margin-bottom:0;">
+            <div class="lms-st-txt">
+              <span class="lms-dot" id="lmsDot"></span>
+              <span id="lmsStatusTxt">LMS 데이터 확인 중…</span>
+            </div>
+            <button type="button" class="refresh-btn" id="lmsSyncCollapseBtn" style="padding:4px 10px;font-size:12px;">▲ 메뉴 접기</button>
           </div>
-          <div style="display:flex;gap:5px;flex-wrap:wrap;">
-            <button type="button" class="refresh-btn" id="lmsSyncBtn">🔄 동기화</button>
-            <button type="button" class="refresh-btn" id="lmsMenuCustomBtn">🎛️ 메뉴 편집</button>
-            <button type="button" class="refresh-btn" id="lmsCfgToggleBtn">⚙️ 연동 설정</button>
+          <div class="lms-sync-body" id="lmsSyncBody" style="margin-top:10px;">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:10px;">
+              <button type="button" class="refresh-btn" id="lmsSyncBtn">🔄 동기화</button>
+              <button type="button" class="refresh-btn" id="lmsMenuCustomBtn">🎛️ 메뉴 편집</button>
+              <button type="button" class="refresh-btn" id="lmsCfgToggleBtn">⚙️ 연동 설정</button>
+            </div>
+
+            <!-- LMS 메뉴(표시할 항목) 커스터마이징 박스 -->
+            <div class="lms-cfg-box" id="lmsMenuCfgBox" style="display:none;">
+              <label style="margin-top:0;">표시할 LMS 메뉴 선택 (원하는 항목만 체크하세요)</label>
+              <div class="lms-menu-chk-grid" id="lmsMenuChkGrid"></div>
+              <div class="rm-row" style="margin-top:12px;">
+                <button type="button" class="tt-btn" id="lmsMenuCfgSaveBtn">적용하기</button>
+                <button type="button" class="tt-btn ghost" id="lmsMenuCfgResetBtn">전체 표시</button>
+              </div>
+            </div>
+
+            <!-- 토큰 연동 설정 박스 -->
+            <div class="lms-cfg-box" id="lmsCfgBox" style="display:none;">
+              <label for="lmsInToken">내 LMS 액세스 토큰</label>
+              <div class="lms-cfg-row">
+                <input type="password" id="lmsInToken" placeholder="토큰을 붙여넣으세요" autocomplete="off">
+                <button type="button" class="lms-act-btn" id="lmsTokenVisBtn">보기</button>
+              </div>
+              <p class="note-block" style="margin-top:10px;padding-top:10px;text-align:left;">
+                🔑 LMS 로그인 → 계정 → 설정 → <b>+ 새 액세스 토큰</b>에서 발급받을 수 있어요.<br>
+                토큰은 이 기기의 브라우저에만 저장되고, 요청 때 연동용 프록시를 거쳐 LMS로 전달만 돼요. 공용 기기에서는 사용 후 <b>토큰 삭제</b>를 눌러 주세요.
+              </p>
+              <div class="rm-row" style="margin-top:10px;">
+                <button type="button" class="tt-btn" id="lmsCfgSaveBtn">저장 후 연동</button>
+                <button type="button" class="tt-btn del" id="lmsLogoutBtn">토큰 삭제</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- LMS 메뉴(표시할 항목) 커스터마이징 박스 -->
-        <div class="lms-cfg-box" id="lmsMenuCfgBox" style="display:none;">
-          <label style="margin-top:0;">표시할 LMS 메뉴 선택 (원하는 항목만 체크하세요)</label>
-          <div class="lms-menu-chk-grid" id="lmsMenuChkGrid"></div>
-          <div class="rm-row" style="margin-top:12px;">
-            <button type="button" class="tt-btn" id="lmsMenuCfgSaveBtn">적용하기</button>
-            <button type="button" class="tt-btn ghost" id="lmsMenuCfgResetBtn">전체 표시</button>
-          </div>
-        </div>
-
-        <!-- 토큰 연동 설정 박스 -->
-        <div class="lms-cfg-box" id="lmsCfgBox" style="display:none;">
-          <label for="lmsInToken">내 LMS 액세스 토큰</label>
-          <div class="lms-cfg-row">
-            <input type="password" id="lmsInToken" placeholder="토큰을 붙여넣으세요" autocomplete="off">
-            <button type="button" class="lms-act-btn" id="lmsTokenVisBtn">보기</button>
-          </div>
-          <p class="note-block" style="margin-top:10px;padding-top:10px;text-align:left;">
-            🔑 LMS 로그인 → 계정 → 설정 → <b>+ 새 액세스 토큰</b>에서 발급받을 수 있어요.<br>
-            토큰은 이 기기의 브라우저에만 저장되고, 요청 때 연동용 프록시를 거쳐 LMS로 전달만 돼요. 공용 기기에서는 사용 후 <b>토큰 삭제</b>를 눌러 주세요.
-          </p>
-          <div class="rm-row" style="margin-top:10px;">
-            <button type="button" class="tt-btn" id="lmsCfgSaveBtn">저장 후 연동</button>
-            <button type="button" class="tt-btn del" id="lmsLogoutBtn">토큰 삭제</button>
-          </div>
-        </div>
-
-        <div class="lms-subtabs" id="lmsSubTabs"></div>
+        <div class="lms-subtabs" id="lmsSubTabs" style="margin-top:12px;"></div>
         <div class="lms-filter-bar" id="lmsFilterBar" style="display:none;"></div>
         <div id="lmsContentArea"></div>
       </section>
@@ -2131,7 +2136,7 @@
 
   // ===================== 테크노관 층별 배치도 =====================
   // FLOOR_MAP[층] = [행, 열, 세로칸, 가로칸, 호실, 종류(p=교수실/연구실, w=강의실, g=엘리베이터·화장실 등)]  ← 테크노관_층별_호실배치도 v3 엑셀 기준
-  const FLOOR_MAP = {"1":[[2,8,1,2,"122","p"],[2,10,1,1,"121","p"],[2,11,1,1,"120","p"],[2,12,1,1,"119","p"],[2,13,1,1,"118","p"],[2,14,1,2,"117","w"],[2,16,1,2,"116","p"],[2,19,1,2,"화장실","g"],[2,21,1,1,"114","p"],[2,22,1,2,"113","w"],[4,8,4,2,"125-1","w"],[4,10,4,2,"125","p"],[4,12,4,3,"126","w"],[4,15,4,2,"127","w"],[4,19,4,5,"112","w"],[5,5,2,2,"화장실","g"],[5,25,1,1,"107","w"],[5,26,1,1,"106","w"],[6,25,4,2,"105","w"],[8,22,1,2,"111","w"],[9,22,2,2,"110","w"],[10,25,2,1,"104","w"],[10,26,2,1,"103","w"],[11,23,2,1,"E/V","g"],[12,4,3,1,"137","p"],[12,5,3,1,"136","p"],[12,6,3,1,"135","p"],[12,7,3,1,"134","p"],[12,8,3,1,"133","p"],[12,9,3,1,"132","w"],[12,10,3,1,"131-1","w"],[12,11,3,1,"131","p"],[12,12,3,1,"130","w"],[12,13,3,1,"129","w"],[12,14,2,4,"128","w"],[13,23,2,1,"↓","a"],[16,4,3,1,"140","p"],[16,5,3,3,"141","w"],[16,8,3,3,"142","w"],[16,11,3,1,"143","w"],[16,12,3,6,"144","w"],[17,1,2,2,"화장실","g"],[18,22,2,2,"108","w"],[18,25,3,2,"102","w"],[21,14,2,4,"145","w"],[21,20,3,4,"101","w"],[22,4,2,1,"154","p"],[22,5,2,1,"153","p"],[22,6,2,1,"152","p"],[22,7,2,1,"151","p"],[22,8,2,1,"150","p"],[22,9,2,1,"149","p"],[22,10,2,1,"148","p"],[22,11,2,1,"147","p"],[22,12,2,2,"146","w"],[25,4,3,5,"157","w"],[25,9,3,4,"158","w"],[25,13,3,5,"159","w"],[26,1,1,2,"화장실","g"]],"2":[[2,10,1,1,"227","p"],[2,11,1,1,"226","p"],[2,12,1,1,"225","p"],[2,13,1,1,"224","p"],[2,14,1,1,"223","p"],[2,15,1,1,"222","p"],[2,16,1,2,"221","p"],[2,18,1,2,"221-1","p"],[2,20,1,1,"220","w"],[2,21,1,1,"219","p"],[2,22,1,1,"218","p"],[2,23,1,2,"217","p"],[2,25,1,1,"216","p"],[2,26,1,2,"215","p"],[2,28,1,1,"214","p"],[4,10,4,1,"230","w"],[4,11,4,2,"231","p"],[4,13,4,1,"232","p"],[4,14,4,3,"233","p"],[4,17,4,2,"234","w"],[4,23,4,2,"213","w"],[4,25,4,3,"212","p"],[4,28,2,1,"212-2","w"],[5,7,3,2,"화장실","g"],[5,30,2,1,"206","w"],[6,28,2,1,"212-1","w"],[7,30,2,1,"205","p"],[8,16,2,4,"235","w"],[8,26,1,3,"210","w"],[9,26,3,3,"209","w"],[9,30,1,1,"204","w"],[10,16,4,4,"236","w"],[10,30,2,1,"203","w"],[11,23,2,2,"화장실","g"],[12,4,3,1,"243","p"],[12,5,3,1,"242","p"],[12,6,3,4,"241","p"],[12,10,3,1,"240","p"],[12,11,3,1,"239","p"],[12,12,3,1,"238-1","p"],[12,13,3,1,"238","p"],[12,14,3,2,"237","p"],[12,28,2,1,"E/V","g"],[14,28,2,1,"↓","a"],[17,4,3,6,"246","w"],[17,10,3,1,"247","w"],[17,11,3,3,"248","w"],[17,14,3,4,"249","w"],[17,18,3,2,"250","w"],[18,1,2,2,"화장실","g"],[19,27,2,2,"207","p"],[19,30,3,1,"202","p"],[20,16,2,4,"251","p"],[22,16,1,4,"251-1","w"],[22,24,4,5,"201","w"],[23,16,2,4,"252","w"],[24,4,2,1,"259","w"],[24,5,2,1,"258","w"],[24,6,2,2,"257","p"],[24,8,2,3,"256-1","w"],[24,11,2,2,"256","w"],[24,13,2,1,"255","w"],[24,14,2,1,"254","w"],[24,15,2,1,"253","w"],[27,4,2,1,"262","w"],[27,5,2,7,"263","w"],[27,12,2,4,"264","w"],[27,16,2,4,"265","w"],[28,1,1,2,"화장실","g"]],"3":[[2,11,1,1,"326","p"],[2,12,1,1,"325","p"],[2,13,1,1,"324","p"],[2,14,1,1,"323-1","p"],[2,15,1,1,"323","p"],[2,16,1,1,"322","p"],[2,17,1,2,"321","p"],[2,19,1,2,"320","p"],[2,21,1,1,"319","p"],[2,22,1,1,"318","p"],[2,23,1,1,"317","p"],[2,24,1,2,"316","p"],[2,26,1,2,"315","p"],[2,28,1,2,"314","p"],[2,30,1,1,"313","p"],[4,11,2,2,"329","w"],[4,13,2,2,"330","p"],[4,15,2,1,"331","w"],[4,16,2,2,"332","w"],[4,18,2,2,"333","w"],[4,24,2,2,"312","w"],[4,26,2,5,"311","p"],[5,8,1,2,"화장실","g"],[5,32,1,1,"305-1","w"],[6,17,3,4,"334","w"],[6,28,1,3,"310","w"],[6,32,1,1,"305","w"],[7,28,1,3,"309","w"],[7,32,3,1,"304","p"],[8,28,3,3,"308","w"],[9,17,4,4,"335","w"],[10,24,3,3,"화장실","g"],[10,32,7,1,"303","w"],[12,5,2,1,"343","p"],[12,6,2,1,"342","p"],[12,7,2,2,"341","p"],[12,9,2,2,"340","p"],[12,11,2,1,"339","p"],[12,12,2,1,"338","p"],[12,13,2,1,"337-1","w"],[12,14,2,1,"337","p"],[12,15,2,2,"336","p"],[12,30,1,1,"E/V","g"],[13,30,2,1,"↓","a"],[16,5,3,4,"346","w"],[16,9,3,2,"347","w"],[16,11,3,2,"348","w"],[16,13,3,2,"348-1","w"],[16,15,3,1,"349","w"],[16,16,3,5,"350","w"],[17,2,2,2,"화장실","g"],[17,32,4,1,"302","w"],[18,29,2,2,"306","w"],[19,17,3,4,"351","w"],[21,25,4,6,"301","w"],[22,17,2,4,"352","w"],[23,5,2,1,"362","p"],[23,6,2,1,"361","p"],[23,7,2,2,"360","p"],[23,9,2,2,"359","p"],[23,11,2,1,"358","p"],[23,12,2,1,"357","p"],[23,13,2,1,"356","p"],[23,14,2,1,"355","p"],[23,15,2,1,"354","p"],[23,16,2,1,"353","p"],[26,5,2,2,"365","p"],[26,7,2,4,"365-1","w"],[26,11,2,2,"366","w"],[26,13,2,2,"366-1","w"],[26,15,2,2,"367","w"],[26,17,2,4,"367-1","w"],[27,2,1,2,"화장실","g"]],"4":[[2,12,1,2,"427","p"],[2,14,1,1,"426","p"],[2,15,1,1,"425","p"],[2,16,1,2,"424","p"],[2,18,1,1,"423","p"],[2,19,1,3,"422","p"],[2,22,1,2,"421","p"],[2,24,1,1,"420","p"],[2,25,1,1,"419","p"],[2,26,1,1,"418","p"],[2,27,1,1,"417","p"],[2,28,1,1,"416","p"],[2,29,1,2,"415","p"],[2,31,1,1,"414","p"],[4,12,3,3,"430","w"],[4,15,3,3,"431","p"],[4,18,3,1,"432","w"],[4,19,3,2,"433","p"],[4,21,3,2,"434","w"],[4,27,3,1,"413","w"],[4,28,3,4,"412","w"],[5,34,3,3,"406","w"],[6,9,1,2,"화장실","g"],[7,20,3,4,"435","w"],[7,29,1,3,"411","w"],[8,29,1,3,"410","w"],[8,34,3,3,"405","w"],[9,29,3,3,"409","w"],[10,20,3,4,"436","w"],[11,26,2,2,"화장실","g"],[11,34,6,3,"404","w"],[12,4,2,4,"446","p"],[12,8,2,2,"445","p"],[12,10,2,1,"444","p"],[12,11,2,2,"443","p"],[12,13,2,1,"442","p"],[12,14,2,1,"441","p"],[12,15,2,1,"440","p"],[12,16,2,2,"439","p"],[12,18,2,1,"438","p"],[12,19,2,1,"437","p"],[12,30,1,1,"E/V","g"],[13,30,2,1,"↓","a"],[16,5,4,8,"449","w"],[16,13,4,5,"450","w"],[16,18,4,6,"451","w"],[17,34,5,3,"403","w"],[18,1,2,2,"화장실","g"],[19,29,2,2,"407","w"],[20,20,1,4,"452","p"],[21,20,1,4,"453","w"],[22,20,1,4,"454","p"],[22,27,2,2,"401","w"],[22,29,2,2,"402","w"],[23,20,1,4,"455","p"],[24,20,2,4,"456","w"],[25,7,1,4,"461","p"],[25,11,1,3,"460","w"],[25,14,1,1,"459","p"],[25,15,1,1,"458-3","p"],[25,16,1,1,"458-2","p"],[25,17,1,1,"458-1","p"],[25,18,1,1,"458","p"],[25,19,1,1,"457","p"],[27,8,2,3,"462","w"],[27,11,2,3,"463","p"],[27,14,2,1,"464","p"],[27,15,2,1,"464-1","p"],[27,16,2,3,"465","w"],[27,19,2,5,"466","w"],[28,3,1,3,"화장실","g"]],"5":[[2,4,1,1,"522","p"],[2,5,1,1,"521","p"],[2,6,1,1,"520","p"],[2,7,1,1,"519","p"],[2,8,1,1,"518","p"],[2,9,1,3,"517","p"],[2,12,1,2,"516","p"],[2,14,1,1,"515","p"],[2,15,1,1,"514","p"],[2,16,1,2,"513","w"],[2,18,1,2,"512","w"],[4,4,3,4,"525-1","w"],[4,8,3,3,"525","w"],[4,16,3,4,"511","w"],[5,1,2,2,"화장실","g"],[5,21,1,1,"505","w"],[6,21,2,1,"504","w"],[7,18,1,2,"510","p"],[8,18,2,2,"509","w"],[8,21,1,1,"503","w"],[9,15,3,2,"화장실","g"],[9,21,6,1,"502","w"],[11,10,2,3,"526","w"],[11,19,1,1,"E/V","g"],[12,19,2,1,"↓","a"],[15,21,3,1,"501","w"],[16,19,1,1,"507","w"],[17,18,1,2,"506","w"]],"6":[[2,2,2,1,"607","w"],[3,6,2,3,"606-2","w"],[3,10,3,1,"602-1","w"],[5,6,1,3,"606-1","w"],[6,6,2,3,"606","w"],[6,10,6,1,"602","w"],[7,3,3,2,"화장실","g"],[8,8,1,1,"E/V","g"],[9,8,2,1,"↓","a"],[12,10,3,1,"601","w"],[13,7,1,2,"604","w"],[14,6,1,3,"603","w"]]};
+  const FLOOR_MAP = {"1":[[2,8,1,2,"122","p"],[2,10,1,1,"121","p"],[2,11,1,1,"120","p"],[2,12,1,1,"119","p"],[2,13,1,1,"118","p"],[2,14,1,2,"117","w"],[2,16,1,2,"116","p"],[2,19,1,2,"화장실","g"],[2,21,1,1,"114","p"],[2,22,1,2,"113","w"],[4,8,4,2,"125-1","w"],[4,10,4,2,"125","p"],[4,12,4,3,"126","w"],[4,15,4,2,"127","w"],[4,19,4,5,"112","w"],[5,5,2,2,"화장실","g"],[5,25,1,1,"107","w"],[5,26,1,1,"106","p"],[6,25,4,2,"105","p"],[8,22,1,2,"111","w"],[9,22,2,2,"110","w"],[10,25,2,1,"104","p"],[10,26,2,1,"103","p"],[11,23,2,1,"E/V","g"],[12,4,3,1,"137","p"],[12,5,3,1,"136","p"],[12,6,3,1,"135","p"],[12,7,3,1,"134","p"],[12,8,3,1,"133","p"],[12,9,3,1,"132","w"],[12,10,3,1,"131-1","w"],[12,11,3,1,"131","p"],[12,12,3,1,"130","w"],[12,13,3,1,"129","w"],[12,14,2,4,"128","w"],[13,23,2,1,"↓","a"],[16,4,3,1,"140","p"],[16,5,3,3,"141","w"],[16,8,3,3,"142","w"],[16,11,3,1,"143","w"],[16,12,3,6,"144","w"],[17,1,2,2,"화장실","g"],[18,22,2,2,"108","w"],[18,25,3,2,"102","w"],[21,14,2,4,"145","w"],[21,20,3,4,"101","w"],[22,4,2,1,"154","p"],[22,5,2,1,"153","p"],[22,6,2,1,"152","p"],[22,7,2,1,"151","p"],[22,8,2,1,"150","p"],[22,9,2,1,"149","p"],[22,10,2,1,"148","p"],[22,11,2,1,"147","p"],[22,12,2,2,"146","w"],[25,4,3,5,"157","w"],[25,9,3,4,"158","w"],[25,13,3,5,"159","w"],[26,1,1,2,"화장실","g"]],"2":[[2,10,1,1,"227","p"],[2,11,1,1,"226","p"],[2,12,1,1,"225","p"],[2,13,1,1,"224","p"],[2,14,1,1,"223","p"],[2,15,1,1,"222","p"],[2,16,1,2,"221","p"],[2,18,1,2,"221-1","p"],[2,20,1,1,"220","w"],[2,21,1,1,"219","p"],[2,22,1,1,"218","p"],[2,23,1,2,"217","p"],[2,25,1,1,"216","p"],[2,26,1,2,"215","p"],[2,28,1,1,"214","p"],[4,10,4,1,"230","w"],[4,11,4,2,"231","p"],[4,13,4,1,"232","p"],[4,14,4,3,"233","p"],[4,17,4,2,"234","w"],[4,23,4,2,"213","w"],[4,25,4,3,"212","p"],[4,28,2,1,"212-2","w"],[5,7,3,2,"화장실","g"],[5,30,2,1,"206","w"],[6,28,2,1,"212-1","w"],[7,30,2,1,"205","p"],[8,16,2,4,"235","w"],[8,26,1,3,"210","w"],[9,26,3,3,"209","w"],[9,30,1,1,"204","w"],[10,16,4,4,"236","w"],[10,30,2,1,"203","w"],[11,23,2,2,"화장실","g"],[12,4,3,1,"243","p"],[12,5,3,1,"242","p"],[12,6,3,4,"241","p"],[12,10,3,1,"240","p"],[12,11,3,1,"239","p"],[12,12,3,1,"238-1","p"],[12,13,3,1,"238","p"],[12,14,3,2,"237","p"],[12,28,2,1,"E/V","g"],[14,28,2,1,"↓","a"],[17,4,3,6,"246","w"],[17,10,3,1,"247","w"],[17,11,3,3,"248","w"],[17,14,3,4,"249","w"],[17,18,3,2,"250","w"],[18,1,2,2,"화장실","g"],[19,27,2,2,"207","p"],[19,30,3,1,"202","p"],[20,16,2,4,"251","p"],[22,16,1,4,"251-1","w"],[22,24,4,5,"201","w"],[23,16,2,4,"252","w"],[24,4,2,1,"259","w"],[24,5,2,1,"258","w"],[24,6,2,2,"257","p"],[24,8,2,3,"256-1","w"],[24,11,2,2,"256","w"],[24,13,2,1,"255","w"],[24,14,2,1,"254","w"],[24,15,2,1,"253","w"],[27,4,2,1,"262","w"],[27,5,2,7,"263","w"],[27,12,2,4,"264","w"],[27,16,2,4,"265","w"],[28,1,1,2,"화장실","g"]],"3":[[2,11,1,1,"326","p"],[2,12,1,1,"325","p"],[2,13,1,1,"324","p"],[2,14,1,1,"323-1","p"],[2,15,1,1,"323","p"],[2,16,1,1,"322","p"],[2,17,1,2,"321","p"],[2,19,1,2,"320","p"],[2,21,1,1,"319","p"],[2,22,1,1,"318","p"],[2,23,1,1,"317","p"],[2,24,1,2,"316","p"],[2,26,1,2,"315","p"],[2,28,1,2,"314","p"],[2,30,1,1,"313","p"],[4,11,2,2,"329","w"],[4,13,2,2,"330","p"],[4,15,2,1,"331","w"],[4,16,2,2,"332","w"],[4,18,2,2,"333","w"],[4,24,2,2,"312","w"],[4,26,2,5,"311","p"],[5,8,1,2,"화장실","g"],[5,32,1,1,"305-1","w"],[6,17,3,4,"334","w"],[6,28,1,3,"310","w"],[6,32,1,1,"305","w"],[7,28,1,3,"309","w"],[7,32,3,1,"304","p"],[8,28,3,3,"308","w"],[9,17,4,4,"335","w"],[10,24,3,3,"화장실","g"],[10,32,7,1,"303","w"],[12,5,2,1,"343","p"],[12,6,2,1,"342","p"],[12,7,2,2,"341","p"],[12,9,2,2,"340","p"],[12,11,2,1,"339","p"],[12,12,2,1,"338","p"],[12,13,2,1,"337-1","w"],[12,14,2,1,"337","p"],[12,15,2,2,"336","p"],[12,30,1,1,"E/V","g"],[13,30,2,1,"↓","a"],[16,5,3,4,"346","w"],[16,9,3,2,"347","w"],[16,11,3,2,"348","w"],[16,13,3,2,"348-1","w"],[16,15,3,1,"349","w"],[16,16,3,5,"350","w"],[17,2,2,2,"화장실","g"],[17,32,4,1,"302","w"],[18,29,2,2,"306","w"],[19,17,3,4,"351","w"],[21,25,4,6,"301","w"],[22,17,2,4,"352","w"],[23,5,2,1,"362","p"],[23,6,2,1,"361","p"],[23,7,2,2,"360","p"],[23,9,2,2,"359","p"],[23,11,2,1,"358","p"],[23,12,2,1,"357","p"],[23,13,2,1,"356","p"],[23,14,2,1,"355","p"],[23,15,2,1,"354","p"],[23,16,2,1,"353","p"],[26,5,2,2,"365","p"],[26,7,2,4,"365-1","w"],[26,11,2,2,"366","w"],[26,13,2,2,"366-1","w"],[26,15,2,2,"367","w"],[26,17,2,4,"367-1","w"],[27,2,1,2,"화장실","g"]],"4":[[2,12,1,2,"427","p"],[2,14,1,1,"426","p"],[2,15,1,1,"425","p"],[2,16,1,2,"424","p"],[2,18,1,1,"423","p"],[2,19,1,3,"422","p"],[2,22,1,2,"421","p"],[2,24,1,1,"420","p"],[2,25,1,1,"419","p"],[2,26,1,1,"418","p"],[2,27,1,1,"417","p"],[2,28,1,1,"416","p"],[2,29,1,2,"415","p"],[2,31,1,1,"414","p"],[4,12,3,3,"430","w"],[4,15,3,3,"431","p"],[4,18,3,1,"432","w"],[4,19,3,2,"433","p"],[4,21,3,2,"434","w"],[4,27,3,1,"413","w"],[4,28,3,4,"412","w"],[5,34,3,3,"406","w"],[6,9,1,2,"화장실","g"],[7,20,3,4,"435","w"],[7,29,1,3,"411","w"],[8,29,1,3,"410","w"],[8,34,3,3,"405","w"],[9,29,3,3,"409","w"],[10,20,3,4,"436","w"],[11,26,2,2,"화장실","g"],[11,34,6,3,"404","w"],[12,4,2,4,"446","p"],[12,8,2,2,"445","p"],[12,10,2,1,"444","p"],[12,11,2,2,"443","p"],[12,13,2,1,"442","p"],[12,14,2,1,"441","p"],[12,15,2,1,"440","p"],[12,16,2,2,"439","p"],[12,18,2,1,"438","p"],[12,19,2,1,"437","p"],[12,30,1,1,"E/V","g"],[13,30,2,1,"↓","a"],[16,5,4,8,"449","w"],[16,13,4,5,"450","w"],[16,18,4,6,"451","w"],[17,34,5,3,"403","w"],[18,1,2,2,"화장실","g"],[19,29,2,2,"407","w"],[20,20,1,4,"452","p"],[21,20,1,4,"453","w"],[22,20,1,4,"454","p"],[22,27,2,2,"401","w"],[22,29,2,2,"402","w"],[23,20,1,4,"455","p"],[24,20,2,4,"456","w"],[25,7,1,4,"461","p"],[25,11,1,3,"460","w"],[25,14,1,1,"459","p"],[25,15,1,1,"458-3","p"],[25,16,1,1,"458-2","p"],[25,17,1,1,"458-1","p"],[25,18,1,1,"458","p"],[25,19,1,1,"457","p"],[27,8,2,3,"462","w"],[27,11,2,3,"463","p"],[27,14,2,1,"464","p"],[27,15,2,1,"464-1","p"],[27,16,2,3,"465","w"],[27,19,2,5,"466","w"],[28,3,1,3,"화장실","g"]],"5":[[2,4,1,1,"522","p"],[2,5,1,1,"521","p"],[2,6,1,1,"520","p"],[2,7,1,1,"519","p"],[2,8,1,1,"518","p"],[2,9,1,3,"517","p"],[2,12,1,2,"516","p"],[2,14,1,1,"515","p"],[2,15,1,1,"514","p"],[2,16,1,2,"513","w"],[2,18,1,2,"512","w"],[4,4,3,4,"525-1","w"],[4,8,3,3,"525","w"],[4,16,3,4,"511","w"],[5,1,2,2,"화장실","g"],[5,21,1,1,"505","w"],[6,21,2,1,"504","w"],[7,18,1,2,"510","p"],[8,18,2,2,"509","w"],[8,21,1,1,"503","w"],[9,15,3,2,"화장실","g"],[9,21,6,1,"502","w"],[11,10,2,3,"526","w"],[11,19,1,1,"E/V","g"],[12,19,2,1,"↓","a"],[15,21,3,1,"501","w"],[16,19,1,1,"507","w"],[17,18,1,2,"506","w"]],"6":[[2,2,2,1,"607","w"],[3,6,2,3,"606-2","w"],[3,10,3,1,"602-1","w"],[5,6,1,3,"606-1","w"],[6,6,2,3,"606","w"],[6,10,6,1,"602","w"],[7,3,3,2,"화장실","g"],[8,8,1,1,"E/V","g"],[9,8,2,1,"↓","a"],[12,10,3,1,"601","w"],[13,7,1,2,"604","w"],[14,6,1,3,"603","w"]]};
   let floorSel = '1';
   let floorPick = null;
   const floorTabsEl = document.getElementById('floorTabs');
@@ -3858,7 +3863,7 @@
 
   // ===================== 나의 LMS =====================
   const LMS_CFG_KEY = 'kit-lms-cfg-v1';
-  const LMS_CACHE_KEY = 'kit-lms-cache-v2';
+  const LMS_CACHE_KEY = 'kit-lms-cache-v3';
   const LMS_MENU_KEY = 'kit-lms-menus-v1';
   const LMS_PROXY = 'https://kumoh-lms-proxy.kangdongwan7.workers.dev'; // ← Worker 주소
   let lmsCfg = { host: 'https://canvas.kumoh.ac.kr', token: '' };
@@ -4114,15 +4119,19 @@
         '</div>';
       }).join('');
     }
-    // 4. 강의 자료 파일 목록 (파일명, 링크)
+    // 4. 강의 자료 파일 목록 (파일 열기 / 파일 다운로드 기능 분리)
     else if(lmsSubTab === 'files'){
       const list = (lmsState.files || []).filter(f=>matchCourse(f.courseId));
       if(!list.length){
         lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">📁</span>불러온 강의 자료 파일이 없어요.<br>(과목에서 파일 탭이나 모듈 자료가 비공개일 수 있어요)</div>';
         return;
       }
-      lmsContentArea.innerHTML = list.map(f=>
-        '<div class="lms-card">'+
+      lmsContentArea.innerHTML = list.map(f=>{
+        const openUrl = f.openUrl || f.url || lmsCfg.host;
+        const dlUrl = f.downloadUrl || '';
+        const fileId = f.fileId || '';
+        const isFile = !!(dlUrl || fileId || f.isFile);
+        return '<div class="lms-card">'+
           '<div class="lms-card-top">'+
             '<span class="lms-course-badge">'+escapeHtml(f.courseName||'강의 자료')+'</span>'+
             '<span class="lms-dday">'+escapeHtml(f.source || (f.size ? fmtFileSize(f.size) : '자료'))+'</span>'+
@@ -4134,10 +4143,13 @@
             (f.size ? '<span>· '+escapeHtml(fmtFileSize(f.size))+'</span>' : '')+
           '</div>'+
           '<div class="lms-actions">'+
-            '<a class="lms-act-btn pri" href="'+escapeHtml(f.url||lmsCfg.host)+'" target="_blank" rel="noopener">⬇️ 파일 열기 / 다운로드 ↗</a>'+
+            '<a class="lms-act-btn" href="'+escapeHtml(openUrl)+'" target="_blank" rel="noopener">👁️ 파일 열기 ↗</a>'+
+            (isFile
+              ? '<button type="button" class="lms-act-btn pri" data-lmsdl-url="'+escapeHtml(dlUrl)+'" data-lmsdl-fid="'+escapeHtml(String(fileId))+'" data-lmsdl-cid="'+escapeHtml(String(f.courseId||''))+'" data-lmsdl-name="'+escapeHtml(f.name||'file')+'">⬇️ 파일 다운로드</button>'
+              : '')+
           '</div>'+
-        '</div>'
-      ).join('');
+        '</div>';
+      }).join('');
     }
     // 5. 캘린더 이벤트 전체
     else if(lmsSubTab === 'cal'){
@@ -4215,6 +4227,7 @@
       lmsDot.className = 'lms-dot';
       lmsStatusTxt.textContent = '토큰을 입력하면 LMS와 연동돼요';
       renderLMS();
+      if(typeof applyLmsSyncCollapse === 'function') applyLmsSyncCollapse(false);
       lmsCfgBox.style.display = '';
       return;
     }
@@ -4246,22 +4259,24 @@
       const sinceAnn = new Date(Date.now() - 120*86400000);
       const sinceAnnStr = fmtYMD(sinceAnn.getFullYear(), sinceAnn.getMonth()+1, sinceAnn.getDate());
 
-      // 2. 각 과목별 과제(제출상태, 점수, 코멘트), 강의자료(파일 + 모듈), 캘린더 이벤트, 공지사항 병렬 수집
+      // 2. 각 과목별 과제(제출상태, 점수, 코멘트), 강의자료(파일 + 모듈), 과목별 공지(discussion_topics?only_announcements=true) 병렬 수집
       const perCoursePromises = courses.map(async c=>{
-        const [asgRes, filesRes, modRes] = await Promise.allSettled([
+        const [asgRes, filesRes, modRes, cAnnRes] = await Promise.allSettled([
           lmsFetchAll('/api/v1/courses/'+c.id+'/assignments?include[]=submission&include[]=score_statistics&per_page=50', 2),
           lmsFetchAll('/api/v1/courses/'+c.id+'/files?per_page=50', 2),
-          lmsFetchAll('/api/v1/courses/'+c.id+'/modules?include[]=items&per_page=30', 2)
+          lmsFetchAll('/api/v1/courses/'+c.id+'/modules?include[]=items&per_page=30', 2),
+          lmsFetchAll('/api/v1/courses/'+c.id+'/discussion_topics?only_announcements=true&per_page=30', 2)
         ]);
         const asgs = asgRes.status === 'fulfilled' ? asgRes.value : [];
         const fls  = filesRes.status === 'fulfilled' ? filesRes.value : [];
         const mods = modRes.status === 'fulfilled' ? modRes.value : [];
-        return { course: c, asgs, fls, mods };
+        const cAnns = cAnnRes.status === 'fulfilled' ? cAnnRes.value : [];
+        return { course: c, asgs, fls, mods, cAnns };
       });
 
       const [perCourseResults, annRes, calEvRes, calAsgRes, upRes] = await Promise.all([
         Promise.all(perCoursePromises),
-        courses.length ? lmsFetchAll('/api/v1/announcements?'+ctx+'&start_date='+sinceAnnStr+'&per_page=40', 2).catch(()=>[]) : Promise.resolve([]),
+        courses.length ? lmsFetchAll('/api/v1/announcements?'+ctx+'&start_date=2020-01-01&per_page=50', 2).catch(()=>[]) : Promise.resolve([]),
         courses.length ? lmsFetchAll('/api/v1/calendar_events?type=event&'+ctx+'&all_events=true&per_page=50', 2).catch(()=>[]) : Promise.resolve([]),
         courses.length ? lmsFetchAll('/api/v1/calendar_events?type=assignment&'+ctx+'&all_events=true&per_page=50', 2).catch(()=>[]) : Promise.resolve([]),
         lmsFetchAll('/api/v1/users/self/upcoming_events?per_page=50', 2).catch(()=>[])
@@ -4271,8 +4286,15 @@
       const allFeedbacks = [];
       const allFiles = [];
       const seenFileKeys = new Set();
+      const rawAnnList = [];
 
-      perCourseResults.forEach(({ course, asgs, fls, mods })=>{
+      perCourseResults.forEach(({ course, asgs, fls, mods, cAnns })=>{
+        (Array.isArray(cAnns)?cAnns:[]).forEach(a=>{
+          if(a && (a.title || a.message)){
+            rawAnnList.push(Object.assign({}, a, { _courseId: course.id, _courseName: course.name }));
+          }
+        });
+
         (Array.isArray(asgs)?asgs:[]).forEach(a=>{
           if(!a || !a.name) return;
           const sub = a.submission || {};
@@ -4311,14 +4333,20 @@
           }
         });
 
-        // 직접 공개된 파일 목록
+        // 파일 ID 매핑 저장 (모듈 파일과 중복 방지 및 다운로드 링크 연결용)
+        const fileById = {};
         (Array.isArray(fls)?fls:[]).forEach(f=>{
           if(!f || !(f.display_name || f.filename)) return;
-          const key = 'f-'+(f.id || f.url || f.display_name);
+          fileById[f.id] = f;
+          const key = 'f-'+course.id+'-'+(f.id || f.display_name);
           if(seenFileKeys.has(key)) return;
           seenFileKeys.add(key);
+          const previewUrl = course.html_url + '/files/' + f.id;
+          const dlUrl = f.url || (course.html_url + '/files/' + f.id + '/download?download_frd=1');
           allFiles.push({
             id: f.id,
+            fileId: f.id,
+            isFile: true,
             courseId: course.id,
             courseName: course.name,
             name: f.display_name || f.filename,
@@ -4326,7 +4354,9 @@
             updated_at: f.updated_at || f.created_at || '',
             source: '강의 자료실',
             moduleName: '',
-            url: f.url || (course.html_url + '/files/' + f.id)
+            openUrl: previewUrl,
+            downloadUrl: dlUrl,
+            url: previewUrl
           });
         });
 
@@ -4336,19 +4366,30 @@
           items.forEach(it=>{
             if(!it || !it.title) return;
             if(it.type === 'File' || it.type === 'ExternalUrl' || it.type === 'Page'){
-              const key = 'm-'+(it.content_id || it.id);
+              const fid = it.content_id || '';
+              if(it.type === 'File' && fid && seenFileKeys.has('f-'+course.id+'-'+fid)) return;
+              const key = it.type === 'File' && fid ? ('f-'+course.id+'-'+fid) : ('m-'+course.id+'-'+(it.content_id || it.id));
               if(seenFileKeys.has(key)) return;
               seenFileKeys.add(key);
+              const matchedFile = (it.type === 'File' && fid) ? fileById[fid] : null;
+              const openUrl = it.html_url || it.external_url || (fid ? course.html_url + '/files/' + fid : course.html_url + '/modules');
+              const dlUrl = matchedFile && matchedFile.url
+                ? matchedFile.url
+                : (it.type === 'File' && fid ? (course.html_url + '/files/' + fid + '/download?download_frd=1') : '');
               allFiles.push({
                 id: it.id,
+                fileId: it.type === 'File' ? fid : '',
+                isFile: it.type === 'File',
                 courseId: course.id,
                 courseName: course.name,
                 name: it.title,
-                size: null,
-                updated_at: '',
+                size: matchedFile ? matchedFile.size : null,
+                updated_at: matchedFile ? (matchedFile.updated_at || '') : '',
                 source: it.type === 'File' ? '주차별 파일' : '강의 모듈 자료',
                 moduleName: m.name || '',
-                url: it.html_url || it.external_url || course.html_url + '/modules'
+                openUrl,
+                downloadUrl: dlUrl,
+                url: openUrl
               });
             }
           });
@@ -4370,28 +4411,40 @@
         return tb - ta;
       });
 
-      // 캘린더 이벤트 전체 통합 (calendar_events + upcoming_events + 과제 마감 일정)
+      // 캘린더 이벤트 전체 통합 (중복 완전 제거: 동일 과목+제목+시각 또는 동일 assignment ID 하나로 통합)
       const calMap = new Map();
+      const seenAsgIds = new Set();
       const pushCalEv = (raw, fallbackType)=>{
         if(!raw || !raw.title) return;
-        const cid = String(raw.context_code||'').replace('course_','');
+        const cid = String(raw.context_code || raw.course_id || '').replace('course_','');
         const startAt = raw.start_at || raw.end_at || (raw.assignment && raw.assignment.due_at) || '';
-        const key = (raw.id || raw.title) + '|' + startAt;
-        if(calMap.has(key)) return;
-        calMap.set(key, {
-          id: raw.id || key,
+        const normTitle = String(raw.title).trim();
+        const normTime = startAt ? new Date(startAt).getTime() : 0;
+        const asgId = (raw.assignment && raw.assignment.id) ? String(raw.assignment.id) : (String(raw.id||'').replace(/^assignment_|^asg-/,''));
+        const isAsg = (raw.type === 'assignment' || fallbackType === 'assignment' || !!(raw.assignment));
+        if(isAsg && asgId && seenAsgIds.has(cid+'|'+asgId)) return;
+        const dedupKey = cid + '|' + normTitle.toLowerCase() + '|' + (normTime || startAt);
+        if(calMap.has(dedupKey)){
+          // 이미 등록된 경우 설명(제출여부 등)이나 링크가 더 상세하면 보강
+          const prev = calMap.get(dedupKey);
+          if(!prev.desc && raw.description){
+            prev.desc = String(raw.description).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,80);
+          }
+          return;
+        }
+        if(isAsg && asgId) seenAsgIds.add(cid+'|'+asgId);
+        calMap.set(dedupKey, {
+          id: raw.id || dedupKey,
           courseId: cid || '',
           courseName: nameOf[cid] || raw.context_name || 'LMS 일정',
-          title: raw.title,
+          title: normTitle,
           start_at: startAt,
-          type: raw.type || fallbackType || 'event',
+          type: isAsg ? 'assignment' : (raw.type || fallbackType || 'event'),
           desc: String(raw.description||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,80),
           html_url: raw.html_url || lmsCfg.host
         });
       };
-      (Array.isArray(calEvRes)?calEvRes:[]).forEach(e=>pushCalEv(e,'event'));
-      (Array.isArray(calAsgRes)?calAsgRes:[]).forEach(e=>pushCalEv(e,'assignment'));
-      (Array.isArray(upRes)?upRes:[]).forEach(e=>pushCalEv(e,'event'));
+      // 과제 목록을 먼저 넣어서 '제출완료/미제출 과제' 설명이 우선 표시되게 함
       allAssignments.forEach(a=>{
         if(a.due_at){
           pushCalEv({
@@ -4405,23 +4458,40 @@
           }, 'assignment');
         }
       });
+      (Array.isArray(calEvRes)?calEvRes:[]).forEach(e=>pushCalEv(e,'event'));
+      (Array.isArray(calAsgRes)?calAsgRes:[]).forEach(e=>pushCalEv(e,'assignment'));
+      (Array.isArray(upRes)?upRes:[]).forEach(e=>pushCalEv(e,'event'));
       const calEventsAll = Array.from(calMap.values()).sort((a,b)=>{
         const ta = a.start_at ? new Date(a.start_at).getTime() : 0;
         const tb = b.start_at ? new Date(b.start_at).getTime() : 0;
         return tb - ta;
       });
 
-      const announcements = (Array.isArray(annRes)?annRes:[]).map(a=>{
-        const cid = String(a.context_code||'').replace('course_','');
-        return {
-          id: a.id,
+      // 과목 공지 통합 (/api/v1/announcements + 각 과목 discussion_topics?only_announcements=true)
+      (Array.isArray(annRes)?annRes:[]).forEach(a=>{
+        if(a && (a.title || a.message)) rawAnnList.push(a);
+      });
+      const annMap = new Map();
+      rawAnnList.forEach(a=>{
+        const cid = String(a._courseId || String(a.context_code||'').replace('course_','') || a.course_id || '');
+        const postedAt = a.posted_at || a.delayed_post_at || a.created_at || '';
+        const title = (a.title || '공지').trim();
+        const key = cid + '|' + (a.id || (title + '|' + postedAt));
+        if(annMap.has(key)) return;
+        annMap.set(key, {
+          id: a.id || key,
           courseId: cid,
-          title: a.title || '공지',
-          courseName: nameOf[cid] || '과목 공지',
-          posted_at: a.posted_at || '',
-          summary: String(a.message||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,140),
-          html_url: a.html_url || lmsCfg.host
-        };
+          title,
+          courseName: a._courseName || nameOf[cid] || '과목 공지',
+          posted_at: postedAt,
+          summary: String(a.message||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,220),
+          html_url: a.html_url || (cid ? lmsCfg.host + '/courses/' + cid + '/announcements' : lmsCfg.host)
+        });
+      });
+      const announcements = Array.from(annMap.values()).sort((a,b)=>{
+        const ta = a.posted_at ? new Date(a.posted_at).getTime() : 0;
+        const tb = b.posted_at ? new Date(b.posted_at).getTime() : 0;
+        return tb - ta;
       });
 
       lmsState = {
@@ -4442,6 +4512,7 @@
       lmsDot.className = 'lms-dot err';
       if(err.message === 'AUTH'){
         lmsStatusTxt.textContent = '토큰이 올바르지 않거나 만료됐어요';
+        if(typeof applyLmsSyncCollapse === 'function') applyLmsSyncCollapse(false);
         lmsCfgBox.style.display = '';
       } else if(err.message && err.message.startsWith('HTTP')){
         lmsStatusTxt.textContent = 'LMS 서버 오류 ('+err.message+')';
@@ -4481,8 +4552,32 @@
     }
   });
 
+  // LMS 동기화 메뉴 접기/펼치기 동작
+  const LMS_COLLAPSE_KEY = 'kit-lms-sync-collapsed-v1';
+  const lmsStatusHeader = document.getElementById('lmsStatusHeader');
+  const lmsSyncBody = document.getElementById('lmsSyncBody');
+  const lmsSyncCollapseBtn = document.getElementById('lmsSyncCollapseBtn');
+  let lmsSyncCollapsed = false;
+  try{
+    lmsSyncCollapsed = localStorage.getItem(LMS_COLLAPSE_KEY) === '1';
+  }catch(e){}
+  function applyLmsSyncCollapse(collapsed){
+    lmsSyncCollapsed = !!collapsed;
+    if(lmsSyncBody) lmsSyncBody.style.display = lmsSyncCollapsed ? 'none' : '';
+    if(lmsStatusHeader) lmsStatusHeader.setAttribute('aria-expanded', lmsSyncCollapsed ? 'false' : 'true');
+    if(lmsSyncCollapseBtn) lmsSyncCollapseBtn.textContent = lmsSyncCollapsed ? '▼ 메뉴 펼치기' : '▲ 메뉴 접기';
+    try{ localStorage.setItem(LMS_COLLAPSE_KEY, lmsSyncCollapsed ? '1' : '0'); }catch(e){}
+  }
+  applyLmsSyncCollapse(lmsSyncCollapsed);
+  if(lmsStatusHeader){
+    lmsStatusHeader.addEventListener('click', ()=>{
+      applyLmsSyncCollapse(!lmsSyncCollapsed);
+    });
+  }
+
   document.getElementById('lmsSyncBtn').addEventListener('click', syncLMS);
   document.getElementById('lmsMenuCustomBtn').addEventListener('click', ()=>{
+    applyLmsSyncCollapse(false);
     const open = lmsMenuCfgBox.style.display === 'none';
     if(open){
       lmsCfgBox.style.display = 'none';
@@ -4511,6 +4606,7 @@
   });
 
   document.getElementById('lmsCfgToggleBtn').addEventListener('click', ()=>{
+    applyLmsSyncCollapse(false);
     const open = lmsCfgBox.style.display === 'none';
     if(open) lmsMenuCfgBox.style.display = 'none';
     lmsCfgBox.style.display = open ? '' : 'none';
@@ -4534,7 +4630,57 @@
     lmsState = { user:null, courses:[], assignments:[], feedbacks:[], files:[], announcements:[], calEventsAll:[], updatedAt:null };
     syncLMS();
   });
-  lmsContentArea.addEventListener('click', e=>{
+  lmsContentArea.addEventListener('click', async e=>{
+    const dlBtn = e.target.closest && e.target.closest('[data-lmsdl-url]');
+    if(dlBtn){
+      e.preventDefault();
+      let dlUrl = dlBtn.getAttribute('data-lmsdl-url') || '';
+      const fid = dlBtn.getAttribute('data-lmsdl-fid') || '';
+      const cid = dlBtn.getAttribute('data-lmsdl-cid') || '';
+      const fname = dlBtn.getAttribute('data-lmsdl-name') || 'download';
+      const origTxt = dlBtn.textContent;
+      dlBtn.disabled = true;
+      dlBtn.textContent = '⏳ 다운로드 준비 중…';
+      try{
+        // fileId가 있으면 Canvas API로 최신 서명된 다운로드 URL(url)을 먼저 조회
+        if(fid && lmsCfg.token){
+          try{
+            const res = await fetch(LMS_PROXY + '/api/v1/files/' + encodeURIComponent(fid), { headers: LMS_HDR() });
+            if(res.ok){
+              const meta = await res.json();
+              if(meta && meta.url) dlUrl = meta.url;
+            }
+          }catch(_){}
+        }
+        if(!dlUrl && cid && fid){
+          dlUrl = lmsCfg.host + '/courses/' + cid + '/files/' + fid + '/download?download_frd=1';
+        }
+        if(dlUrl && !dlUrl.includes('download_frd=1') && !dlUrl.includes('verifier=')){
+          dlUrl += (dlUrl.includes('?') ? '&' : '?') + 'download_frd=1';
+        }
+        // iframe 또는 hidden a[download]로 브라우저 즉시 다운로드 트리거 (새 탭 미리보기 방지)
+        let dlFrame = document.getElementById('lmsHiddenDlFrame');
+        if(!dlFrame){
+          dlFrame = document.createElement('iframe');
+          dlFrame.id = 'lmsHiddenDlFrame';
+          dlFrame.style.display = 'none';
+          document.body.appendChild(dlFrame);
+        }
+        const a = document.createElement('a');
+        a.href = dlUrl || lmsCfg.host;
+        a.setAttribute('download', fname);
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(()=>{ try{ document.body.removeChild(a); }catch(_){} }, 1000);
+      }finally{
+        setTimeout(()=>{
+          dlBtn.disabled = false;
+          dlBtn.textContent = origTxt;
+        }, 700);
+      }
+      return;
+    }
     const btn = e.target.closest && e.target.closest('[data-lmsaddcal]');
     if(!btn) return;
     const title = btn.getAttribute('data-lmsaddcal');
