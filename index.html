@@ -3662,7 +3662,7 @@
   const LMS_CFG_KEY = 'kit-lms-cfg-v1';
   const LMS_CACHE_KEY = 'kit-lms-cache-v1';
   const LMS_PROXY = 'https://kumoh-lms-proxy.kangdongwan7.workers.dev'; // ← Worker 주소
-  let lmsCfg = { host: 'https://lms.kumoh.ac.kr', token: '' };
+  let lmsCfg = { host: 'https://canvas.kumoh.ac.kr', token: '' };
   try{
     const sc = JSON.parse(localStorage.getItem(LMS_CFG_KEY)||'null');
     if(sc && typeof sc.token === 'string') lmsCfg.token = sc.token;
