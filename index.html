@@ -108,6 +108,7 @@
     padding:12px;font-size:13px;border-radius:var(--radius);cursor:pointer;font-family:inherit;margin-top:4px;
   }
   .n-pin{color:var(--amber);font-size:11px;font-weight:700;margin-right:6px;}
+  .n-new{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:5px;background:#ff7a00;color:#ffffff;font-size:11.5px;font-weight:800;line-height:1;margin-left:6px;vertical-align:middle;box-shadow:0 1px 4px rgba(255,122,0,.45);flex-shrink:0;}
   header.top .kicker{
     font-size:13px;
     font-weight:700;
@@ -1265,6 +1266,7 @@
   body.side-open .side-menu a:nth-of-type(8){transition-delay:.44s}
   body.side-open .side-menu a:nth-of-type(9){transition-delay:.48s}
   body.side-open .side-menu a:nth-of-type(10){transition-delay:.52s}
+  body.side-open .side-menu a:nth-of-type(11){transition-delay:.56s}
   .side-menu .user-cfg-btn{
     border-color:var(--amber);
     background:var(--amber-soft);
@@ -1297,6 +1299,83 @@
     border:1px solid var(--line);
     background-color:var(--navy-2);
     color:var(--ink);
+  }
+  .cfg-sec-title{
+    font-size:13.5px;
+    color:var(--amber);
+    margin:8px 0 4px;
+    text-align:left;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .side-order-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    max-height:240px;
+    overflow-y:auto;
+    padding-right:2px;
+    margin:2px 0;
+  }
+  .side-order-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:8px 11px;
+    border:1px solid var(--line);
+    background:var(--navy-2);
+    border-radius:10px;
+    font-size:13.5px;
+    color:var(--ink);
+  }
+  .side-order-name{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    text-align:left;
+    min-width:0;
+    flex:1;
+  }
+  .side-order-num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:20px;
+    height:20px;
+    border-radius:6px;
+    background:var(--paper-2);
+    color:var(--ink-dim);
+    font-size:11.5px;
+  }
+  .side-order-btns{
+    display:flex;
+    gap:4px;
+    flex-shrink:0;
+  }
+  .side-order-btn{
+    width:30px;
+    height:28px;
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    color:var(--ink);
+    border-radius:7px;
+    font-size:12px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    font-family:inherit;
+  }
+  .side-order-btn:disabled{
+    opacity:.3;
+    cursor:default;
+  }
+  .side-order-btn:active:not(:disabled){
+    border-color:var(--amber);
+    color:var(--amber);
   }
   .tt-blk{
     position:relative;
@@ -1356,8 +1435,8 @@
   .sh-tabs button, .sh-card, .sh-card *, .sh-next, .sh-stop, .sh-stop *,
   .cal-nav-btn, .cal-cat-chip, .cal-pill, .cal-day.today .cal-day-num,
   .cal-add-open-btn, .cal-ev-item, .cal-ev-item *, .cal-icon-btn, .cal-cat-edit-link, .cal-cat-opt,
-  .cal-catm-del, .cal-catm-add, .cal-modal-btns button, .cal-sheet-close, .tab-cfg-sel,
-  .rm-bus-tab, .lms-subtab, .lms-card, .lms-card *, .lms-course-badge, .lms-dday, .lms-act-btn, .lms-status-bar, .lms-status-bar *,
+  .cal-catm-del, .cal-catm-add, .cal-modal-btns button, .cal-sheet-close, .tab-cfg-sel, .n-new, .cfg-sec-title, .side-order-row, .side-order-row *, .side-order-btn,
+  .rm-bus-tab, .lms-subtab, .lms-chip, .lms-menu-chk, .lms-card, .lms-card *, .lms-course-badge, .lms-dday, .lms-act-btn, .lms-status-bar, .lms-status-bar *,
   nav.tabbar, nav.tabbar *{
     font-weight:700 !important;
   }
@@ -1379,24 +1458,35 @@
   .rm-bus-tab{flex:1;padding:10px 6px;border:1px solid var(--line);background:var(--navy-2);color:var(--ink-dim);border-radius:var(--radius);font-size:13.5px;cursor:pointer;font-family:inherit;}
   .rm-bus-tab.on{background:var(--amber);border-color:var(--amber);color:#000;}
 
-  /* 나의 LMS (Canvas 연동) */
-  .lms-status-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border:1px solid var(--line);background:var(--navy-2);border-radius:var(--radius);margin-bottom:12px;font-size:13px;}
+  /* 나의 LMS */
+  .lms-status-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border:1px solid var(--line);background:var(--navy-2);border-radius:var(--radius);margin-bottom:12px;font-size:13px;flex-wrap:wrap;}
   .lms-status-bar .lms-st-txt{color:var(--ink);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
   .lms-dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--ink-dim);}
   .lms-dot.ok{background:var(--free);}
   .lms-dot.warn{background:var(--amber);}
   .lms-dot.err{background:var(--busy);}
-  .lms-subtabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;}
-  .lms-subtab{flex:1;min-width:74px;padding:9px 8px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-dim);border-radius:999px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;text-align:center;}
+  .lms-subtabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+  .lms-subtabs::-webkit-scrollbar{display:none;}
+  .lms-subtab{flex:0 0 auto;padding:9px 14px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-dim);border-radius:999px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;text-align:center;}
   .lms-subtab.on{background:var(--amber);border-color:var(--amber);color:#000;}
+  .lms-filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+  .lms-filter-bar select{flex:1;min-width:130px;padding:9px 30px 9px 11px;font-size:13.5px;}
+  .lms-chip-row{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;}
+  .lms-chip{border:1px solid var(--line);background:var(--navy-2);color:var(--ink-dim);padding:6px 11px;border-radius:999px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .lms-chip.on{border-color:var(--amber);color:var(--amber);background:var(--amber-soft);}
   .lms-card{border:1px solid var(--line);background:var(--paper-2);border-radius:var(--radius-lg);padding:15px 16px;margin-bottom:10px;box-shadow:var(--shadow);text-align:left;}
-  .lms-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
+  .lms-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .lms-badges{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
   .lms-course-badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;background:var(--amber-soft);color:var(--amber);}
   .lms-dday{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;background:var(--navy-2);color:var(--ink-dim);}
   .lms-dday.urgent{background:var(--busy-bg);color:var(--busy);}
   .lms-dday.done{background:var(--free-bg);color:var(--free);}
+  .lms-dday.score{background:rgba(59,130,246,.16);color:#60a5fa;}
   .lms-title{font-size:16px;color:var(--ink);margin:4px 0;line-height:1.4;}
   .lms-meta{font-size:12.5px;color:var(--ink-dim);display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;align-items:center;}
+  .lms-feedback-box{margin-top:8px;padding:9px 12px;border-radius:10px;background:var(--navy-2);border-left:3px solid var(--amber);font-size:13px;color:var(--ink);line-height:1.5;}
+  .lms-feedback-box .fb-who{font-size:11.5px;color:var(--ink-dim);margin-bottom:2px;}
+  .lms-grade-big{font-size:20px;color:var(--amber);margin-left:auto;}
   .lms-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
   .lms-act-btn{border:1px solid var(--line);background:var(--navy-2);color:var(--ink);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
   .lms-act-btn.pri{border-color:var(--amber);color:var(--amber);background:var(--amber-soft);}
@@ -1405,6 +1495,9 @@
   .lms-cfg-box label:first-child{margin-top:0;}
   .lms-cfg-row{display:flex;gap:6px;align-items:center;}
   .lms-cfg-row input{flex:1;min-width:0;padding:11px 12px;font-size:14px;border:1px solid var(--line);background:var(--navy-2);color:var(--ink);border-radius:var(--radius);font-family:inherit;}
+  .lms-menu-chk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+  .lms-menu-chk{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);background:var(--navy-2);border-radius:10px;font-size:13.5px;color:var(--ink);cursor:pointer;}
+  .lms-menu-chk input{width:18px;height:18px;accent-color:var(--amber);margin:0;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -1702,20 +1795,32 @@
     <!-- ===== TAB: 나의 LMS (사이드메뉴에서 진입) ===== -->
     <div class="tab-panel" data-tab="mylms">
       <section>
-        <h2>💻 나의 LMS (Canvas 연동)</h2>
+        <h2>💻 나의 LMS</h2>
         <div class="lms-status-bar">
           <div class="lms-st-txt">
             <span class="lms-dot" id="lmsDot"></span>
             <span id="lmsStatusTxt">LMS 데이터 확인 중…</span>
           </div>
-          <div style="display:flex;gap:6px;">
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
             <button type="button" class="refresh-btn" id="lmsSyncBtn">🔄 동기화</button>
+            <button type="button" class="refresh-btn" id="lmsMenuCustomBtn">🎛️ 메뉴 편집</button>
             <button type="button" class="refresh-btn" id="lmsCfgToggleBtn">⚙️ 연동 설정</button>
           </div>
         </div>
 
+        <!-- LMS 메뉴(표시할 항목) 커스터마이징 박스 -->
+        <div class="lms-cfg-box" id="lmsMenuCfgBox" style="display:none;">
+          <label style="margin-top:0;">표시할 LMS 메뉴 선택 (원하는 항목만 체크하세요)</label>
+          <div class="lms-menu-chk-grid" id="lmsMenuChkGrid"></div>
+          <div class="rm-row" style="margin-top:12px;">
+            <button type="button" class="tt-btn" id="lmsMenuCfgSaveBtn">적용하기</button>
+            <button type="button" class="tt-btn ghost" id="lmsMenuCfgResetBtn">전체 표시</button>
+          </div>
+        </div>
+
+        <!-- 토큰 연동 설정 박스 -->
         <div class="lms-cfg-box" id="lmsCfgBox" style="display:none;">
-          <label for="lmsInToken">내 Canvas 액세스 토큰</label>
+          <label for="lmsInToken">내 LMS 액세스 토큰</label>
           <div class="lms-cfg-row">
             <input type="password" id="lmsInToken" placeholder="토큰을 붙여넣으세요" autocomplete="off">
             <button type="button" class="lms-act-btn" id="lmsTokenVisBtn">보기</button>
@@ -1730,13 +1835,8 @@
           </div>
         </div>
 
-        <div class="lms-subtabs" id="lmsSubTabs">
-          <button type="button" class="lms-subtab on" data-lsub="todo">📝 할 일·과제</button>
-          <button type="button" class="lms-subtab" data-lsub="courses">📚 수강 과목</button>
-          <button type="button" class="lms-subtab" data-lsub="ann">📢 과목 공지</button>
-          <button type="button" class="lms-subtab" data-lsub="cal">🗓️ 예정 일정</button>
-        </div>
-
+        <div class="lms-subtabs" id="lmsSubTabs"></div>
+        <div class="lms-filter-bar" id="lmsFilterBar" style="display:none;"></div>
         <div id="lmsContentArea"></div>
       </section>
     </div>
@@ -2214,9 +2314,25 @@
   let noticeShown = [];
   let noticeCurrentPage = 1;
 
+  function isNoticeToday(dateStr){
+    if(!dateStr) return false;
+    const nums = String(dateStr).match(/\d+/g);
+    if(!nums || nums.length < 3) return false;
+    const now = new Date();
+    const ty = now.getFullYear();
+    const tm = now.getMonth() + 1;
+    const td = now.getDate();
+    let y = parseInt(nums[0], 10);
+    if(y < 100) y += 2000;
+    const m = parseInt(nums[1], 10);
+    const d = parseInt(nums[2], 10);
+    return y === ty && m === tm && d === td;
+  }
+
   function noticeItemHtml(n, pinned){
+    const todayBadge = isNoticeToday(n.date) ? '<span class="n-new" title="오늘 등록된 게시물" aria-label="새 게시물">N</span>' : '';
     return '<div class="notice-item" data-article-no="'+escapeHtml(n.articleNo)+'">'+
-      '<p class="n-title">'+(pinned?'<span class="n-pin">공지</span>':'')+escapeHtml(n.title)+'</p>'+
+      '<p class="n-title">'+(pinned?'<span class="n-pin">공지</span>':'')+escapeHtml(n.title)+todayBadge+'</p>'+
       '<p class="n-meta">'+
         (n.dept? '<span>'+escapeHtml(n.dept)+'</span>':'')+
         (n.date? '<span>'+escapeHtml(n.date)+'</span>':'')+
@@ -2369,8 +2485,9 @@
   }
 
   function renderNoticeDetail(d, sourceUrl){
+    const todayBadge = isNoticeToday(d.writeDate) ? '<span class="n-new" title="오늘 등록된 게시물" aria-label="새 게시물">N</span>' : '';
     noticeDetailArea.innerHTML =
-      '<p class="notice-detail-title">'+escapeHtml(d.title)+'</p>'+
+      '<p class="notice-detail-title">'+escapeHtml(d.title)+todayBadge+'</p>'+
       '<p class="notice-detail-meta">'+
         (d.writer? '<span>'+escapeHtml(d.writer)+'</span>':'')+
         (d.writeDate? '<span>'+escapeHtml(d.writeDate)+'</span>':'')+
@@ -2456,16 +2573,45 @@
     biskit:   { id:'biskit',   icon:'📚', label:'Biskit',     sideLabel:'Biskit',      type:'link', url:'https://biskit.kumoh.ac.kr/' }
   };
   const DEFAULT_BAR_TABS = ['rooms','menu','bus','notice'];
+  const DEFAULT_SIDE_ORDER = ['rooms','menu','bus','notice','mytt','mycal','remind','mylms','home_web','onekit','biskit'];
   const TAB_CFG_KEY = 'kit-custom-tabs-v1';
+  const SIDE_ORDER_KEY = 'kit-side-order-v1';
   let userBarTabs = DEFAULT_BAR_TABS.slice();
+  let userSideOrder = DEFAULT_SIDE_ORDER.slice();
   try{
     const savedTabs = JSON.parse(localStorage.getItem(TAB_CFG_KEY)||'null');
     if(Array.isArray(savedTabs) && savedTabs.length === 4 && savedTabs.every(k=>TAB_ITEMS[k])){
       userBarTabs = savedTabs;
     }
   }catch(e){}
+  try{
+    const savedSide = JSON.parse(localStorage.getItem(SIDE_ORDER_KEY)||'null');
+    if(Array.isArray(savedSide) && savedSide.length){
+      const valid = savedSide.filter(k=>TAB_ITEMS[k]);
+      DEFAULT_SIDE_ORDER.forEach(k=>{ if(!valid.includes(k)) valid.push(k); });
+      userSideOrder = valid;
+    }
+  }catch(e){}
   function saveUserBarTabs(){
     try{ localStorage.setItem(TAB_CFG_KEY, JSON.stringify(userBarTabs)); }catch(e){}
+  }
+  function saveUserSideOrder(){
+    try{ localStorage.setItem(SIDE_ORDER_KEY, JSON.stringify(userSideOrder)); }catch(e){}
+  }
+
+  function renderSideMenu(){
+    const navListEl = document.getElementById('sideNavList');
+    if(!navListEl) return;
+    const idAttrMap = { mytt:' id="sideMyTT"', mycal:' id="sideMyCal"', remind:' id="sideRemind"', mylms:' id="sideMyLMS"' };
+    navListEl.innerHTML = userSideOrder.map(k=>{
+      const it = TAB_ITEMS[k];
+      if(!it) return '';
+      const extraId = idAttrMap[k] || '';
+      if(it.type === 'link'){
+        return '<a href="'+escapeHtml(it.url)+'" target="_blank" rel="noopener"'+extraId+' data-nav="'+escapeHtml(k)+'">'+it.icon+' '+escapeHtml(it.sideLabel)+'<small>↗</small></a>';
+      }
+      return '<a href="#"'+extraId+' data-nav="'+escapeHtml(k)+'">'+it.icon+' '+escapeHtml(it.sideLabel)+'</a>';
+    }).join('');
   }
 
   let currentActiveTab = 'rooms';
@@ -2546,12 +2692,33 @@
     }
   });
 
-  // 사용자 설정 모달 동작 (모달 HTML이 스크립트 아래에 있으므로 호출 시점에 요소를 조회)
+  // 사용자 설정 모달 동작 (하단 4개 탭 배치 + 사이드메뉴 순서 변경)
+  let tempSideOrder = [];
+  function renderSideOrderModalList(){
+    const sideOrderEl = document.getElementById('sideOrderList');
+    if(!sideOrderEl) return;
+    sideOrderEl.innerHTML = tempSideOrder.map((k, idx)=>{
+      const it = TAB_ITEMS[k];
+      if(!it) return '';
+      const tag = it.type === 'link' ? ' <small style="color:var(--ink-dim);font-size:11px;">(바로가기 ↗)</small>' : '';
+      return '<div class="side-order-row" data-skey="'+escapeHtml(k)+'">'+
+        '<div class="side-order-name">'+
+          '<span class="side-order-num">'+(idx+1)+'</span>'+
+          '<span>'+it.icon+' '+escapeHtml(it.sideLabel)+tag+'</span>'+
+        '</div>'+
+        '<div class="side-order-btns">'+
+          '<button type="button" class="side-order-btn" data-side-move="up" data-sidx="'+idx+'" '+(idx===0?'disabled':'')+' aria-label="위로 이동">▲</button>'+
+          '<button type="button" class="side-order-btn" data-side-move="down" data-sidx="'+idx+'" '+(idx===tempSideOrder.length-1?'disabled':'')+' aria-label="아래로 이동">▼</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
   function openTabCfgModal(){
     const modalBg = document.getElementById('tabCfgModalBg');
     const listEl = document.getElementById('tabCfgList');
     if(!modalBg || !listEl) return;
-    const allKeys = Object.keys(TAB_ITEMS);
+    const allKeys = userSideOrder.slice();
     listEl.innerHTML = [0,1,2,3].map(idx=>{
       const curKey = userBarTabs[idx] || DEFAULT_BAR_TABS[idx];
       const opts = allKeys.map(k=>{
@@ -2564,6 +2731,8 @@
         '<select class="tab-cfg-sel" data-slot="'+idx+'">'+opts+'</select>'+
       '</div>';
     }).join('');
+    tempSideOrder = userSideOrder.slice();
+    renderSideOrderModalList();
     // 사이드메뉴 닫고 모달 열기
     document.body.classList.remove('side-open');
     const sm = document.getElementById('sideMenu');
@@ -2577,6 +2746,23 @@
   document.addEventListener('click', e=>{
     const modalBg = document.getElementById('tabCfgModalBg');
     const listEl = document.getElementById('tabCfgList');
+    const moveBtn = e.target.closest && e.target.closest('[data-side-move]');
+    if(moveBtn){
+      const dir = moveBtn.getAttribute('data-side-move');
+      const idx = parseInt(moveBtn.getAttribute('data-sidx'), 10);
+      if(dir === 'up' && idx > 0){
+        const tmp = tempSideOrder[idx - 1];
+        tempSideOrder[idx - 1] = tempSideOrder[idx];
+        tempSideOrder[idx] = tmp;
+        renderSideOrderModalList();
+      } else if(dir === 'down' && idx < tempSideOrder.length - 1){
+        const tmp = tempSideOrder[idx + 1];
+        tempSideOrder[idx + 1] = tempSideOrder[idx];
+        tempSideOrder[idx] = tmp;
+        renderSideOrderModalList();
+      }
+      return;
+    }
     if(e.target.closest && e.target.closest('#openTabCfgBtn')){
       e.preventDefault();
       openTabCfgModal();
@@ -2589,21 +2775,33 @@
         const sels = listEl.querySelectorAll('.tab-cfg-sel');
         DEFAULT_BAR_TABS.forEach((k,i)=>{ if(sels[i]) sels[i].value = k; });
       }
+      tempSideOrder = DEFAULT_SIDE_ORDER.slice();
+      renderSideOrderModalList();
     } else if(e.target.closest && e.target.closest('#tabCfgSave')){
       if(listEl){
         const sels = Array.from(listEl.querySelectorAll('.tab-cfg-sel'));
         const picked = sels.map(s=>s.value);
         if(new Set(picked).size < 4){
-          if(!confirm('중복으로 선택된 탭이 있어요. 이대로 저장할까요?')) return;
+          if(!confirm('중복으로 선택된 하단 탭이 있어요. 이대로 저장할까요?')) return;
         }
         userBarTabs = picked;
         saveUserBarTabs();
         renderTabbar();
-        closeTabCfgModal();
       }
+      if(Array.isArray(tempSideOrder) && tempSideOrder.length){
+        userSideOrder = tempSideOrder.slice();
+        saveUserSideOrder();
+        renderSideMenu();
+      }
+      closeTabCfgModal();
     }
   });
   renderTabbar();
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', renderSideMenu);
+  } else {
+    renderSideMenu();
+  }
 
 
   // ===================== 내 시간표 ======================
@@ -3658,9 +3856,10 @@
   setTimeout(()=>{ renderRM(); rmTick(); }, 0);
   setTimeout(rmTick, 3000);
 
-  // ===================== 나의 LMS (GitHub Actions data/lms.json + Canvas API 연동) =====================
+  // ===================== 나의 LMS =====================
   const LMS_CFG_KEY = 'kit-lms-cfg-v1';
-  const LMS_CACHE_KEY = 'kit-lms-cache-v1';
+  const LMS_CACHE_KEY = 'kit-lms-cache-v2';
+  const LMS_MENU_KEY = 'kit-lms-menus-v1';
   const LMS_PROXY = 'https://kumoh-lms-proxy.kangdongwan7.workers.dev'; // ← Worker 주소
   let lmsCfg = { host: 'https://canvas.kumoh.ac.kr', token: '' };
   try{
@@ -3669,64 +3868,52 @@
   }catch(e){}
   function saveLmsCfg(){ try{ localStorage.setItem(LMS_CFG_KEY, JSON.stringify({ token: lmsCfg.token })); }catch(e){} }
 
-  let lmsSubTab = 'todo';
+  // 사용자 커스터마이징 가능한 LMS 서브메뉴 전체 목록
+  const LMS_MENU_DEFS = [
+    { id:'assignments', label:'📝 전체 과제·제출현황' },
+    { id:'feedback',    label:'💯 성적·최근 피드백' },
+    { id:'grades',      label:'📊 과목별 현재 성적' },
+    { id:'files',       label:'📁 강의 자료실' },
+    { id:'cal',         label:'🗓️ 캘린더 이벤트 전체' },
+    { id:'ann',         label:'📢 과목 공지' }
+  ];
+  let lmsVisibleMenus = LMS_MENU_DEFS.map(m=>m.id);
+  try{
+    const sm = JSON.parse(localStorage.getItem(LMS_MENU_KEY)||'null');
+    if(Array.isArray(sm) && sm.length){
+      const valid = sm.filter(id=>LMS_MENU_DEFS.some(d=>d.id===id));
+      if(valid.length) lmsVisibleMenus = valid;
+    }
+  }catch(e){}
+  function saveLmsMenus(){ try{ localStorage.setItem(LMS_MENU_KEY, JSON.stringify(lmsVisibleMenus)); }catch(e){} }
+
+  let lmsSubTab = lmsVisibleMenus[0] || 'assignments';
+  let lmsFilterCourse = 'all';
+  let lmsFilterStatus = 'all'; // all | unsubmitted | submitted | graded
+
   let lmsState = {
     user: null,
     courses: [],
-    todos: [],
+    assignments: [],
+    feedbacks: [],
+    files: [],
     announcements: [],
-    upcoming: [],
+    calEventsAll: [],
     updatedAt: null
   };
   try{
     const cachedLms = JSON.parse(localStorage.getItem(LMS_CACHE_KEY)||'null');
-    if(cachedLms && cachedLms.courses) lmsState = cachedLms;
+    if(cachedLms && Array.isArray(cachedLms.courses)) Object.assign(lmsState, cachedLms);
   }catch(e){}
-
-  function buildDemoLmsData(){
-    const now = Date.now();
-    const dPlus = (days, hh='23:59')=>{
-      const d = new Date(now + days*86400000);
-      return fmtYMD(d.getFullYear(), d.getMonth()+1, d.getDate())+'T'+hh+':00+09:00';
-    };
-    const myTaken = myTT.map(k=>courseMap[k]).filter(Boolean);
-    const baseCourses = myTaken.length ? myTaken.map((c,i)=>({
-      id: 1001+i,
-      name: c.course,
-      course_code: c.code || ('KIT-'+(i+1)),
-      term: '2026학년도 2학기',
-      prof: c.prof || '담당교수',
-      html_url: lmsCfg.host+'/courses/'+(1001+i)
-    })) : [
-      { id:1001, name:'정역학', course_code:'CA0003-01', term:'2026학년도 2학기', prof:'담당교수', html_url:lmsCfg.host },
-      { id:1002, name:'대학수학2', course_code:'LA0505-05', term:'2026학년도 2학기', prof:'담당교수', html_url:lmsCfg.host },
-      { id:1003, name:'일반물리학2', course_code:'LA0506-02', term:'2026학년도 2학기', prof:'담당교수', html_url:lmsCfg.host },
-      { id:1004, name:'디지털문해력', course_code:'LA0366-01', term:'2026학년도 2학기', prof:'담당교수', html_url:lmsCfg.host }
-    ];
-    return {
-      user: { name:'금오공대 학생' },
-      courses: baseCourses,
-      todos: [
-        { id:'td-1', title:'단원별 연습문제 풀이 과제 #4 제출', courseName:baseCourses[0].name, due_at:dPlus(2,'23:59'), points:20, submitted:false, html_url:baseCourses[0].html_url },
-        { id:'td-2', title:'주차별 온라인 강의 영상 수강 (출석 인정)', courseName:baseCourses[1]?baseCourses[1].name:baseCourses[0].name, due_at:dPlus(4,'23:59'), points:10, submitted:false, html_url:lmsCfg.host },
-        { id:'td-3', title:'실험 보고서 및 데이터 분석 리포트 제출', courseName:baseCourses[2]?baseCourses[2].name:baseCourses[0].name, due_at:dPlus(6,'18:00'), points:30, submitted:false, html_url:lmsCfg.host }
-      ],
-      announcements: [
-        { id:'an-1', title:'[공지] 과제 제출 기한 및 성적 확인 안내', courseName:baseCourses[0].name, posted_at:dPlus(-1,'14:20'), summary:'이번 주 마감되는 과제 제출 기한을 엄수해 주시기 바랍니다.', html_url:lmsCfg.host },
-        { id:'an-2', title:'[안내] 다음 주 실습 강의실 및 준비물 공지', courseName:baseCourses[1]?baseCourses[1].name:baseCourses[0].name, posted_at:dPlus(-3,'10:00'), summary:'실습 자료를 LMS 강의자료실에서 미리 다운로드해 오세요.', html_url:lmsCfg.host }
-      ],
-      upcoming: [
-        { id:'up-1', title:'단원별 연습문제 풀이 과제 #4 마감', courseName:baseCourses[0].name, start_at:dPlus(2,'23:59'), html_url:lmsCfg.host },
-        { id:'up-2', title:'팀 프로젝트 발표자료 제출', courseName:baseCourses[1]?baseCourses[1].name:baseCourses[0].name, start_at:dPlus(5,'23:59'), html_url:lmsCfg.host }
-      ],
-      updatedAt: new Date().toISOString()
-    };
-  }
 
   const lmsDot = document.getElementById('lmsDot');
   const lmsStatusTxt = document.getElementById('lmsStatusTxt');
   const lmsContentArea = document.getElementById('lmsContentArea');
   const lmsCfgBox = document.getElementById('lmsCfgBox');
+  const lmsMenuCfgBox = document.getElementById('lmsMenuCfgBox');
+  const lmsMenuChkGrid = document.getElementById('lmsMenuChkGrid');
+  const lmsSubTabsEl = document.getElementById('lmsSubTabs');
+  const lmsFilterBar = document.getElementById('lmsFilterBar');
   const lmsInToken = document.getElementById('lmsInToken');
 
   function fmtDday(isoStr){
@@ -3740,64 +3927,255 @@
     return { text:'D-'+days, cls: days<=3 ? 'urgent' : '' };
   }
   function fmtKorDateTime(isoStr){
-    if(!isoStr) return '-';
+    if(!isoStr) return '기한 없음';
     const d = new Date(isoStr);
     if(isNaN(d.getTime())) return isoStr;
     return (d.getMonth()+1)+'월 '+d.getDate()+'일 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   }
+  function fmtFileSize(bytes){
+    if(bytes == null || isNaN(bytes)) return '';
+    if(bytes < 1024) return bytes+' B';
+    if(bytes < 1048576) return (bytes/1024).toFixed(1)+' KB';
+    return (bytes/1048576).toFixed(1)+' MB';
+  }
+
+  function renderLmsSubTabs(){
+    if(!lmsVisibleMenus.includes(lmsSubTab)){
+      lmsSubTab = lmsVisibleMenus[0] || 'assignments';
+    }
+    lmsSubTabsEl.innerHTML = LMS_MENU_DEFS
+      .filter(m => lmsVisibleMenus.includes(m.id))
+      .map(m => '<button type="button" class="lms-subtab'+(m.id===lmsSubTab?' on':'')+'" data-lsub="'+escapeHtml(m.id)+'">'+escapeHtml(m.label)+'</button>')
+      .join('');
+  }
+
+  function renderLmsMenuCheckboxes(){
+    lmsMenuChkGrid.innerHTML = LMS_MENU_DEFS.map(m=>{
+      const chk = lmsVisibleMenus.includes(m.id) ? ' checked' : '';
+      return '<label class="lms-menu-chk"><input type="checkbox" value="'+escapeHtml(m.id)+'"'+chk+'><span>'+escapeHtml(m.label)+'</span></label>';
+    }).join('');
+  }
+
+  function renderLmsFilterBar(){
+    const courses = lmsState.courses || [];
+    if(!courses.length || lmsSubTab === 'grades'){
+      lmsFilterBar.style.display = 'none';
+      lmsFilterBar.innerHTML = '';
+      return;
+    }
+    lmsFilterBar.style.display = 'flex';
+    const courseOpts = '<option value="all">전체 수강 과목 ('+courses.length+')</option>' +
+      courses.map(c=>'<option value="'+escapeHtml(String(c.id))+'"'+(String(lmsFilterCourse)===String(c.id)?' selected':'')+'>'+escapeHtml(c.name)+'</option>').join('');
+    let statusChips = '';
+    if(lmsSubTab === 'assignments'){
+      const stList = [
+        { k:'all', l:'전체' },
+        { k:'unsubmitted', l:'미제출' },
+        { k:'submitted', l:'제출완료' },
+        { k:'graded', l:'채점완료' }
+      ];
+      statusChips = '<div class="lms-chip-row">' + stList.map(s=>
+        '<button type="button" class="lms-chip'+(lmsFilterStatus===s.k?' on':'')+'" data-lst="'+s.k+'">'+s.l+'</button>'
+      ).join('') + '</div>';
+    }
+    lmsFilterBar.innerHTML = '<select id="lmsCourseFilterSel">'+courseOpts+'</select>' + statusChips;
+  }
 
   function renderLMS(){
-    if(!lmsState.courses.length && !lmsState.todos.length){
+    renderLmsSubTabs();
+    if(!lmsCfg.token && !lmsState.courses.length){
+      lmsFilterBar.style.display = 'none';
+      lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">🔑</span>위의 <b>⚙️ 연동 설정</b>에서<br>내 LMS 액세스 토큰을 입력해 주세요.</div>';
+      return;
+    }
+    if(!lmsState.courses.length){
+      lmsFilterBar.style.display = 'none';
       lmsContentArea.innerHTML = '<div class="notice-loading">LMS 데이터를 불러오는 중이에요…</div>';
       return;
     }
+    renderLmsFilterBar();
+    const matchCourse = (cid) => lmsFilterCourse === 'all' || String(cid) === String(lmsFilterCourse);
 
-    if(lmsSubTab === 'todo'){
-      const list = lmsState.todos || [];
+    // 1. 과제 전체 목록과 제출 여부, 제출 상태, 마감일
+    if(lmsSubTab === 'assignments'){
+      let list = (lmsState.assignments || []).filter(a=>matchCourse(a.courseId));
+      if(lmsFilterStatus === 'unsubmitted') list = list.filter(a=>!a.submitted && !a.graded);
+      else if(lmsFilterStatus === 'submitted') list = list.filter(a=>a.submitted);
+      else if(lmsFilterStatus === 'graded') list = list.filter(a=>a.graded);
+
       if(!list.length){
-        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">🎉</span>현재 제출할 과제나 할 일이 없어요!</div>';
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">📝</span>조건에 맞는 과제가 없어요.</div>';
         return;
       }
-      lmsContentArea.innerHTML = list.map(t=>{
-        const dd = t.submitted ? { text:'제출완료', cls:'done' } : fmtDday(t.due_at);
-        const dObj = t.due_at ? new Date(t.due_at) : null;
+      lmsContentArea.innerHTML = list.map(a=>{
+        const dd = fmtDday(a.due_at);
+        let subBadge = '';
+        if(a.graded){
+          const scTxt = (a.score != null ? a.score : '-') + (a.points != null ? ' / '+a.points : '');
+          subBadge = '<span class="lms-dday score">채점완료 · '+escapeHtml(scTxt)+'점</span>';
+        } else if(a.submitted){
+          subBadge = '<span class="lms-dday done">✅ 제출완료'+(a.late?' (지각제출)':'')+'</span>';
+        } else {
+          subBadge = '<span class="lms-dday '+(a.missing || dd.cls==='urgent' ? 'urgent' : '')+'">❌ 미제출'+(a.missing?' (미제출 처리)':'')+'</span>';
+        }
+        const ddayBadge = a.due_at ? '<span class="lms-dday '+(!a.submitted && dd.cls ? dd.cls : '')+'">'+escapeHtml(dd.text)+'</span>' : '';
+        const dObj = a.due_at ? new Date(a.due_at) : null;
         const ymd = (dObj && !isNaN(dObj.getTime())) ? fmtYMD(dObj.getFullYear(), dObj.getMonth()+1, dObj.getDate()) : '';
         const hm = (dObj && !isNaN(dObj.getTime())) ? (String(dObj.getHours()).padStart(2,'0')+':'+String(dObj.getMinutes()).padStart(2,'0')) : '23:59';
+
+        const fbHtml = (a.comments && a.comments.length) ? a.comments.map(cm=>
+          '<div class="lms-feedback-box"><div class="fb-who">💬 '+escapeHtml(cm.author||'교수님/조교 코멘트')+(cm.date?' · '+escapeHtml(fmtKorDateTime(cm.date)):'')+'</div>'+escapeHtml(cm.comment)+'</div>'
+        ).join('') : '';
+
         return '<div class="lms-card">'+
           '<div class="lms-card-top">'+
-            '<span class="lms-course-badge">'+escapeHtml(t.courseName||'수강 과목')+'</span>'+
-            '<span class="lms-dday '+dd.cls+'">'+escapeHtml(dd.text)+'</span>'+
+            '<span class="lms-course-badge">'+escapeHtml(a.courseName||'과목')+'</span>'+
+            '<div class="lms-badges">'+subBadge+ddayBadge+'</div>'+
           '</div>'+
-          '<div class="lms-title">'+escapeHtml(t.title)+'</div>'+
+          '<div class="lms-title">'+escapeHtml(a.title)+'</div>'+
           '<div class="lms-meta">'+
-            '<span>⏰ 마감: '+escapeHtml(fmtKorDateTime(t.due_at))+'</span>'+
-            (t.points != null ? '<span>· 배점 '+escapeHtml(t.points)+'점</span>' : '')+
+            '<span>⏰ 마감일: '+escapeHtml(fmtKorDateTime(a.due_at))+'</span>'+
+            (a.points != null ? '<span>· 배점 '+escapeHtml(a.points)+'점</span>' : '')+
+            (a.submitted_at ? '<span>· 제출일: '+escapeHtml(fmtKorDateTime(a.submitted_at))+'</span>' : '')+
           '</div>'+
+          fbHtml+
           '<div class="lms-actions">'+
-            (ymd ? '<button type="button" class="lms-act-btn pri" data-lmsaddcal="'+escapeHtml(t.title)+'" data-course="'+escapeHtml(t.courseName||'')+'" data-date="'+ymd+'" data-time="'+hm+'">📅 내 캘린더·알림에 추가</button>' : '')+
-            '<a class="lms-act-btn" href="'+escapeHtml(t.html_url||lmsCfg.host)+'" target="_blank" rel="noopener">🔗 LMS에서 열기 ↗</a>'+
+            (ymd ? '<button type="button" class="lms-act-btn pri" data-lmsaddcal="'+escapeHtml(a.title)+'" data-course="'+escapeHtml(a.courseName||'')+'" data-date="'+ymd+'" data-time="'+hm+'">📅 내 캘린더·알림에 추가</button>' : '')+
+            '<a class="lms-act-btn" href="'+escapeHtml(a.html_url||lmsCfg.host)+'" target="_blank" rel="noopener">🔗 과제 바로가기 ↗</a>'+
           '</div>'+
         '</div>';
       }).join('');
-    } else if(lmsSubTab === 'courses'){
-      const list = lmsState.courses || [];
-      lmsContentArea.innerHTML = list.map(c=>
-        '<div class="lms-card">'+
+    }
+    // 2. 성적과 최근 피드백 (점수, 교수 코멘트)
+    else if(lmsSubTab === 'feedback'){
+      const list = (lmsState.feedbacks || []).filter(f=>matchCourse(f.courseId));
+      if(!list.length){
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">💯</span>아직 채점된 과제나 등록된 교수님 피드백이 없어요.</div>';
+        return;
+      }
+      lmsContentArea.innerHTML = list.map(f=>{
+        const scTxt = (f.score != null ? f.score : '-') + (f.points != null ? ' / '+f.points : '');
+        const fbHtml = (f.comments && f.comments.length) ? f.comments.map(cm=>
+          '<div class="lms-feedback-box"><div class="fb-who">💬 '+escapeHtml(cm.author||'교수님 코멘트')+(cm.date?' · '+escapeHtml(fmtKorDateTime(cm.date)):'')+'</div>'+escapeHtml(cm.comment)+'</div>'
+        ).join('') : '<div class="lms-meta"><span>코멘트 없음</span></div>';
+        return '<div class="lms-card">'+
           '<div class="lms-card-top">'+
-            '<span class="lms-course-badge">'+escapeHtml(c.term||'수강중')+'</span>'+
-            '<span class="lms-dday">'+escapeHtml(c.course_code||'')+'</span>'+
+            '<span class="lms-course-badge">'+escapeHtml(f.courseName||'과목')+'</span>'+
+            '<span class="lms-dday score">점수: '+escapeHtml(scTxt)+(f.grade && String(f.grade)!==String(f.score)?' ('+escapeHtml(f.grade)+')':'')+'</span>'+
+          '</div>'+
+          '<div class="lms-title">'+escapeHtml(f.title)+'</div>'+
+          '<div class="lms-meta">'+
+            (f.graded_at ? '<span>📌 채점일: '+escapeHtml(fmtKorDateTime(f.graded_at))+'</span>' : '')+
+          '</div>'+
+          fbHtml+
+          '<div class="lms-actions">'+
+            '<a class="lms-act-btn" href="'+escapeHtml(f.html_url||lmsCfg.host)+'" target="_blank" rel="noopener">🔗 상세 확인 ↗</a>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+    }
+    // 3. 과목별 현재 성적 (수강 과목 + 총점/백분율/등급 + 과제 달성 합계)
+    else if(lmsSubTab === 'grades'){
+      const list = lmsState.courses || [];
+      lmsContentArea.innerHTML = list.map(c=>{
+        const cAsgs = (lmsState.assignments || []).filter(a=>String(a.courseId)===String(c.id));
+        const subCnt = cAsgs.filter(a=>a.submitted).length;
+        const gradedAsgs = cAsgs.filter(a=>a.graded && a.score != null && a.points != null);
+        const earnedSum = gradedAsgs.reduce((acc,x)=>acc + Number(x.score||0), 0);
+        const possibleSum = gradedAsgs.reduce((acc,x)=>acc + Number(x.points||0), 0);
+
+        let gradeBadge = '';
+        if(c.current_score != null || c.current_grade){
+          gradeBadge = '<span class="lms-grade-big">'+(c.current_score != null ? escapeHtml(c.current_score)+'%' : '')+(c.current_grade ? ' ('+escapeHtml(c.current_grade)+')' : '')+'</span>';
+        } else if(possibleSum > 0){
+          const pct = ((earnedSum / possibleSum)*100).toFixed(1);
+          gradeBadge = '<span class="lms-grade-big">'+escapeHtml(earnedSum)+' / '+escapeHtml(possibleSum)+'점 ('+pct+'%)</span>';
+        } else {
+          gradeBadge = '<span class="lms-dday">성적 집계 중</span>';
+        }
+
+        return '<div class="lms-card">'+
+          '<div class="lms-card-top">'+
+            '<div class="lms-badges">'+
+              '<span class="lms-course-badge">'+escapeHtml(c.term||'수강 과목')+'</span>'+
+              (c.course_code ? '<span class="lms-dday">'+escapeHtml(c.course_code)+'</span>' : '')+
+            '</div>'+
+            gradeBadge+
           '</div>'+
           '<div class="lms-title">'+escapeHtml(c.name)+'</div>'+
-          (c.prof ? '<div class="lms-meta"><span>👨‍🏫 '+escapeHtml(c.prof)+'</span></div>' : '')+
+          '<div class="lms-meta">'+
+            '<span>📝 과제 제출: '+subCnt+' / '+cAsgs.length+'건</span>'+
+            (possibleSum > 0 ? '<span>· 채점된 과제 합산: '+earnedSum+' / '+possibleSum+'점</span>' : '')+
+          '</div>'+
           '<div class="lms-actions">'+
-            '<a class="lms-act-btn pri" href="'+escapeHtml(c.html_url||(lmsCfg.host+'/courses/'+c.id))+'" target="_blank" rel="noopener">📚 강의실 바로가기 ↗</a>'+
+            '<a class="lms-act-btn pri" href="'+escapeHtml(c.html_url+'/grades')+'" target="_blank" rel="noopener">📊 성적표 열기 ↗</a>'+
+            '<a class="lms-act-btn" href="'+escapeHtml(c.html_url)+'" target="_blank" rel="noopener">📚 강의실 홈 ↗</a>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+    }
+    // 4. 강의 자료 파일 목록 (파일명, 링크)
+    else if(lmsSubTab === 'files'){
+      const list = (lmsState.files || []).filter(f=>matchCourse(f.courseId));
+      if(!list.length){
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">📁</span>불러온 강의 자료 파일이 없어요.<br>(과목에서 파일 탭이나 모듈 자료가 비공개일 수 있어요)</div>';
+        return;
+      }
+      lmsContentArea.innerHTML = list.map(f=>
+        '<div class="lms-card">'+
+          '<div class="lms-card-top">'+
+            '<span class="lms-course-badge">'+escapeHtml(f.courseName||'강의 자료')+'</span>'+
+            '<span class="lms-dday">'+escapeHtml(f.source || (f.size ? fmtFileSize(f.size) : '자료'))+'</span>'+
+          '</div>'+
+          '<div class="lms-title">📄 '+escapeHtml(f.name)+'</div>'+
+          '<div class="lms-meta">'+
+            (f.moduleName ? '<span>📂 '+escapeHtml(f.moduleName)+'</span>' : '')+
+            (f.updated_at ? '<span>· 등록일: '+escapeHtml(fmtKorDateTime(f.updated_at))+'</span>' : '')+
+            (f.size ? '<span>· '+escapeHtml(fmtFileSize(f.size))+'</span>' : '')+
+          '</div>'+
+          '<div class="lms-actions">'+
+            '<a class="lms-act-btn pri" href="'+escapeHtml(f.url||lmsCfg.host)+'" target="_blank" rel="noopener">⬇️ 파일 열기 / 다운로드 ↗</a>'+
           '</div>'+
         '</div>'
       ).join('');
-    } else if(lmsSubTab === 'ann'){
-      const list = lmsState.announcements || [];
+    }
+    // 5. 캘린더 이벤트 전체
+    else if(lmsSubTab === 'cal'){
+      const list = (lmsState.calEventsAll || []).filter(u=>matchCourse(u.courseId));
       if(!list.length){
-        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">📢</span>최근 등록된 과목 공지사항이 없어요.</div>';
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">🗓️</span>등록된 LMS 캘린더 이벤트가 없어요.</div>';
+        return;
+      }
+      lmsContentArea.innerHTML = list.map(u=>{
+        const d = u.start_at ? new Date(u.start_at) : null;
+        const ymd = (d && !isNaN(d.getTime())) ? fmtYMD(d.getFullYear(), d.getMonth()+1, d.getDate()) : '';
+        const hm = (d && !isNaN(d.getTime())) ? (String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')) : '23:59';
+        const dd = fmtDday(u.start_at);
+        return '<div class="lms-card">'+
+          '<div class="lms-card-top">'+
+            '<span class="lms-course-badge">'+escapeHtml(u.courseName||'LMS 일정')+'</span>'+
+            '<div class="lms-badges">'+
+              '<span class="lms-dday">'+(u.type==='assignment'?'📝 과제 일정':'🗓️ 캘린더 이벤트')+'</span>'+
+              (u.start_at ? '<span class="lms-dday '+dd.cls+'">'+escapeHtml(dd.text)+'</span>' : '')+
+            '</div>'+
+          '</div>'+
+          '<div class="lms-title">'+escapeHtml(u.title)+'</div>'+
+          '<div class="lms-meta">'+
+            '<span>🕒 일시: '+escapeHtml(fmtKorDateTime(u.start_at))+'</span>'+
+            (u.desc ? '<span>· '+escapeHtml(u.desc)+'</span>' : '')+
+          '</div>'+
+          '<div class="lms-actions">'+
+            (ymd ? '<button type="button" class="lms-act-btn pri" data-lmsaddcal="'+escapeHtml(u.title)+'" data-course="'+escapeHtml(u.courseName||'')+'" data-date="'+ymd+'" data-time="'+hm+'">📅 내 캘린더·알림에 추가</button>' : '')+
+            '<a class="lms-act-btn" href="'+escapeHtml(u.html_url||lmsCfg.host)+'" target="_blank" rel="noopener">🔗 상세 보기 ↗</a>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+    }
+    // 6. 과목 공지
+    else if(lmsSubTab === 'ann'){
+      const list = (lmsState.announcements || []).filter(a=>matchCourse(a.courseId));
+      if(!list.length){
+        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">📢</span>등록된 과목 공지사항이 없어요.</div>';
         return;
       }
       lmsContentArea.innerHTML = list.map(a=>
@@ -3813,28 +4191,6 @@
           '</div>'+
         '</div>'
       ).join('');
-    } else if(lmsSubTab === 'cal'){
-      const list = lmsState.upcoming || [];
-      if(!list.length){
-        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">🗓️</span>예정된 LMS 일정이 없어요.</div>';
-        return;
-      }
-      lmsContentArea.innerHTML = list.map(u=>{
-        const d = u.start_at ? new Date(u.start_at) : null;
-        const ymd = (d && !isNaN(d.getTime())) ? fmtYMD(d.getFullYear(), d.getMonth()+1, d.getDate()) : '';
-        const hm = (d && !isNaN(d.getTime())) ? (String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')) : '23:59';
-        return '<div class="lms-card">'+
-          '<div class="lms-card-top">'+
-            '<span class="lms-course-badge">'+escapeHtml(u.courseName||'LMS 일정')+'</span>'+
-            '<span class="lms-dday">'+escapeHtml(fmtKorDateTime(u.start_at))+'</span>'+
-          '</div>'+
-          '<div class="lms-title">'+escapeHtml(u.title)+'</div>'+
-          '<div class="lms-actions">'+
-            (ymd ? '<button type="button" class="lms-act-btn pri" data-lmsaddcal="'+escapeHtml(u.title)+'" data-course="'+escapeHtml(u.courseName||'')+'" data-date="'+ymd+'" data-time="'+hm+'">📅 내 캘린더·알림에 추가</button>' : '')+
-            '<a class="lms-act-btn" href="'+escapeHtml(u.html_url||lmsCfg.host)+'" target="_blank" rel="noopener">🔗 상세 보기 ↗</a>'+
-          '</div>'+
-        '</div>';
-      }).join('');
     }
   }
 
@@ -3858,81 +4214,239 @@
     if(!lmsCfg.token){
       lmsDot.className = 'lms-dot';
       lmsStatusTxt.textContent = '토큰을 입력하면 LMS와 연동돼요';
-      lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">🔑</span>위의 <b>⚙️ 연동 설정</b>에서<br>내 Canvas 액세스 토큰을 입력해 주세요.</div>';
+      renderLMS();
       lmsCfgBox.style.display = '';
       return;
     }
     lmsDot.className = 'lms-dot warn';
-    lmsStatusTxt.textContent = 'LMS 데이터를 불러오는 중…';
+    lmsStatusTxt.textContent = 'LMS 전체 데이터를 동기화하는 중…';
     try{
-      const courses = (await lmsFetchAll('/api/v1/courses?enrollment_state=active&include[]=term&per_page=50'))
+      // 1. 수강 과목 + 현재 성적(total_scores, enrollments) 조회
+      const coursesRaw = (await lmsFetchAll('/api/v1/courses?enrollment_state=active&include[]=term&include[]=total_scores&include[]=enrollments&per_page=50'))
         .filter(c=>c && c.name);
       const nameOf = {};
-      courses.forEach(c=>{ nameOf[c.id] = c.name; });
+      const courses = coursesRaw.map(c=>{
+        nameOf[c.id] = c.name;
+        const enr = (Array.isArray(c.enrollments) ? c.enrollments.find(e=>e.type==='StudentEnrollment' || e.role==='StudentEnrollment' || e.grades) : null) || (c.enrollments && c.enrollments[0]) || {};
+        const gr = enr.grades || {};
+        const curScore = gr.current_score ?? enr.computed_current_score ?? gr.final_score ?? null;
+        const curGrade = gr.current_grade ?? enr.computed_current_grade ?? gr.final_grade ?? null;
+        return {
+          id: c.id,
+          name: c.name,
+          course_code: c.course_code || '',
+          term: (c.term && c.term.name) || '수강중',
+          current_score: curScore,
+          current_grade: curGrade,
+          html_url: lmsCfg.host + '/courses/' + c.id
+        };
+      });
 
-      const since = new Date(Date.now() - 30*86400000);
-      const sinceStr = fmtYMD(since.getFullYear(), since.getMonth()+1, since.getDate());
       const ctx = courses.slice(0,20).map(c=>'context_codes[]=course_'+c.id).join('&');
+      const sinceAnn = new Date(Date.now() - 120*86400000);
+      const sinceAnnStr = fmtYMD(sinceAnn.getFullYear(), sinceAnn.getMonth()+1, sinceAnn.getDate());
 
-      const [todoR, upR, annR] = await Promise.allSettled([
-        lmsFetchAll('/api/v1/users/self/todo?per_page=50', 2),
-        lmsFetchAll('/api/v1/users/self/upcoming_events?per_page=50', 2),
-        courses.length ? lmsFetchAll('/api/v1/announcements?'+ctx+'&start_date='+sinceStr+'&per_page=30', 2) : Promise.resolve([])
+      // 2. 각 과목별 과제(제출상태, 점수, 코멘트), 강의자료(파일 + 모듈), 캘린더 이벤트, 공지사항 병렬 수집
+      const perCoursePromises = courses.map(async c=>{
+        const [asgRes, filesRes, modRes] = await Promise.allSettled([
+          lmsFetchAll('/api/v1/courses/'+c.id+'/assignments?include[]=submission&include[]=score_statistics&per_page=50', 2),
+          lmsFetchAll('/api/v1/courses/'+c.id+'/files?per_page=50', 2),
+          lmsFetchAll('/api/v1/courses/'+c.id+'/modules?include[]=items&per_page=30', 2)
+        ]);
+        const asgs = asgRes.status === 'fulfilled' ? asgRes.value : [];
+        const fls  = filesRes.status === 'fulfilled' ? filesRes.value : [];
+        const mods = modRes.status === 'fulfilled' ? modRes.value : [];
+        return { course: c, asgs, fls, mods };
+      });
+
+      const [perCourseResults, annRes, calEvRes, calAsgRes, upRes] = await Promise.all([
+        Promise.all(perCoursePromises),
+        courses.length ? lmsFetchAll('/api/v1/announcements?'+ctx+'&start_date='+sinceAnnStr+'&per_page=40', 2).catch(()=>[]) : Promise.resolve([]),
+        courses.length ? lmsFetchAll('/api/v1/calendar_events?type=event&'+ctx+'&all_events=true&per_page=50', 2).catch(()=>[]) : Promise.resolve([]),
+        courses.length ? lmsFetchAll('/api/v1/calendar_events?type=assignment&'+ctx+'&all_events=true&per_page=50', 2).catch(()=>[]) : Promise.resolve([]),
+        lmsFetchAll('/api/v1/users/self/upcoming_events?per_page=50', 2).catch(()=>[])
       ]);
-      const val = r => r.status === 'fulfilled' ? r.value : [];
+
+      const allAssignments = [];
+      const allFeedbacks = [];
+      const allFiles = [];
+      const seenFileKeys = new Set();
+
+      perCourseResults.forEach(({ course, asgs, fls, mods })=>{
+        (Array.isArray(asgs)?asgs:[]).forEach(a=>{
+          if(!a || !a.name) return;
+          const sub = a.submission || {};
+          const wf = sub.workflow_state || 'unsubmitted';
+          const submitted = !!(sub.submitted_at || wf==='submitted' || wf==='graded' || wf==='pending_review');
+          const graded = (wf==='graded' || sub.score != null || sub.grade != null);
+          const rawComments = Array.isArray(sub.submission_comments) ? sub.submission_comments : [];
+          const comments = rawComments.map(cm=>({
+            author: cm.author_name || (cm.author && cm.author.display_name) || '교수님/조교',
+            comment: cm.comment || '',
+            date: cm.created_at || ''
+          })).filter(cm=>cm.comment);
+
+          const item = {
+            id: a.id,
+            courseId: course.id,
+            courseName: course.name,
+            title: a.name,
+            due_at: a.due_at || '',
+            points: a.points_possible,
+            submitted,
+            graded,
+            workflow_state: wf,
+            submitted_at: sub.submitted_at || '',
+            graded_at: sub.graded_at || '',
+            late: !!sub.late,
+            missing: !!sub.missing,
+            score: sub.score,
+            grade: sub.grade,
+            comments,
+            html_url: a.html_url || (course.html_url + '/assignments/' + a.id)
+          };
+          allAssignments.push(item);
+          if(graded || comments.length > 0){
+            allFeedbacks.push(item);
+          }
+        });
+
+        // 직접 공개된 파일 목록
+        (Array.isArray(fls)?fls:[]).forEach(f=>{
+          if(!f || !(f.display_name || f.filename)) return;
+          const key = 'f-'+(f.id || f.url || f.display_name);
+          if(seenFileKeys.has(key)) return;
+          seenFileKeys.add(key);
+          allFiles.push({
+            id: f.id,
+            courseId: course.id,
+            courseName: course.name,
+            name: f.display_name || f.filename,
+            size: f.size,
+            updated_at: f.updated_at || f.created_at || '',
+            source: '강의 자료실',
+            moduleName: '',
+            url: f.url || (course.html_url + '/files/' + f.id)
+          });
+        });
+
+        // 모듈(주차별 학습) 내부의 파일 및 외부 자료 링크
+        (Array.isArray(mods)?mods:[]).forEach(m=>{
+          const items = Array.isArray(m.items) ? m.items : [];
+          items.forEach(it=>{
+            if(!it || !it.title) return;
+            if(it.type === 'File' || it.type === 'ExternalUrl' || it.type === 'Page'){
+              const key = 'm-'+(it.content_id || it.id);
+              if(seenFileKeys.has(key)) return;
+              seenFileKeys.add(key);
+              allFiles.push({
+                id: it.id,
+                courseId: course.id,
+                courseName: course.name,
+                name: it.title,
+                size: null,
+                updated_at: '',
+                source: it.type === 'File' ? '주차별 파일' : '강의 모듈 자료',
+                moduleName: m.name || '',
+                url: it.html_url || it.external_url || course.html_url + '/modules'
+              });
+            }
+          });
+        });
+      });
+
+      // 과제 정렬: 미제출 & 마감 임박 우선 → 최신 마감일 순
+      allAssignments.sort((a,b)=>{
+        if(a.submitted !== b.submitted) return a.submitted ? 1 : -1;
+        const da = a.due_at ? new Date(a.due_at).getTime() : 9e15;
+        const db = b.due_at ? new Date(b.due_at).getTime() : 9e15;
+        return da - db;
+      });
+
+      // 피드백 정렬: 최근 채점일/마감일 순
+      allFeedbacks.sort((a,b)=>{
+        const ta = new Date(a.graded_at || a.submitted_at || a.due_at || 0).getTime();
+        const tb = new Date(b.graded_at || b.submitted_at || b.due_at || 0).getTime();
+        return tb - ta;
+      });
+
+      // 캘린더 이벤트 전체 통합 (calendar_events + upcoming_events + 과제 마감 일정)
+      const calMap = new Map();
+      const pushCalEv = (raw, fallbackType)=>{
+        if(!raw || !raw.title) return;
+        const cid = String(raw.context_code||'').replace('course_','');
+        const startAt = raw.start_at || raw.end_at || (raw.assignment && raw.assignment.due_at) || '';
+        const key = (raw.id || raw.title) + '|' + startAt;
+        if(calMap.has(key)) return;
+        calMap.set(key, {
+          id: raw.id || key,
+          courseId: cid || '',
+          courseName: nameOf[cid] || raw.context_name || 'LMS 일정',
+          title: raw.title,
+          start_at: startAt,
+          type: raw.type || fallbackType || 'event',
+          desc: String(raw.description||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,80),
+          html_url: raw.html_url || lmsCfg.host
+        });
+      };
+      (Array.isArray(calEvRes)?calEvRes:[]).forEach(e=>pushCalEv(e,'event'));
+      (Array.isArray(calAsgRes)?calAsgRes:[]).forEach(e=>pushCalEv(e,'assignment'));
+      (Array.isArray(upRes)?upRes:[]).forEach(e=>pushCalEv(e,'event'));
+      allAssignments.forEach(a=>{
+        if(a.due_at){
+          pushCalEv({
+            id: 'asg-'+a.id,
+            context_code: 'course_'+a.courseId,
+            title: a.title,
+            start_at: a.due_at,
+            type: 'assignment',
+            description: a.submitted ? '제출완료' : '미제출 과제',
+            html_url: a.html_url
+          }, 'assignment');
+        }
+      });
+      const calEventsAll = Array.from(calMap.values()).sort((a,b)=>{
+        const ta = a.start_at ? new Date(a.start_at).getTime() : 0;
+        const tb = b.start_at ? new Date(b.start_at).getTime() : 0;
+        return tb - ta;
+      });
+
+      const announcements = (Array.isArray(annRes)?annRes:[]).map(a=>{
+        const cid = String(a.context_code||'').replace('course_','');
+        return {
+          id: a.id,
+          courseId: cid,
+          title: a.title || '공지',
+          courseName: nameOf[cid] || '과목 공지',
+          posted_at: a.posted_at || '',
+          summary: String(a.message||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,140),
+          html_url: a.html_url || lmsCfg.host
+        };
+      });
 
       lmsState = {
         user: { name: '' },
-        courses: courses.map(c=>({
-          id: c.id, name: c.name, course_code: c.course_code || '',
-          term: (c.term && c.term.name) || '수강 과목',
-          html_url: lmsCfg.host + '/courses/' + c.id
-        })),
-        todos: val(todoR).map((t,i)=>{
-          const a = t.assignment || {};
-          return {
-            id: a.id || ('todo-'+i),
-            title: a.name || t.title || '과제',
-            courseName: nameOf[t.course_id] || t.context_name || '수강 과목',
-            due_at: a.due_at || '',
-            points: a.points_possible,
-            submitted: false,
-            html_url: t.html_url || a.html_url || lmsCfg.host
-          };
-        }),
-        announcements: val(annR).map(a=>{
-          const cid = String(a.context_code||'').replace('course_','');
-          return {
-            id: a.id, title: a.title || '공지',
-            courseName: nameOf[cid] || '과목 공지',
-            posted_at: a.posted_at || '',
-            summary: String(a.message||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,120),
-            html_url: a.html_url || lmsCfg.host
-          };
-        }),
-        upcoming: val(upR).map(u=>({
-          id: u.id, title: u.title || '일정',
-          courseName: u.context_name || 'LMS 일정',
-          start_at: u.start_at || (u.assignment && u.assignment.due_at) || '',
-          html_url: u.html_url || lmsCfg.host
-        })),
+        courses,
+        assignments: allAssignments,
+        feedbacks: allFeedbacks,
+        files: allFiles,
+        announcements,
+        calEventsAll,
         updatedAt: new Date().toISOString()
       };
       try{ localStorage.setItem(LMS_CACHE_KEY, JSON.stringify(lmsState)); }catch(e){}
       lmsDot.className = 'lms-dot ok';
-      lmsStatusTxt.textContent = 'LMS 연동됨 · 수강 과목 '+lmsState.courses.length+'개';
-      if(!lmsState.courses.length){
-        lmsContentArea.innerHTML = '<div class="empty-state"><span class="es-icon">📚</span>수강 중인 과목이 없어요.</div>';
-      } else renderLMS();
+      lmsStatusTxt.textContent = '동기화 완료 · 과목 '+courses.length+'개 · 과제 '+allAssignments.length+'건';
+      renderLMS();
     }catch(err){
       lmsDot.className = 'lms-dot err';
       if(err.message === 'AUTH'){
         lmsStatusTxt.textContent = '토큰이 올바르지 않거나 만료됐어요';
         lmsCfgBox.style.display = '';
-      } else if(err.message.startsWith('HTTP')){
+      } else if(err.message && err.message.startsWith('HTTP')){
         lmsStatusTxt.textContent = 'LMS 서버 오류 ('+err.message+')';
       } else {
-        lmsStatusTxt.textContent = '프록시에 연결하지 못했어요 (Worker 주소를 확인해 주세요)';
+        lmsStatusTxt.textContent = '프록시에 연결하지 못했어요 (네트워크/Worker 확인)';
       }
       if(lmsState.courses.length) renderLMS();
     }
@@ -3941,20 +4455,65 @@
   let lmsInitialized = false;
   function initAndLoadLMS(){
     lmsInToken.value = lmsCfg.token;
+    renderLmsSubTabs();
     if(!lmsInitialized){ lmsInitialized = true; syncLMS(); }
     else renderLMS();
   }
 
-  document.getElementById('lmsSubTabs').addEventListener('click', e=>{
+  lmsSubTabsEl.addEventListener('click', e=>{
     const b = e.target.closest && e.target.closest('[data-lsub]');
     if(!b) return;
     lmsSubTab = b.getAttribute('data-lsub');
-    document.querySelectorAll('#lmsSubTabs .lms-subtab').forEach(x=>x.classList.toggle('on', x===b));
     renderLMS();
   });
+
+  lmsFilterBar.addEventListener('change', e=>{
+    if(e.target && e.target.id === 'lmsCourseFilterSel'){
+      lmsFilterCourse = e.target.value;
+      renderLMS();
+    }
+  });
+  lmsFilterBar.addEventListener('click', e=>{
+    const chip = e.target.closest && e.target.closest('[data-lst]');
+    if(chip){
+      lmsFilterStatus = chip.getAttribute('data-lst');
+      renderLMS();
+    }
+  });
+
   document.getElementById('lmsSyncBtn').addEventListener('click', syncLMS);
+  document.getElementById('lmsMenuCustomBtn').addEventListener('click', ()=>{
+    const open = lmsMenuCfgBox.style.display === 'none';
+    if(open){
+      lmsCfgBox.style.display = 'none';
+      renderLmsMenuCheckboxes();
+      lmsMenuCfgBox.style.display = '';
+    } else {
+      lmsMenuCfgBox.style.display = 'none';
+    }
+  });
+  document.getElementById('lmsMenuCfgSaveBtn').addEventListener('click', ()=>{
+    const chks = Array.from(lmsMenuChkGrid.querySelectorAll('input[type="checkbox"]:checked')).map(c=>c.value);
+    if(!chks.length){
+      alert('최소 1개 이상의 메뉴를 선택해 주세요.');
+      return;
+    }
+    lmsVisibleMenus = chks;
+    saveLmsMenus();
+    lmsMenuCfgBox.style.display = 'none';
+    renderLMS();
+  });
+  document.getElementById('lmsMenuCfgResetBtn').addEventListener('click', ()=>{
+    lmsVisibleMenus = LMS_MENU_DEFS.map(m=>m.id);
+    saveLmsMenus();
+    renderLmsMenuCheckboxes();
+    renderLMS();
+  });
+
   document.getElementById('lmsCfgToggleBtn').addEventListener('click', ()=>{
-    lmsCfgBox.style.display = lmsCfgBox.style.display === 'none' ? '' : 'none';
+    const open = lmsCfgBox.style.display === 'none';
+    if(open) lmsMenuCfgBox.style.display = 'none';
+    lmsCfgBox.style.display = open ? '' : 'none';
   });
   document.getElementById('lmsTokenVisBtn').addEventListener('click', e=>{
     const isPw = lmsInToken.type === 'password';
@@ -3972,7 +4531,7 @@
     if(!confirm('이 기기에 저장된 토큰과 LMS 데이터를 삭제할까요?')) return;
     lmsCfg.token = ''; lmsInToken.value = '';
     try{ localStorage.removeItem(LMS_CFG_KEY); localStorage.removeItem(LMS_CACHE_KEY); }catch(e){}
-    lmsState = { user:null, courses:[], todos:[], announcements:[], upcoming:[], updatedAt:null };
+    lmsState = { user:null, courses:[], assignments:[], feedbacks:[], files:[], announcements:[], calEventsAll:[], updatedAt:null };
     syncLMS();
   });
   lmsContentArea.addEventListener('click', e=>{
@@ -4151,13 +4710,17 @@
   </div>
 </aside>
 
-<!-- 사용자 설정 (하단 4개 탭 직접 배치) 모달 -->
+<!-- 사용자 설정 (하단 4개 탭 배치 + 사이드메뉴 순서 설정) 모달 -->
 <div class="cal-modal-bg" id="tabCfgModalBg">
   <div class="cal-modal">
     <h3><span>⚙️ 사용자 설정</span><button type="button" class="side-close" id="tabCfgClose">✕</button></h3>
-    <p class="cal-catm-hint">하단 4개 탭에 배치할 메뉴나 바로가기를 직접 선택하세요. (선택하지 않은 항목은 사이드메뉴에서 언제든 이용할 수 있어요)</p>
+    <div class="cfg-sec-title"><span>📌 하단 4개 탭 배치</span></div>
+    <p class="cal-catm-hint">하단 4개 탭에 배치할 메뉴나 바로가기를 직접 선택하세요.</p>
     <div class="tab-cfg-list" id="tabCfgList"></div>
-    <button type="button" class="cal-catm-add" id="tabCfgReset">↺ 기본 배치로 초기화 (강의실·식단·교통·공지)</button>
+    <div class="cfg-sec-title" style="margin-top:10px;"><span>☰ 사이드메뉴 순서 변경</span></div>
+    <p class="cal-catm-hint">우측 ▲ / ▼ 버튼을 눌러 사이드메뉴에 표시될 항목의 순서를 바꿀 수 있어요.</p>
+    <div class="side-order-list" id="sideOrderList"></div>
+    <button type="button" class="cal-catm-add" id="tabCfgReset">↺ 하단 탭·사이드메뉴 기본 순서로 초기화</button>
     <div class="cal-modal-btns">
       <button type="button" class="cal-btn-cancel" id="tabCfgCancel">취소</button>
       <button type="button" class="cal-btn-save" id="tabCfgSave">저장</button>
@@ -4193,7 +4756,7 @@
   document.getElementById('menuBtn').addEventListener('click',o);
   document.getElementById('sideClose').addEventListener('click',c);
   document.getElementById('sideDim').addEventListener('click',c);
-  document.querySelectorAll('#sideMenu a').forEach(a=>a.addEventListener('click',c));
+  document.getElementById('sideMenu').addEventListener('click',e=>{if(e.target.closest&&e.target.closest('a'))c()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')c()});
 })();
 </script>
