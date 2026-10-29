@@ -1646,7 +1646,266 @@
   .app-tile-card.tile-dragging .app-tile-icon{
     box-shadow:0 14px 26px rgba(0,0,0,.24), 0 3px 8px rgba(0,0,0,.12);
   }
+
+  /* 앱타일 상단 학생 프로필 & 모바일 학생증 카드 (사진 스타일) */
+  .tile-profile-card{
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:18px 18px 0;
+    margin-bottom:16px;
+    box-shadow:var(--shadow);
+  }
+  .tile-profile-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tile-profile-user{
+    display:flex;
+    align-items:center;
+    gap:11px;
+  }
+  .tile-profile-avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:rgba(74, 144, 226, 0.16);
+    color:#4a90e2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:21px;
+    overflow:hidden;
+    flex-shrink:0;
+    border:1px solid rgba(74, 144, 226, 0.28);
+  }
+  .tile-profile-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .tile-profile-name{
+    font-size:18px;
+    font-weight:700 !important;
+    color:var(--ink);
+    letter-spacing:-0.02em;
+  }
+  .tile-profile-arrow{
+    font-size:22px;
+    color:var(--ink-dim);
+    line-height:1;
+    padding-left:8px;
+  }
+  .tile-profile-chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:11px;
+  }
+  .tile-profile-chip{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 13px;
+    border-radius:999px;
+    background:rgba(74, 144, 226, 0.12);
+    color:#4a90e2;
+    font-size:13px;
+    font-weight:700 !important;
+    letter-spacing:-0.01em;
+  }
+  :root[data-theme="light"] .tile-profile-chip{
+    background:#eef5ff;
+    color:#2f6fd6;
+  }
+  .tile-profile-divider{
+    height:1px;
+    background:var(--line);
+    margin-top:15px;
+  }
+  .tile-profile-action{
+    width:100%;
+    border:none;
+    background:transparent;
+    color:var(--ink);
+    font-size:15px;
+    font-weight:700 !important;
+    padding:14px 0;
+    text-align:center;
+    cursor:pointer;
+    font-family:inherit;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tile-profile-action:active{
+    opacity:0.7;
+  }
+
+  /* 모바일 학생증 탭 (실제 학생증 카드 UI, 유효시간 제거) */
+  .idcard-stage{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:6px 0 14px;
+  }
+  .id-real-card{
+    width:100%;
+    max-width:350px;
+    background:#ffffff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,0.22);
+    border:1px solid rgba(0,0,0,0.08);
+    color:#111111;
+  }
+  .id-real-top{
+    background:linear-gradient(145deg, #005baa 0%, #00478f 100%);
+    color:#ffffff;
+    text-align:center;
+    padding:26px 20px 54px;
+    position:relative;
+  }
+  .id-real-top .m-sub{
+    font-size:13.5px;
+    opacity:0.92;
+    margin-bottom:4px;
+    font-weight:700 !important;
+  }
+  .id-real-top .m-univ{
+    font-size:22px;
+    font-weight:700 !important;
+    letter-spacing:-0.03em;
+  }
+  .id-real-body{
+    position:relative;
+    background:#ffffff;
+    padding:54px 22px 22px;
+    text-align:center;
+    color:#111111;
+  }
+  .id-real-photo{
+    position:absolute;
+    top:-46px;
+    left:50%;
+    transform:translateX(-50%);
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    background:#f1f3f6;
+    border:4px solid #ffffff;
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    color:#b0b8c1;
+  }
+  .id-real-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .id-real-name-row{
+    margin-bottom:14px;
+    display:flex;
+    align-items:baseline;
+    justify-content:center;
+    gap:8px;
+  }
+  .id-real-name-row .r-name{
+    font-size:22px;
+    font-weight:700 !important;
+    color:#111111;
+  }
+  .id-real-name-row .r-num{
+    font-size:15.5px;
+    font-weight:700 !important;
+    color:#333333;
+  }
+  .id-real-meta{
+    display:inline-grid;
+    grid-template-columns:auto auto;
+    gap:6px 14px;
+    text-align:left;
+    font-size:14px;
+    margin-bottom:18px;
+  }
+  .id-real-meta .k{
+    color:#9aa0a6;
+    font-weight:700 !important;
+    text-align:right;
+  }
+  .id-real-meta .v{
+    color:#222222;
+    font-weight:700 !important;
+  }
+  .id-real-qr-box{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#ffffff;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #e5e8eb;
+    margin-bottom:18px;
+    min-width:168px;
+    min-height:168px;
+  }
+  .id-real-qr-box img,
+  .id-real-qr-box canvas{
+    display:block;
+    margin:0 auto;
+  }
+  .id-real-notice{
+    font-size:11.5px;
+    color:#6b7280;
+    line-height:1.6;
+    text-align:left;
+    padding:10px 6px 14px;
+    word-break:keep-all;
+  }
+  .id-real-foot{
+    padding-top:12px;
+    border-top:1px solid #eff1f4;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+  .id-real-foot img{
+    height:22px;
+    width:auto;
+    filter:none !important;
+  }
+  .id-qr-status-msg{
+    font-size:12.5px;
+    padding:9px 12px;
+    border-radius:10px;
+    background:var(--navy-2);
+    border:1px solid var(--line);
+    color:var(--ink-dim);
+    margin-top:4px;
+    line-height:1.45;
+    word-break:keep-all;
+  }
+  .id-qr-status-msg.ok{
+    background:var(--free-bg);
+    color:var(--free);
+    border-color:var(--free);
+  }
+  .id-qr-status-msg.err{
+    background:var(--busy-bg);
+    color:var(--busy);
+    border-color:var(--busy);
+  }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -1672,6 +1931,21 @@
   </header>
 
   <div id="appTileView" style="display:none;padding:16px 14px 28px;flex:1;">
+    <div class="tile-profile-card" id="tileProfileCard">
+      <div class="tile-profile-top" id="tileProfileTopBtn" role="button" tabindex="0" aria-label="모바일 학생증 열기">
+        <div class="tile-profile-user">
+          <div class="tile-profile-avatar" id="tileProfileAvatar">👤</div>
+          <div class="tile-profile-name" id="tileProfileName">학생 정보 등록하기</div>
+        </div>
+        <span class="tile-profile-arrow">›</span>
+      </div>
+      <div class="tile-profile-chips" id="tileProfileChips">
+        <span class="tile-profile-chip" id="tileProfileNumChip">학번 미등록</span>
+        <span class="tile-profile-chip" id="tileProfileDeptChip">학과 미등록</span>
+      </div>
+      <div class="tile-profile-divider"></div>
+      <button type="button" class="tile-profile-action" id="tileProfileIdBtn">모바일 학생증</button>
+    </div>
     <div class="app-tile-grid" id="appTileGrid"></div>
     <div class="app-tile-edit-bar" id="appTileEditBar" style="display:none;">
       <span>👆 타일을 드래그하거나 다른 타일을 눌러 위치를 바꾸세요</span>
@@ -2008,6 +2282,55 @@
         <div class="lms-subtabs" id="lmsSubTabs" style="margin-top:12px;"></div>
         <div class="lms-filter-bar" id="lmsFilterBar" style="display:none;"></div>
         <div id="lmsContentArea"></div>
+      </section>
+    </div>
+
+    <!-- ===== TAB: 모바일 학생증 ===== -->
+    <div class="tab-panel" data-tab="idcard">
+      <section>
+        <h2>🪪 모바일 학생증</h2>
+        <div id="idCardEmptyArea" style="display:none;">
+          <div class="empty-state">
+            <span class="es-icon">🪪</span>
+            아직 등록된 모바일 학생증 정보가 없어요.<br>
+            이름·학과·학번과 학생증 QR 캡처 이미지를 한 번만 등록하면<br>
+            언제든 바로 영구 QR 학생증이 표시돼요.
+            <div style="margin-top:16px;">
+              <button type="button" class="tt-btn" id="idCardOpenSetupBtn" style="padding:11px 22px;font-size:15px;">＋ 모바일 학생증 등록하기</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="idCardDisplayArea" class="idcard-stage" style="display:none;">
+          <div class="id-real-card">
+            <div class="id-real-top">
+              <div class="m-sub">모바일 학생증</div>
+              <div class="m-univ">국립금오공과대학교</div>
+            </div>
+            <div class="id-real-body">
+              <div class="id-real-photo" id="idCardPhotoBox">👤</div>
+              <div class="id-real-name-row">
+                <span class="r-name" id="idCardDispName">-</span>
+                <span class="r-num" id="idCardDispNum">-</span>
+              </div>
+              <div class="id-real-meta">
+                <span class="k">학부</span><span class="v" id="idCardDispDept">-</span>
+                <span class="k">학적</span><span class="v">재학생</span>
+              </div>
+              <div>
+                <div class="id-real-qr-box" id="idCardQrBox"></div>
+              </div>
+              <div class="id-real-notice">
+                ⓘ 본 증은 타인에게 양도 할 수 없습니다.<br>
+                ⓘ 본 증의 복제로 일어나는 모든 책임은 본인에게 있습니다.
+              </div>
+              <div class="id-real-foot" id="idCardFootLogo"></div>
+            </div>
+          </div>
+          <div class="rm-row" style="margin-top:16px;justify-content:center;width:100%;max-width:350px;">
+            <button type="button" class="tt-btn ghost" id="idCardEditInfoBtn" style="flex:1;padding:11px;">⚙️ 학생증 정보·QR 수정</button>
+          </div>
+        </div>
       </section>
     </div>
 
@@ -2741,13 +3064,14 @@ document.addEventListener('click', e=>{
     mycal:    { id:'mycal',    icon:'📅', label:'내 캘린더',  sideLabel:'내 캘린더',   type:'tab' },
     remind:   { id:'remind',   icon:'🔔', label:'알림',       sideLabel:'알림',        type:'tab' },
     mylms:    { id:'mylms',    icon:'💻', label:'나의 LMS',   sideLabel:'나의 LMS',    type:'tab' },
+    idcard:   { id:'idcard',   icon:'🪪', label:'학생증',     sideLabel:'모바일 학생증', type:'tab' },
     home_web: { id:'home_web', icon:'🌐', label:'학교홈피',   sideLabel:'학교 홈페이지', type:'link', url:'https://www.kumoh.ac.kr/ko/index.do' },
     onekit:   { id:'onekit',   icon:'🔑', label:'Onekit',     sideLabel:'Onekit',      type:'link', url:'https://onekit.kumoh.ac.kr/login.jsp' },
     biskit:   { id:'biskit',   icon:'📚', label:'Biskit',     sideLabel:'Biskit',      type:'link', url:'https://biskit.kumoh.ac.kr/' },
     settings: { id:'settings', icon:'⚙️', label:'사용자설정', sideLabel:'사용자 설정', type:'action', action:'settings' }
   };
   const DEFAULT_BAR_TABS = ['rooms','menu','bus','notice'];
-  const DEFAULT_SIDE_ORDER = ['rooms','menu','bus','notice','mytt','mycal','remind','mylms','home_web','onekit','biskit','settings'];
+  const DEFAULT_SIDE_ORDER = ['rooms','menu','bus','notice','mytt','mycal','remind','mylms','idcard','home_web','onekit','biskit','settings'];
   const TAB_CFG_KEY = 'kit-custom-tabs-v1';
   const SIDE_ORDER_KEY = 'kit-side-order-v2';
   const VIEW_MODE_KEY = 'kit-view-mode-v1';
@@ -2789,7 +3113,7 @@ document.addEventListener('click', e=>{
   function renderSideMenu(){
     const navListEl = document.getElementById('sideNavList');
     if(!navListEl) return;
-    const idAttrMap = { mytt:' id="sideMyTT"', mycal:' id="sideMyCal"', remind:' id="sideRemind"', mylms:' id="sideMyLMS"' };
+    const idAttrMap = { mytt:' id="sideMyTT"', mycal:' id="sideMyCal"', remind:' id="sideRemind"', mylms:' id="sideMyLMS"', idcard:' id="sideMyIdCard"' };
     navListEl.innerHTML = userSideOrder.filter(k=>k!=='settings').map(k=>{
       const it = TAB_ITEMS[k];
       if(!it) return '';
@@ -2943,6 +3267,7 @@ document.addEventListener('click', e=>{
     if(name === 'mycal' && typeof renderCal === 'function'){ calSheetOpen = false; renderCal(); }
     if(name === 'remind' && typeof renderRM === 'function') renderRM();
     if(name === 'mylms' && typeof initAndLoadLMS === 'function') initAndLoadLMS();
+    if(name === 'idcard' && typeof onEnterIdCardTab === 'function') onEnterIdCardTab();
     window.scrollTo({top:0});
   }
 
@@ -3361,6 +3686,331 @@ document.addEventListener('click', e=>{
   } else {
     renderSideMenu();
   }
+
+  
+  // ===================== 모바일 학생증 (상단 프로필 카드 + QR 이미지 난수·학번 자동 추출 + 영구 QR 탭) =====================
+  const IDCARD_STORAGE_KEY = 'kit-mobile-idcard-v1';
+  let userIdCard = {
+    name: '',
+    dept: '',
+    num: '',
+    rawPayload: '',
+    photo: ''
+  };
+  try{
+    const savedId = JSON.parse(localStorage.getItem(IDCARD_STORAGE_KEY)||'null');
+    if(savedId && typeof savedId === 'object'){
+      Object.assign(userIdCard, savedId);
+    }
+  }catch(e){}
+
+  function saveUserIdCard(){
+    try{ localStorage.setItem(IDCARD_STORAGE_KEY, JSON.stringify(userIdCard)); }catch(e){}
+  }
+  function isIdCardConfigured(){
+    return !!(userIdCard.name && userIdCard.num && userIdCard.rawPayload);
+  }
+
+  // 앱타일 홈 상단 프로필 카드 업데이트 (사진과 동일한 구성)
+  function renderTileProfileBanner(){
+    const nameEl = document.getElementById('tileProfileName');
+    const numChip = document.getElementById('tileProfileNumChip');
+    const deptChip = document.getElementById('tileProfileDeptChip');
+    const avatarEl = document.getElementById('tileProfileAvatar');
+    if(!nameEl) return;
+    if(userIdCard.name || userIdCard.num){
+      nameEl.textContent = (userIdCard.name || '학생') + ' 님';
+      if(numChip) numChip.textContent = userIdCard.num || '학번 미입력';
+      if(deptChip) deptChip.textContent = userIdCard.dept || '학부 미입력';
+      if(avatarEl){
+        if(userIdCard.photo){
+          avatarEl.innerHTML = '<img src="'+escapeHtml(userIdCard.photo)+'" alt="프로필">';
+        } else {
+          avatarEl.innerHTML = '👤';
+        }
+      }
+    } else {
+      nameEl.textContent = '학생증을 등록해 주세요';
+      if(numChip) numChip.textContent = '학번 미등록';
+      if(deptChip) deptChip.textContent = '학과 미등록';
+      if(avatarEl) avatarEl.innerHTML = '👤';
+    }
+  }
+
+  // 모바일 학생증 탭 화면 렌더링 (유효시간 없이 깔끔한 영구 QR 표시)
+  function renderIdCardTab(){
+    renderTileProfileBanner();
+    const emptyArea = document.getElementById('idCardEmptyArea');
+    const dispArea = document.getElementById('idCardDisplayArea');
+    if(!emptyArea || !dispArea) return;
+
+    if(!isIdCardConfigured()){
+      emptyArea.style.display = '';
+      dispArea.style.display = 'none';
+      return;
+    }
+    emptyArea.style.display = 'none';
+    dispArea.style.display = 'flex';
+
+    const dispName = document.getElementById('idCardDispName');
+    const dispNum = document.getElementById('idCardDispNum');
+    const dispDept = document.getElementById('idCardDispDept');
+    const photoBox = document.getElementById('idCardPhotoBox');
+    const qrBox = document.getElementById('idCardQrBox');
+    const footLogo = document.getElementById('idCardFootLogo');
+
+    if(dispName) dispName.textContent = userIdCard.name;
+    if(dispNum) dispNum.textContent = userIdCard.num;
+    if(dispDept) dispDept.textContent = userIdCard.dept || '기계공학부';
+    if(photoBox){
+      if(userIdCard.photo){
+        photoBox.innerHTML = '<img src="'+escapeHtml(userIdCard.photo)+'" alt="학생 사진">';
+      } else {
+        photoBox.innerHTML = '👤';
+      }
+    }
+    if(footLogo && !footLogo.innerHTML){
+      const topEmblem = document.querySelector('.kit-emblem');
+      if(topEmblem){
+        const clone = topEmblem.cloneNode(true);
+        clone.className = '';
+        footLogo.appendChild(clone);
+      }
+    }
+    if(qrBox){
+      qrBox.innerHTML = '';
+      const payload = userIdCard.rawPayload || userIdCard.num;
+      if(typeof QRCode !== 'undefined' && payload){
+        new QRCode(qrBox, {
+          text: payload,
+          width: 156,
+          height: 156,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } else {
+        qrBox.innerHTML = '<span style="font-size:12px;color:#888;">QR 생성 라이브러리를 불러오는 중입니다.</span>';
+      }
+    }
+  }
+
+  // 모바일 학생증 탭 진입 시: 처음 누르는 거면 자동으로 설정 팝업창 오픈
+  function onEnterIdCardTab(){
+    renderIdCardTab();
+    if(!isIdCardConfigured()){
+      openIdCardSetupModal();
+    }
+  }
+
+  // 업로드된 학생증 캡처/QR 이미지에서 QR 코드(학번_난수)를 추출하는 멀티패스 디코더
+  async function decodeQrFromImageFile(file){
+    return new Promise((resolve)=>{
+      const reader = new FileReader();
+      reader.onerror = ()=> resolve(null);
+      reader.onload = (ev)=>{
+        const img = new Image();
+        img.onerror = ()=> resolve(null);
+        img.onload = async ()=>{
+          // 1) 브라우저 내장 BarcodeDetector 가 지원되면 우선 시도
+          if('BarcodeDetector' in window){
+            try{
+              const bd = new BarcodeDetector({ formats:['qr_code'] });
+              const found = await bd.detect(img);
+              if(found && found.length && found[0].rawValue){
+                resolve(found[0].rawValue.trim());
+                return;
+              }
+            }catch(_){}
+          }
+          // 2) jsQR 로 전체 이미지 및 중앙/하단 크롭 영역을 여러 해상도로 스캔 (전체 화면 스크린샷 완벽 대응)
+          if(typeof jsQR !== 'function'){
+            resolve(null);
+            return;
+          }
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          const W = img.naturalWidth || img.width;
+          const H = img.naturalHeight || img.height;
+
+          const regions = [
+            [0, 0, 1, 1],
+            [0.15, 0.40, 0.70, 0.45],
+            [0.20, 0.48, 0.60, 0.35],
+            [0.10, 0.25, 0.80, 0.65]
+          ];
+          const scales = [1, 1.5, 0.75, 2];
+
+          for(const [rx, ry, rw, rh] of regions){
+            const sx = Math.floor(W * rx);
+            const sy = Math.floor(H * ry);
+            const sw = Math.max(32, Math.floor(W * rw));
+            const sh = Math.max(32, Math.floor(H * rh));
+            for(const sc of scales){
+              const tw = Math.min(1600, Math.max(120, Math.floor(sw * sc)));
+              const th = Math.min(1600, Math.max(120, Math.floor(sh * sc)));
+              canvas.width = tw;
+              canvas.height = th;
+              ctx.imageSmoothingEnabled = false;
+              ctx.drawImage(img, sx, sy, sw, sh, 0, 0, tw, th);
+              const imgData = ctx.getImageData(0, 0, tw, th);
+              const code = jsQR(imgData.data, tw, th, { inversionAttempts:'attemptBoth' });
+              if(code && code.data && code.data.trim()){
+                resolve(code.data.trim());
+                return;
+              }
+            }
+          }
+          resolve(null);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  let tempUploadedPhotoDataUrl = '';
+  const idCardSetupModalBg = document.getElementById('idCardSetupModalBg');
+  const idInName = document.getElementById('idInName');
+  const idInDept = document.getElementById('idInDept');
+  const idInNum = document.getElementById('idInNum');
+  const idInQrFile = document.getElementById('idInQrFile');
+  const idInRawPayload = document.getElementById('idInRawPayload');
+  const idInPhotoFile = document.getElementById('idInPhotoFile');
+  const idQrExtractMsg = document.getElementById('idQrExtractMsg');
+
+  function openIdCardSetupModal(){
+    if(!idCardSetupModalBg) return;
+    idInName.value = userIdCard.name || '';
+    idInDept.value = userIdCard.dept || '';
+    idInNum.value = userIdCard.num || '';
+    idInRawPayload.value = userIdCard.rawPayload || '';
+    idInQrFile.value = '';
+    if(idInPhotoFile) idInPhotoFile.value = '';
+    tempUploadedPhotoDataUrl = userIdCard.photo || '';
+    if(userIdCard.rawPayload){
+      idQrExtractMsg.className = 'id-qr-status-msg ok';
+      idQrExtractMsg.textContent = '✅ 저장된 영구 QR 데이터: ' + userIdCard.rawPayload;
+    } else {
+      idQrExtractMsg.className = 'id-qr-status-msg';
+      idQrExtractMsg.textContent = '학생증 스크린샷이나 QR 이미지를 선택하면 학번과 암호화 난수를 자동으로 읽어와요.';
+    }
+    idCardSetupModalBg.classList.add('open');
+  }
+
+  function closeIdCardSetupModal(){
+    if(idCardSetupModalBg) idCardSetupModalBg.classList.remove('open');
+  }
+
+  if(idInQrFile){
+    idInQrFile.addEventListener('change', async ()=>{
+      const file = idInQrFile.files && idInQrFile.files[0];
+      if(!file) return;
+      idQrExtractMsg.className = 'id-qr-status-msg';
+      idQrExtractMsg.textContent = '⏳ 이미지에서 QR코드(학번·난수)를 분석하는 중…';
+      const decoded = await decodeQrFromImageFile(file);
+      if(decoded){
+        idInRawPayload.value = decoded;
+        const parts = decoded.split('_');
+        const extractedNum = parts[0] || '';
+        const extractedRand = parts.slice(1).join('_');
+        if(extractedNum && /^\d{6,12}$/.test(extractedNum)){
+          idInNum.value = extractedNum;
+        }
+        idQrExtractMsg.className = 'id-qr-status-msg ok';
+        if(extractedRand){
+          idQrExtractMsg.innerHTML = '✅ <b>QR 추출 완료!</b><br>· 학번: <b>'+escapeHtml(extractedNum)+'</b><br>· 난수 토큰: <b>'+escapeHtml(extractedRand)+'</b>';
+        } else {
+          idQrExtractMsg.innerHTML = '✅ <b>QR 데이터 추출 완료:</b> '+escapeHtml(decoded);
+        }
+      } else {
+        idQrExtractMsg.className = 'id-qr-status-msg err';
+        idQrExtractMsg.textContent = '⚠️ 이미지에서 QR코드를 찾지 못했어요. QR코드가 잘 보이도록 조금만 확대해서 캡처한 이미지를 올리거나 아래 칸에 직접 입력해 주세요.';
+      }
+    });
+  }
+
+  if(idInPhotoFile){
+    idInPhotoFile.addEventListener('change', ()=>{
+      const file = idInPhotoFile.files && idInPhotoFile.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev)=>{
+        const img = new Image();
+        img.onload = ()=>{
+          const c = document.createElement('canvas');
+          const size = 240;
+          c.width = size; c.height = size;
+          const ctx = c.getContext('2d');
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+          tempUploadedPhotoDataUrl = c.toDataURL('image/jpeg', 0.85);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.addEventListener('click', e=>{
+    if(e.target.closest && (e.target.closest('#tileProfileIdBtn') || e.target.closest('#tileProfileTopBtn'))){
+      e.preventDefault();
+      if(!isIdCardConfigured()){
+        switchTab('idcard');
+        openIdCardSetupModal();
+      } else {
+        switchTab('idcard');
+      }
+      return;
+    }
+    if(e.target.closest && (e.target.closest('#idCardOpenSetupBtn') || e.target.closest('#idCardEditInfoBtn'))){
+      e.preventDefault();
+      openIdCardSetupModal();
+      return;
+    }
+    if(e.target.closest && (e.target.closest('#idCardSetupClose') || e.target.closest('#idCardSetupCancel'))){
+      closeIdCardSetupModal();
+      return;
+    }
+    if(idCardSetupModalBg && e.target === idCardSetupModalBg){
+      closeIdCardSetupModal();
+      return;
+    }
+    if(e.target.closest && e.target.closest('#idCardSetupSave')){
+      const name = idInName.value.trim();
+      const dept = idInDept.value.trim();
+      let num = idInNum.value.trim();
+      let rawPayload = idInRawPayload.value.trim();
+
+      if(!num && rawPayload.includes('_')){
+        num = rawPayload.split('_')[0].trim();
+      }
+      if(!name){ alert('이름을 입력해 주세요.'); idInName.focus(); return; }
+      if(!dept){ alert('학과(학부)를 입력해 주세요.'); idInDept.focus(); return; }
+      if(!num){ alert('학번을 입력해 주세요.'); idInNum.focus(); return; }
+      if(!rawPayload){
+        alert('학생증 QR코드 이미지를 업로드하여 난수를 추출하거나 QR 데이터를 입력해 주세요.');
+        return;
+      }
+
+      userIdCard = {
+        name,
+        dept,
+        num,
+        rawPayload,
+        photo: tempUploadedPhotoDataUrl || userIdCard.photo || ''
+      };
+      saveUserIdCard();
+      closeIdCardSetupModal();
+      switchTab('idcard');
+      renderIdCardTab();
+    }
+  });
+
+  renderTileProfileBanner();
+  renderIdCardTab();
 
   // ===================== 내 시간표 ======================
   const TT_KEY = 'kit-mytt-v1';
@@ -5622,6 +6272,43 @@ document.addEventListener('click', e=>{
     </button>
   </div>
 </aside>
+
+<!-- 모바일 학생증 초기 등록 / 수정 팝업 모달 -->
+<div class="cal-modal-bg" id="idCardSetupModalBg">
+  <div class="cal-modal">
+    <h3><span>🪪 모바일 학생증 설정</span><button type="button" class="side-close" id="idCardSetupClose">✕</button></h3>
+    <p class="cal-catm-hint">이름, 학과, 학번을 입력하고 기존 학생증 캡처(QR코드 이미지)를 업로드하면 학번과 난수를 자동으로 추출해 영구 QR로 저장해요.</p>
+    <div class="cal-form-row">
+      <label for="idInName">이름</label>
+      <input type="text" id="idInName" placeholder="예: 강동완" autocomplete="off">
+    </div>
+    <div class="cal-form-row">
+      <label for="idInDept">학과 / 학부</label>
+      <input type="text" id="idInDept" placeholder="예: 기계공학부" autocomplete="off">
+    </div>
+    <div class="cal-form-row">
+      <label for="idInNum">학번</label>
+      <input type="text" id="idInNum" placeholder="예: 2026113836 (QR 업로드 시 자동 입력)" inputmode="numeric" autocomplete="off">
+    </div>
+    <div class="cal-form-row">
+      <label for="idInQrFile" style="color:var(--amber);">📷 학생증 QR코드 이미지 업로드 (난수·학번 자동 추출)</label>
+      <input type="file" id="idInQrFile" accept="image/*" style="font-size:13.5px;padding:10px;border:1px dashed var(--amber);border-radius:var(--radius);background:var(--navy-2);color:var(--ink);">
+      <div class="id-qr-status-msg" id="idQrExtractMsg">학생증 스크린샷이나 QR 이미지를 선택하면 학번과 암호화 난수를 자동으로 읽어와요.</div>
+    </div>
+    <div class="cal-form-row">
+      <label for="idInRawPayload"><span>추출된 영구 QR 데이터 (학번_난수)</span></label>
+      <input type="text" id="idInRawPayload" placeholder="이미지 업로드 시 자동 채워짐 (직접 수정 가능)" autocomplete="off" style="font-size:13px;">
+    </div>
+    <div class="cal-form-row">
+      <label for="idInPhotoFile">👤 증명사진 업로드 (선택)</label>
+      <input type="file" id="idInPhotoFile" accept="image/*" style="font-size:13px;padding:8px;border:1px solid var(--line);border-radius:var(--radius);background:var(--navy-2);color:var(--ink);">
+    </div>
+    <div class="cal-modal-btns">
+      <button type="button" class="cal-btn-cancel" id="idCardSetupCancel">취소</button>
+      <button type="button" class="cal-btn-save" id="idCardSetupSave">저장하기</button>
+    </div>
+  </div>
+</div>
 
 <!-- 사용자 설정 (하단 4개 탭 배치 + 사이드메뉴 순서 설정) 모달 -->
 <div class="cal-modal-bg" id="tabCfgModalBg">
