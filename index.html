@@ -1630,6 +1630,29 @@
   @media (prefers-reduced-motion: reduce){
     .app-tile-grid.editing .app-tile-inner{ animation:none; }
   }
+  .app-tile-del-btn{
+    position:absolute;
+    top:-4px;
+    left:calc(50% - 38px);
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    border:1.5px solid var(--paper);
+    background:var(--busy);
+    color:#fff;
+    font-size:14px;
+    line-height:1;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:5;
+    padding:0;
+    box-shadow:0 2px 6px rgba(0,0,0,.28);
+  }
+  .app-tile-grid.editing .app-tile-del-btn{
+    display:inline-flex;
+  }
   .app-tile-card.tile-selected .app-tile-icon{
     border:2px solid var(--amber);
     box-shadow:0 0 0 3px var(--amber-soft), var(--shadow);
@@ -1934,8 +1957,7 @@
     <div class="tile-profile-card" id="tileProfileCard">
       <div class="tile-profile-top" id="tileProfileTopBtn" role="button" tabindex="0" aria-label="모바일 학생증 열기">
         <div class="tile-profile-user">
-          <div class="tile-profile-avatar" id="tileProfileAvatar">👤</div>
-          <div class="tile-profile-name" id="tileProfileName">학생 정보 등록하기</div>
+          <div class="tile-profile-name" id="tileProfileName">학생증을 등록해 주세요</div>
         </div>
         <span class="tile-profile-arrow">›</span>
       </div>
@@ -3075,13 +3097,30 @@ document.addEventListener('click', e=>{
   const TAB_CFG_KEY = 'kit-custom-tabs-v1';
   const SIDE_ORDER_KEY = 'kit-side-order-v2';
   const VIEW_MODE_KEY = 'kit-view-mode-v1';
+  const TILE_HIDDEN_KEY = 'kit-tile-hidden-v1';
 
   let userBarTabs = DEFAULT_BAR_TABS.slice();
   let userSideOrder = DEFAULT_SIDE_ORDER.slice();
+  let userHiddenTiles = []; // 앱타일 목록에서 숨긴(뺀) 메뉴 키 배열
   let userViewMode = 'bar'; // 'bar' (탭바 모드) | 'tile' (앱타일 모드)
   let tileHomeActive = false; // 앱타일 모드일 때 현재 타일 홈 화면을 보고 있는지 여부
   let tileEditMode = false;   // 아이폰처럼 타일 꾹 눌러서 위치 편집 중인지 여부
   let tileSelectedKey = null; // 편집 모드에서 선택된 타일 키
+
+  try{
+    const savedHidden = JSON.parse(localStorage.getItem(TILE_HIDDEN_KEY)||'null');
+    if(Array.isArray(savedHidden)){
+      userHiddenTiles = savedHidden.filter(k=>TAB_ITEMS[k]);
+    }
+  }catch(e){}
+  function saveUserHiddenTiles(){
+    try{ localStorage.setItem(TILE_HIDDEN_KEY, JSON.stringify(userHiddenTiles)); }catch(e){}
+  }
+  function getVisibleTileKeys(){
+    DEFAULT_SIDE_ORDER.forEach(k=>{ if(!userSideOrder.includes(k)) userSideOrder.push(k); });
+    userSideOrder = userSideOrder.filter(k=>TAB_ITEMS[k]);
+    return userSideOrder.filter(k=>!userHiddenTiles.includes(k));
+  }
 
   try{
     const savedVm = localStorage.getItem(VIEW_MODE_KEY);
@@ -3157,25 +3196,22 @@ document.addEventListener('click', e=>{
     }
   }
 
-  // 타일 DOM 은 최초 1회만 만들고, 이후에는 order/클래스만 갱신한다.
-  // (innerHTML 로 매번 새로 그리면 애니메이션이 불가능하고 드래그 중인 요소도 사라짐)
+  // 타일 DOM 은 표시 대상(visibleKeys)이 바뀔 때만 갱신하고, 드래그 중에는 order/클래스만 갱신한다.
   function renderAppTiles(){
     if(!appTileGrid) return;
-    // 11개 메뉴 + 사용자 설정('settings') = 총 12개 보장
-    DEFAULT_SIDE_ORDER.forEach(k=>{ if(!userSideOrder.includes(k)) userSideOrder.push(k); });
-    userSideOrder = userSideOrder.filter(k=>TAB_ITEMS[k]);
-
+    const visKeys = getVisibleTileKeys();
     const sigOf = k => TAB_ITEMS[k].icon + '|' + TAB_ITEMS[k].sideLabel;
     const cards = {};
     appTileGrid.querySelectorAll('.app-tile-card').forEach(c=>{ cards[c.getAttribute('data-tile-key')] = c; });
-    const upToDate = Object.keys(cards).length === userSideOrder.length &&
-      userSideOrder.every(k=> cards[k] && cards[k].getAttribute('data-sig') === sigOf(k));
+    const upToDate = Object.keys(cards).length === visKeys.length &&
+      visKeys.every(k=> cards[k] && cards[k].getAttribute('data-sig') === sigOf(k));
 
     if(!upToDate){
-      appTileGrid.innerHTML = userSideOrder.map(k=>{
+      appTileGrid.innerHTML = visKeys.map(k=>{
         const it = TAB_ITEMS[k];
         return '<div class="app-tile-card" data-tile-key="'+escapeHtml(k)+'">'+
           '<div class="app-tile-inner">'+
+            '<button type="button" class="app-tile-del-btn" data-tile-hide="'+escapeHtml(k)+'" title="앱타일에서 빼기" aria-label="앱타일에서 빼기">−</button>'+
             '<div class="app-tile-icon">'+it.icon+'</div>'+
             '<div class="app-tile-lbl">'+escapeHtml(it.sideLabel)+'</div>'+
           '</div>'+
@@ -3192,12 +3228,13 @@ document.addEventListener('click', e=>{
     if(appTileEditBar) appTileEditBar.style.display = tileEditMode ? 'flex' : 'none';
   }
 
-  // 순서 배열(userSideOrder) → CSS order 로 반영 (DOM 노드를 옮기지 않으므로 포인터 캡처가 유지됨)
+  // 순서 배열(visKeys) → CSS order 로 반영 (DOM 노드를 옮기지 않으므로 포인터 캡처가 유지됨)
   function applyTileOrderStyles(){
     if(!appTileGrid) return;
+    const visKeys = getVisibleTileKeys();
     const cards = {};
     appTileGrid.querySelectorAll('.app-tile-card').forEach(c=>{ cards[c.getAttribute('data-tile-key')] = c; });
-    userSideOrder.forEach((k, i)=>{
+    visKeys.forEach((k, i)=>{
       const c = cards[k]; if(!c) return;
       c.style.order = i;
       c.classList.toggle('tile-selected', tileEditMode && tileSelectedKey === k);
@@ -3312,13 +3349,26 @@ document.addEventListener('click', e=>{
     }
     const vibrate = ms => { if(navigator.vibrate){ try{ navigator.vibrate(ms); }catch(_){} } };
 
-    // 현재 순서 기준 각 칸(슬롯)의 그리드 내 좌표. transform 영향을 받지 않는 offset 값을 사용
+    // 현재 표시 중인 타일 순서 기준 각 칸(슬롯)의 그리드 내 좌표
     function measureSlots(){
       const cards = cardMap();
-      return userSideOrder.map(k=>{
+      const visKeys = getVisibleTileKeys();
+      return visKeys.map(k=>{
         const c = cards[k];
         return { x:c.offsetLeft, y:c.offsetTop, w:c.offsetWidth, h:c.offsetHeight };
       });
+    }
+    function moveKeyInSideOrder(fromKey, toKey){
+      if(!fromKey || !toKey || fromKey === toKey) return;
+      const vis = getVisibleTileKeys();
+      const fVis = vis.indexOf(fromKey);
+      const tVis = vis.indexOf(toKey);
+      if(fVis < 0 || tVis < 0) return;
+      vis.splice(fVis, 1);
+      vis.splice(tVis, 0, fromKey);
+      // 숨김 타일의 상대 위치는 유지하면서 표시 타일 순서를 userSideOrder에 반영
+      let vPtr = 0;
+      userSideOrder = userSideOrder.map(k => userHiddenTiles.includes(k) ? k : vis[vPtr++]);
     }
 
     // FLIP: 순서 변경(mutate) 전/후 위치 차이를 transform 으로 역보정한 뒤 0 으로 재생
@@ -3347,7 +3397,8 @@ document.addEventListener('click', e=>{
     function startDrag(){
       const p = pending; if(!p || drag) return;
       const slots = measureSlots();
-      const from = userSideOrder.indexOf(p.key);
+      const visKeys = getVisibleTileKeys();
+      const from = visKeys.indexOf(p.key);
       if(from < 0 || !slots[from]) return;
       const gr = appTileGrid.getBoundingClientRect();
       drag = {
@@ -3389,12 +3440,13 @@ document.addEventListener('click', e=>{
 
     function reorderDragged(target){
       const d = drag; if(!d) return;
+      const visKeys = getVisibleTileKeys();
+      const targetKey = visKeys[target];
+      if(!targetKey) return;
       flipReorder(d.card, ()=>{
-        userSideOrder.splice(d.idx, 1);
-        userSideOrder.splice(target, 0, d.key);
+        moveKeyInSideOrder(d.key, targetKey);
         d.idx = target;
       });
-      // 드래그 카드의 레이아웃 위치가 바뀌었으니 transform 재계산
       moveDrag(d.lx, d.ly);
     }
 
@@ -3420,6 +3472,7 @@ document.addEventListener('click', e=>{
 
     appTileGrid.addEventListener('pointerdown', e=>{
       if(e.pointerType === 'mouse' && e.button !== 0) return;
+      if(e.target && e.target.closest && e.target.closest('[data-tile-hide]')) return;
       const card = cardOf(e.target);
       if(!card || drag) return;
       suppressClick = false;
@@ -3484,6 +3537,23 @@ document.addEventListener('click', e=>{
     });
 
     appTileGrid.addEventListener('click', e=>{
+      const hideBtn = e.target && e.target.closest && e.target.closest('[data-tile-hide]');
+      if(hideBtn){
+        e.preventDefault();
+        e.stopPropagation();
+        const hideKey = hideBtn.getAttribute('data-tile-hide');
+        const visKeys = getVisibleTileKeys();
+        if(visKeys.length <= 1){
+          alert('최소 1개 이상의 앱타일은 남겨두어야 해요.');
+          return;
+        }
+        if(!userHiddenTiles.includes(hideKey)){
+          userHiddenTiles.push(hideKey);
+          saveUserHiddenTiles();
+          renderAppTiles();
+        }
+        return;
+      }
       const card = cardOf(e.target);
       if(!card) return;
       e.preventDefault();
@@ -3501,11 +3571,7 @@ document.addEventListener('click', e=>{
           const fromKey = tileSelectedKey;
           tileSelectedKey = null;
           flipReorder(null, ()=>{
-            const fromIdx = userSideOrder.indexOf(fromKey);
-            const toIdx = userSideOrder.indexOf(key);
-            if(fromIdx < 0 || toIdx < 0) return;
-            userSideOrder.splice(fromIdx, 1);
-            userSideOrder.splice(toIdx, 0, fromKey);
+            moveKeyInSideOrder(fromKey, key);
           });
           saveUserSideOrder();
           renderSideMenu();
@@ -3547,20 +3613,25 @@ document.addEventListener('click', e=>{
     }
   });
 
-  // 사용자 설정 모달 동작 (탭바 모드 / 앱타일 모드 + 순서 변경)
+  // 사용자 설정 모달 동작 (탭바 모드 / 앱타일 모드 + 순서 변경 + 앱타일 표시/숨김 체크)
   let tempSideOrder = [];
+  let tempHiddenTilesSet = new Set();
+
   function renderSideOrderModalList(){
     const sideOrderEl = document.getElementById('sideOrderList');
     if(!sideOrderEl) return;
     sideOrderEl.innerHTML = tempSideOrder.map((k, idx)=>{
       const it = TAB_ITEMS[k];
       if(!it) return '';
+      const isVisible = !tempHiddenTilesSet.has(k);
       const tag = it.type === 'link' ? ' <small style="color:var(--ink-dim);font-size:11px;">(바로가기 ↗)</small>' : '';
-      return '<div class="side-order-row" data-skey="'+escapeHtml(k)+'">'+
-        '<div class="side-order-name">'+
+      const hideTag = !isVisible ? ' <small style="color:var(--busy);font-size:11px;">(앱타일 숨김)</small>' : '';
+      return '<div class="side-order-row" data-skey="'+escapeHtml(k)+'" style="'+(isVisible?'':'opacity:0.58;')+'">'+
+        '<label class="side-order-name" style="cursor:pointer;">'+
           '<span class="side-order-num">'+(idx+1)+'</span>'+
-          '<span>'+it.icon+' '+escapeHtml(it.sideLabel)+tag+'</span>'+
-        '</div>'+
+          '<input type="checkbox" data-tile-vis-chk="'+escapeHtml(k)+'"'+(isVisible?' checked':'')+' style="width:18px;height:18px;accent-color:var(--amber);margin:0;flex-shrink:0;" title="앱타일 목록에 표시">'+
+          '<span>'+it.icon+' '+escapeHtml(it.sideLabel)+tag+hideTag+'</span>'+
+        '</label>'+
         '<div class="side-order-btns">'+
           '<button type="button" class="side-order-btn" data-side-move="up" data-sidx="'+idx+'" '+(idx===0?'disabled':'')+' aria-label="위로 이동">▲</button>'+
           '<button type="button" class="side-order-btn" data-side-move="down" data-sidx="'+idx+'" '+(idx===tempSideOrder.length-1?'disabled':'')+' aria-label="아래로 이동">▼</button>'+
@@ -3602,6 +3673,7 @@ document.addEventListener('click', e=>{
       '</div>';
     }).join('');
     tempSideOrder = userSideOrder.slice();
+    tempHiddenTilesSet = new Set(userHiddenTiles);
     renderSideOrderModalList();
     document.body.classList.remove('side-open');
     const sm = document.getElementById('sideMenu');
@@ -3615,6 +3687,23 @@ document.addEventListener('click', e=>{
   document.addEventListener('change', e=>{
     if(e.target && e.target.id === 'viewModeSel'){
       syncModalViewModeUI(e.target.value);
+      return;
+    }
+    const visChk = e.target && e.target.closest && e.target.closest('[data-tile-vis-chk]');
+    if(visChk){
+      const k = visChk.getAttribute('data-tile-vis-chk');
+      if(visChk.checked){
+        tempHiddenTilesSet.delete(k);
+      } else {
+        const remainCnt = tempSideOrder.filter(x => x !== k && !tempHiddenTilesSet.has(x)).length;
+        if(remainCnt < 1){
+          alert('최소 1개 이상의 앱타일은 표시해야 해요.');
+          visChk.checked = true;
+          return;
+        }
+        tempHiddenTilesSet.add(k);
+      }
+      renderSideOrderModalList();
     }
   });
   document.addEventListener('click', e=>{
@@ -3650,6 +3739,7 @@ document.addEventListener('click', e=>{
         DEFAULT_BAR_TABS.forEach((k,i)=>{ if(sels[i]) sels[i].value = k; });
       }
       tempSideOrder = DEFAULT_SIDE_ORDER.slice();
+      tempHiddenTilesSet = new Set();
       renderSideOrderModalList();
     } else if(e.target.closest && e.target.closest('#tabCfgSave')){
       if(listEl){
@@ -3664,8 +3754,10 @@ document.addEventListener('click', e=>{
       if(Array.isArray(tempSideOrder) && tempSideOrder.length){
         userSideOrder = tempSideOrder.slice();
         saveUserSideOrder();
-        renderSideMenu();
       }
+      userHiddenTiles = Array.from(tempHiddenTilesSet);
+      saveUserHiddenTiles();
+      renderSideMenu();
       const vm = document.getElementById('viewModeSel');
       if(vm){
         userViewMode = vm.value;
@@ -3711,29 +3803,20 @@ document.addEventListener('click', e=>{
     return !!(userIdCard.name && userIdCard.num && userIdCard.rawPayload);
   }
 
-  // 앱타일 홈 상단 프로필 카드 업데이트 (사진과 동일한 구성)
+  // 앱타일 홈 상단 프로필 카드 업데이트 (사람 이미지 제거)
   function renderTileProfileBanner(){
     const nameEl = document.getElementById('tileProfileName');
     const numChip = document.getElementById('tileProfileNumChip');
     const deptChip = document.getElementById('tileProfileDeptChip');
-    const avatarEl = document.getElementById('tileProfileAvatar');
     if(!nameEl) return;
     if(userIdCard.name || userIdCard.num){
       nameEl.textContent = (userIdCard.name || '학생') + ' 님';
       if(numChip) numChip.textContent = userIdCard.num || '학번 미입력';
       if(deptChip) deptChip.textContent = userIdCard.dept || '학부 미입력';
-      if(avatarEl){
-        if(userIdCard.photo){
-          avatarEl.innerHTML = '<img src="'+escapeHtml(userIdCard.photo)+'" alt="프로필">';
-        } else {
-          avatarEl.innerHTML = '👤';
-        }
-      }
     } else {
       nameEl.textContent = '학생증을 등록해 주세요';
       if(numChip) numChip.textContent = '학번 미등록';
       if(deptChip) deptChip.textContent = '학과 미등록';
-      if(avatarEl) avatarEl.innerHTML = '👤';
     }
   }
 
@@ -3812,7 +3895,6 @@ document.addEventListener('click', e=>{
         const img = new Image();
         img.onerror = ()=> resolve(null);
         img.onload = async ()=>{
-          // 1) 브라우저 내장 BarcodeDetector 가 지원되면 우선 시도
           if('BarcodeDetector' in window){
             try{
               const bd = new BarcodeDetector({ formats:['qr_code'] });
@@ -3823,7 +3905,6 @@ document.addEventListener('click', e=>{
               }
             }catch(_){}
           }
-          // 2) jsQR 로 전체 이미지 및 중앙/하단 크롭 영역을 여러 해상도로 스캔 (전체 화면 스크린샷 완벽 대응)
           if(typeof jsQR !== 'function'){
             resolve(null);
             return;
@@ -3870,68 +3951,79 @@ document.addEventListener('click', e=>{
   }
 
   let tempUploadedPhotoDataUrl = '';
-  const idCardSetupModalBg = document.getElementById('idCardSetupModalBg');
-  const idInName = document.getElementById('idInName');
-  const idInDept = document.getElementById('idInDept');
-  const idInNum = document.getElementById('idInNum');
-  const idInQrFile = document.getElementById('idInQrFile');
-  const idInRawPayload = document.getElementById('idInRawPayload');
-  const idInPhotoFile = document.getElementById('idInPhotoFile');
-  const idQrExtractMsg = document.getElementById('idQrExtractMsg');
 
   function openIdCardSetupModal(){
-    if(!idCardSetupModalBg) return;
-    idInName.value = userIdCard.name || '';
-    idInDept.value = userIdCard.dept || '';
-    idInNum.value = userIdCard.num || '';
-    idInRawPayload.value = userIdCard.rawPayload || '';
-    idInQrFile.value = '';
+    const modalBg = document.getElementById('idCardSetupModalBg');
+    const idInName = document.getElementById('idInName');
+    const idInDept = document.getElementById('idInDept');
+    const idInNum = document.getElementById('idInNum');
+    const idInQrFile = document.getElementById('idInQrFile');
+    const idInRawPayload = document.getElementById('idInRawPayload');
+    const idInPhotoFile = document.getElementById('idInPhotoFile');
+    const idQrExtractMsg = document.getElementById('idQrExtractMsg');
+    if(!modalBg) return;
+
+    if(idInName) idInName.value = userIdCard.name || '';
+    if(idInDept) idInDept.value = userIdCard.dept || '';
+    if(idInNum) idInNum.value = userIdCard.num || '';
+    if(idInRawPayload) idInRawPayload.value = userIdCard.rawPayload || '';
+    if(idInQrFile) idInQrFile.value = '';
     if(idInPhotoFile) idInPhotoFile.value = '';
     tempUploadedPhotoDataUrl = userIdCard.photo || '';
-    if(userIdCard.rawPayload){
-      idQrExtractMsg.className = 'id-qr-status-msg ok';
-      idQrExtractMsg.textContent = '✅ 저장된 영구 QR 데이터: ' + userIdCard.rawPayload;
-    } else {
-      idQrExtractMsg.className = 'id-qr-status-msg';
-      idQrExtractMsg.textContent = '학생증 스크린샷이나 QR 이미지를 선택하면 학번과 암호화 난수를 자동으로 읽어와요.';
+    if(idQrExtractMsg){
+      if(userIdCard.rawPayload){
+        idQrExtractMsg.className = 'id-qr-status-msg ok';
+        idQrExtractMsg.textContent = '✅ 저장된 영구 QR 데이터: ' + userIdCard.rawPayload;
+      } else {
+        idQrExtractMsg.className = 'id-qr-status-msg';
+        idQrExtractMsg.textContent = '학생증 스크린샷이나 QR 이미지를 선택하면 학번과 암호화 난수를 자동으로 읽어와요.';
+      }
     }
-    idCardSetupModalBg.classList.add('open');
+    modalBg.classList.add('open');
   }
 
   function closeIdCardSetupModal(){
-    if(idCardSetupModalBg) idCardSetupModalBg.classList.remove('open');
+    const modalBg = document.getElementById('idCardSetupModalBg');
+    if(modalBg) modalBg.classList.remove('open');
   }
 
-  if(idInQrFile){
-    idInQrFile.addEventListener('change', async ()=>{
+  document.addEventListener('change', async e=>{
+    if(e.target && e.target.id === 'idInQrFile'){
+      const idInQrFile = e.target;
       const file = idInQrFile.files && idInQrFile.files[0];
       if(!file) return;
-      idQrExtractMsg.className = 'id-qr-status-msg';
-      idQrExtractMsg.textContent = '⏳ 이미지에서 QR코드(학번·난수)를 분석하는 중…';
+      const idQrExtractMsg = document.getElementById('idQrExtractMsg');
+      const idInRawPayload = document.getElementById('idInRawPayload');
+      const idInNum = document.getElementById('idInNum');
+      if(idQrExtractMsg){
+        idQrExtractMsg.className = 'id-qr-status-msg';
+        idQrExtractMsg.textContent = '⏳ 이미지에서 QR코드(학번·난수)를 분석하는 중…';
+      }
       const decoded = await decodeQrFromImageFile(file);
       if(decoded){
-        idInRawPayload.value = decoded;
+        if(idInRawPayload) idInRawPayload.value = decoded;
         const parts = decoded.split('_');
         const extractedNum = parts[0] || '';
         const extractedRand = parts.slice(1).join('_');
-        if(extractedNum && /^\d{6,12}$/.test(extractedNum)){
+        if(idInNum && extractedNum && /^\d{6,12}$/.test(extractedNum)){
           idInNum.value = extractedNum;
         }
-        idQrExtractMsg.className = 'id-qr-status-msg ok';
-        if(extractedRand){
-          idQrExtractMsg.innerHTML = '✅ <b>QR 추출 완료!</b><br>· 학번: <b>'+escapeHtml(extractedNum)+'</b><br>· 난수 토큰: <b>'+escapeHtml(extractedRand)+'</b>';
-        } else {
-          idQrExtractMsg.innerHTML = '✅ <b>QR 데이터 추출 완료:</b> '+escapeHtml(decoded);
+        if(idQrExtractMsg){
+          idQrExtractMsg.className = 'id-qr-status-msg ok';
+          if(extractedRand){
+            idQrExtractMsg.innerHTML = '✅ <b>QR 추출 완료!</b><br>· 학번: <b>'+escapeHtml(extractedNum)+'</b><br>· 난수 토큰: <b>'+escapeHtml(extractedRand)+'</b>';
+          } else {
+            idQrExtractMsg.innerHTML = '✅ <b>QR 데이터 추출 완료:</b> '+escapeHtml(decoded);
+          }
         }
-      } else {
+      } else if(idQrExtractMsg){
         idQrExtractMsg.className = 'id-qr-status-msg err';
         idQrExtractMsg.textContent = '⚠️ 이미지에서 QR코드를 찾지 못했어요. QR코드가 잘 보이도록 조금만 확대해서 캡처한 이미지를 올리거나 아래 칸에 직접 입력해 주세요.';
       }
-    });
-  }
-
-  if(idInPhotoFile){
-    idInPhotoFile.addEventListener('change', ()=>{
+      return;
+    }
+    if(e.target && e.target.id === 'idInPhotoFile'){
+      const idInPhotoFile = e.target;
       const file = idInPhotoFile.files && idInPhotoFile.files[0];
       if(!file) return;
       const reader = new FileReader();
@@ -3951,18 +4043,13 @@ document.addEventListener('click', e=>{
         img.src = ev.target.result;
       };
       reader.readAsDataURL(file);
-    });
-  }
+    }
+  });
 
   document.addEventListener('click', e=>{
     if(e.target.closest && (e.target.closest('#tileProfileIdBtn') || e.target.closest('#tileProfileTopBtn'))){
       e.preventDefault();
-      if(!isIdCardConfigured()){
-        switchTab('idcard');
-        openIdCardSetupModal();
-      } else {
-        switchTab('idcard');
-      }
+      switchTab('idcard');
       return;
     }
     if(e.target.closest && (e.target.closest('#idCardOpenSetupBtn') || e.target.closest('#idCardEditInfoBtn'))){
@@ -3974,22 +4061,27 @@ document.addEventListener('click', e=>{
       closeIdCardSetupModal();
       return;
     }
-    if(idCardSetupModalBg && e.target === idCardSetupModalBg){
+    const modalBg = document.getElementById('idCardSetupModalBg');
+    if(modalBg && e.target === modalBg){
       closeIdCardSetupModal();
       return;
     }
     if(e.target.closest && e.target.closest('#idCardSetupSave')){
-      const name = idInName.value.trim();
-      const dept = idInDept.value.trim();
-      let num = idInNum.value.trim();
-      let rawPayload = idInRawPayload.value.trim();
+      const idInName = document.getElementById('idInName');
+      const idInDept = document.getElementById('idInDept');
+      const idInNum = document.getElementById('idInNum');
+      const idInRawPayload = document.getElementById('idInRawPayload');
+      const name = idInName ? idInName.value.trim() : '';
+      const dept = idInDept ? idInDept.value.trim() : '';
+      let num = idInNum ? idInNum.value.trim() : '';
+      let rawPayload = idInRawPayload ? idInRawPayload.value.trim() : '';
 
       if(!num && rawPayload.includes('_')){
         num = rawPayload.split('_')[0].trim();
       }
-      if(!name){ alert('이름을 입력해 주세요.'); idInName.focus(); return; }
-      if(!dept){ alert('학과(학부)를 입력해 주세요.'); idInDept.focus(); return; }
-      if(!num){ alert('학번을 입력해 주세요.'); idInNum.focus(); return; }
+      if(!name){ alert('이름을 입력해 주세요.'); if(idInName) idInName.focus(); return; }
+      if(!dept){ alert('학과(학부)를 입력해 주세요.'); if(idInDept) idInDept.focus(); return; }
+      if(!num){ alert('학번을 입력해 주세요.'); if(idInNum) idInNum.focus(); return; }
       if(!rawPayload){
         alert('학생증 QR코드 이미지를 업로드하여 난수를 추출하거나 QR 데이터를 입력해 주세요.');
         return;
@@ -4009,8 +4101,15 @@ document.addEventListener('click', e=>{
     }
   });
 
-  renderTileProfileBanner();
-  renderIdCardTab();
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', ()=>{
+      renderTileProfileBanner();
+      renderIdCardTab();
+    });
+  } else {
+    renderTileProfileBanner();
+    renderIdCardTab();
+  }
 
   // ===================== 내 시간표 ======================
   const TT_KEY = 'kit-mytt-v1';
@@ -6326,8 +6425,8 @@ document.addEventListener('click', e=>{
     <div class="cfg-sec-title" id="barCfgSecTitle"><span>📌 하단 4개 탭 배치</span></div>
     <p class="cal-catm-hint" id="barCfgHint">하단 4개 탭에 배치할 메뉴나 바로가기를 직접 선택하세요.</p>
     <div class="tab-cfg-list" id="tabCfgList"></div>
-    <div class="cfg-sec-title" style="margin-top:10px;"><span>☰ 사이드메뉴 순서 변경</span></div>
-    <p class="cal-catm-hint">우측 ▲ / ▼ 버튼을 눌러 사이드메뉴에 표시될 항목의 순서를 바꿀 수 있어요.</p>
+    <div class="cfg-sec-title" style="margin-top:10px;"><span>☰ 사이드메뉴 · 앱타일 순서 및 표시 설정</span></div>
+    <p class="cal-catm-hint">체크박스를 해제하면 앱타일 홈 화면에서 숨길 수 있고, 우측 ▲ / ▼ 버튼으로 순서를 바꿀 수 있어요.</p>
     <div class="side-order-list" id="sideOrderList"></div>
     <button type="button" class="cal-catm-add" id="tabCfgReset">↺ 하단 탭·사이드메뉴 기본 순서로 초기화</button>
     <div class="cal-modal-btns">
