@@ -1532,7 +1532,20 @@
   .lms-dday{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;background:var(--navy-2);color:var(--ink-dim);}
   .lms-dday.urgent{background:var(--busy-bg);color:var(--busy);}
   .lms-dday.done{background:var(--free-bg);color:var(--free);}
-  .lms-dday.score{background:rgba(59,130,246,.16);color:#60a5fa;}
+  .lms-dday.score{
+    background:var(--amber);
+    color:#111111;
+    border:1.5px solid var(--amber);
+    font-size:12.5px;
+    padding:4px 11px;
+    box-shadow:0 2px 6px rgba(217,155,63,.32);
+  }
+  :root[data-theme="light"] .lms-dday.score{
+    background:#b86f0a;
+    color:#ffffff;
+    border-color:#b86f0a;
+    box-shadow:0 2px 6px rgba(184,111,10,.25);
+  }
   .lms-title{font-size:16px;color:var(--ink);margin:4px 0;line-height:1.4;}
   .lms-meta{font-size:12.5px;color:var(--ink-dim);display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;align-items:center;}
   .lms-feedback-box{margin-top:8px;padding:9px 12px;border-radius:10px;background:var(--navy-2);border-left:3px solid var(--amber);font-size:13px;color:var(--ink);line-height:1.5;}
@@ -3300,7 +3313,7 @@ document.addEventListener('click', e=>{
     updateHomeBtnVisibility();
   }
 
-  function switchTab(name){
+  function switchTab(name, skipHistory){
     const it = TAB_ITEMS[name];
     if(!it) return;
     if(it.type === 'link'){
@@ -3310,6 +3323,10 @@ document.addEventListener('click', e=>{
     if(it.type === 'action' && it.action === 'settings'){
       openTabCfgModal();
       return;
+    }
+    if(!skipHistory && !tileHomeActive && currentActiveTab && currentActiveTab !== name){
+      navHistoryStack.push(currentActiveTab);
+      if(navHistoryStack.length > 15) navHistoryStack.shift();
     }
     tileHomeActive = false;
     currentActiveTab = name;
@@ -3333,6 +3350,55 @@ document.addEventListener('click', e=>{
       if(b) switchTab(b.getAttribute('data-tab'));
     });
   }
+  let navHistoryStack = []; // 스와이프 뒤로가기용 화면 이동 기록 스택
+
+  function goHomeOrBack(){
+    // 1) 열려 있는 모달이 있으면 모달 닫기
+    const openModal = document.querySelector('.cal-modal-bg.open');
+    if(openModal){
+      openModal.classList.remove('open');
+      return true;
+    }
+    // 2) 공지 상세 화면이 열려 있으면 목록으로 복귀
+    if(noticeDetailView && noticeDetailView.style.display !== 'none'){
+      closeNoticeDetail(false);
+      return true;
+    }
+    // 3) 캘린더 하단 시트가 열려 있으면 닫기
+    const calSheetEl = document.getElementById('calSheet');
+    if(calSheetEl && calSheetEl.classList.contains('open')){
+      calSheetEl.classList.remove('open');
+      const cw = document.getElementById('calWrap');
+      if(cw) cw.classList.remove('sheet-open');
+      return true;
+    }
+    // 4) 앱타일 모드에서 개별 메뉴를 보고 있다면 앱타일 홈으로 복귀
+    if(userViewMode === 'tile'){
+      if(!tileHomeActive){
+        tileHomeActive = true;
+        tileEditMode = false;
+        updateViewModeDisplay();
+        window.scrollTo({top:0});
+        return true;
+      }
+      return false;
+    }
+    // 5) 탭바 모드에서 이전 탭 기록이 있으면 이전 탭으로, 없으면 홈 탭으로 복귀
+    if(navHistoryStack.length > 0){
+      const prevTab = navHistoryStack.pop();
+      if(prevTab && prevTab !== currentActiveTab){
+        switchTab(prevTab, true);
+        return true;
+      }
+    }
+    const homeTab = getHomeTabId();
+    if(currentActiveTab !== homeTab){
+      switchTab(homeTab, true);
+      return true;
+    }
+    return false;
+  }
+
   if(homeBtn){
     homeBtn.addEventListener('click', ()=>{
       if(userViewMode === 'tile'){
@@ -3341,10 +3407,45 @@ document.addEventListener('click', e=>{
         updateViewModeDisplay();
         window.scrollTo({top:0});
       } else {
-        switchTab(getHomeTabId());
+        switchTab(getHomeTabId(), true);
       }
     });
   }
+
+  // 아이폰 스타일 화면 스와이프 뒤로가기 (왼쪽에서 오른쪽으로 스와이프)
+  (function initGlobalSwipeBack(){
+    let sx = 0, sy = 0, st = 0, tracking = false;
+    document.addEventListener('touchstart', e=>{
+      if(!e.touches || e.touches.length !== 1) return;
+      if(document.body.classList.contains('side-open')) { tracking = false; return; }
+      if(tileEditMode) { tracking = false; return; }
+      const t = e.target;
+      // 가로 스크롤 영역(도면, 시간표, 칩 바, 표 등) 내부에서 시작된 터치는 제외 (단, 화면 맨 왼쪽 28px 엣지에서 시작하면 뒤로가기 우선)
+      const x = e.touches[0].clientX;
+      const isLeftEdge = (x <= 28);
+      if(!isLeftEdge && t && t.closest && t.closest('.floor-scroll, .tt-scroll, .menu-day-row, .notice-cat-row, .cal-cat-bar, .lms-subtabs, .lms-chip-row, table, pre, code, input, textarea, select')){
+        tracking = false;
+        return;
+      }
+      // 스와이프 시작 허용 범위: 화면 왼쪽 절반(<= 180px)에서 오른쪽으로 밀기
+      if(x > 180) { tracking = false; return; }
+      sx = x;
+      sy = e.touches[0].clientY;
+      st = Date.now();
+      tracking = true;
+    }, {passive:true});
+
+    document.addEventListener('touchend', e=>{
+      if(!tracking || !e.changedTouches || !e.changedTouches.length) return;
+      tracking = false;
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = Math.abs(e.changedTouches[0].clientY - sy);
+      const dt = Date.now() - st;
+      if(dx > 68 && dx > dy * 1.65 && dt < 650){
+        goHomeOrBack();
+      }
+    }, {passive:true});
+  })();
 
   // 아이폰 스타일 앱타일: 롱프레스 → 흔들림 → 드래그 재배치 (FLIP 애니메이션)
   (function initAppTileInteractions(){
@@ -3793,6 +3894,140 @@ document.addEventListener('click', e=>{
 
   const appTileCfgBtn = document.getElementById('appTileCfgBtn');
   if(appTileCfgBtn) appTileCfgBtn.addEventListener('click', e=>{ e.stopPropagation(); openTabCfgModal(); });
+
+  // ===================== 아이폰 ↔ 아이패드 기기 간 데이터 연동 (백업 내보내기 / 불러오기) =====================
+  const SYNC_STORAGE_KEYS = [
+    'kit-theme',
+    'kit-view-mode-v1',
+    'kit-custom-tabs-v1',
+    'kit-side-order-v2',
+    'kit-tile-hidden-v1',
+    'kit-mobile-idcard-v1',
+    'kit-my-tt-v1',
+    'kit-my-cal-v1',
+    'kit-my-cal-cats-v1',
+    'kit-reminders-v2',
+    'kit-lms-cfg-v1',
+    'kit-lms-menus-v1',
+    'kit-lms-order-v1',
+    'kit-lms-sync-collapsed-v1'
+  ];
+
+  function buildSyncBackupObject(){
+    const data = {};
+    SYNC_STORAGE_KEYS.forEach(k=>{
+      try{
+        const v = localStorage.getItem(k);
+        if(v !== null) data[k] = v;
+      }catch(e){}
+    });
+    return {
+      app: 'kumoh-campus-allinone',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      data: data
+    };
+  }
+
+  function applySyncBackupObject(parsed){
+    if(!parsed || typeof parsed !== 'object' || !parsed.data || typeof parsed.data !== 'object'){
+      alert('올바른 연동 데이터 형식이 아니에요.');
+      return false;
+    }
+    let count = 0;
+    Object.keys(parsed.data).forEach(k=>{
+      if(SYNC_STORAGE_KEYS.includes(k) && typeof parsed.data[k] === 'string'){
+        try{
+          localStorage.setItem(k, parsed.data[k]);
+          count++;
+        }catch(e){}
+      }
+    });
+    if(count === 0){
+      alert('불러올 수 있는 설정 항목이 없어요.');
+      return false;
+    }
+    alert('✅ 기기 데이터 연동 완료! ('+count+'개 항목 복원)\n화면을 새로고침하여 바로 적용할게요.');
+    location.reload();
+    return true;
+  }
+
+  document.addEventListener('click', async e=>{
+    if(e.target.closest && e.target.closest('#syncExportFileBtn')){
+      const payload = JSON.stringify(buildSyncBackupObject(), null, 2);
+      const blob = new Blob([payload], { type:'application/json' });
+      const fileName = 'kumoh_backup_'+new Date().toISOString().slice(0,10)+'.json';
+      // iOS/iPadOS Web Share API 지원 시 AirDrop/파일앱 바로 공유 가능
+      if(navigator.canShare && typeof File === 'function'){
+        try{
+          const file = new File([blob], fileName, { type:'application/json' });
+          if(navigator.canShare({ files:[file] })){
+            await navigator.share({ title:'금오공대 앱 데이터 백업', files:[file] });
+            return;
+          }
+        }catch(_){}
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 2000);
+      return;
+    }
+    if(e.target.closest && e.target.closest('#syncImportFileBtn')){
+      const inp = document.getElementById('syncImportFileInput');
+      if(inp){ inp.value = ''; inp.click(); }
+      return;
+    }
+    if(e.target.closest && e.target.closest('#syncCopyCodeBtn')){
+      const payload = JSON.stringify(buildSyncBackupObject());
+      try{
+        await navigator.clipboard.writeText(payload);
+        alert('📋 연동 코드가 클립보드에 복사되었어요!\n(같은 Apple 계정의 아이폰↔아이패드라면 유니버설 클립보드로 다른 기기에서 바로 붙여넣을 수 있고, 카카오톡 나에게 보내기로 보내도 됩니다.)');
+      }catch(err){
+        prompt('아래 연동 코드를 전체 복사해 주세요:', payload);
+      }
+      return;
+    }
+    if(e.target.closest && e.target.closest('#syncPasteCodeBtn')){
+      let text = '';
+      if(navigator.clipboard && navigator.clipboard.readText){
+        try{ text = await navigator.clipboard.readText(); }catch(_){}
+      }
+      if(!text || !text.trim().startsWith('{')){
+        text = prompt('복사해 둔 연동 코드(JSON)를 여기에 붙여넣어 주세요:') || '';
+      }
+      if(!text.trim()) return;
+      try{
+        const parsed = JSON.parse(text.trim());
+        applySyncBackupObject(parsed);
+      }catch(err){
+        alert('연동 코드가 올바르지 않아요. 전체 코드가 복사되었는지 확인해 주세요.');
+      }
+      return;
+    }
+  });
+
+  document.addEventListener('change', e=>{
+    if(e.target && e.target.id === 'syncImportFileInput'){
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev=>{
+        try{
+          const parsed = JSON.parse(String(ev.target.result || ''));
+          applySyncBackupObject(parsed);
+        }catch(err){
+          alert('백업 파일을 읽지 못했어요. 올바른 JSON 백업 파일인지 확인해 주세요.');
+        }
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+  });
+
   renderTabbar();
   updateViewModeDisplay();
   if(document.readyState === 'loading'){
@@ -5299,7 +5534,7 @@ document.addEventListener('click', e=>{
   // 사용자 커스터마이징 가능한 LMS 서브메뉴 전체 목록 (표시 여부 + 순서 변경 지원)
   const LMS_MENU_DEFS = [
     { id:'assignments', label:'📝 전체 과제·제출현황' },
-    { id:'feedback',    label:'💯 성적·최근 피드백' },
+    { id:'feedback',    label:'💯 성적' },
     { id:'grades',      label:'📊 과목별 현재 성적' },
     { id:'files',       label:'📁 강의 자료실' },
     { id:'cal',         label:'🗓️ 캘린더 이벤트 전체' },
@@ -6451,6 +6686,15 @@ document.addEventListener('click', e=>{
     <p class="cal-catm-hint">체크박스를 해제하면 앱타일 홈 화면에서 숨길 수 있고, 우측 ▲ / ▼ 버튼으로 순서를 바꿀 수 있어요.</p>
     <div class="side-order-list" id="sideOrderList"></div>
     <button type="button" class="cal-catm-add" id="tabCfgReset">↺ 하단 탭·사이드메뉴 기본 순서로 초기화</button>
+    <div class="cfg-sec-title" style="margin-top:12px;"><span>🔄 아이폰 ↔ 아이패드 기기 간 데이터 연동</span></div>
+    <p class="cal-catm-hint">내 시간표, 캘린더 일정, 모바일 학생증, LMS 토큰, 알림 및 화면 설정을 한 번에 백업하여 다른 기기(AirDrop·카카오톡·파일·클립보드)로 그대로 옮길 수 있어요.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+      <button type="button" class="tt-btn ghost" id="syncExportFileBtn" style="padding:10px 8px;font-size:13px;">📤 백업 파일 내보내기</button>
+      <button type="button" class="tt-btn ghost" id="syncImportFileBtn" style="padding:10px 8px;font-size:13px;">📥 백업 파일 불러오기</button>
+      <button type="button" class="tt-btn ghost" id="syncCopyCodeBtn" style="padding:10px 8px;font-size:13px;">📋 연동 코드 복사</button>
+      <button type="button" class="tt-btn ghost" id="syncPasteCodeBtn" style="padding:10px 8px;font-size:13px;">📲 연동 코드 붙여넣기</button>
+    </div>
+    <input type="file" id="syncImportFileInput" accept=".json,application/json" style="display:none;">
     <div class="cal-modal-btns">
       <button type="button" class="cal-btn-cancel" id="tabCfgCancel">취소</button>
       <button type="button" class="cal-btn-save" id="tabCfgSave">저장</button>
