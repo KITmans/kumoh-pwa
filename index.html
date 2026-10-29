@@ -1014,7 +1014,7 @@
   }
   .floor-grid{
     display:grid;
-    gap:2px;
+    gap:0;
     width:max-content !important;
     margin:0 auto;
   }
@@ -1023,7 +1023,7 @@
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    border-radius:4px;
+    border-radius:0;
     font-size:10.5px !important;
     font-weight:700;
     line-height:1.15 !important;
@@ -1050,6 +1050,20 @@
   .fm-cell.arrow{
     font-size:22px !important;
   }
+  /* 도면: 모서리 없이 각지고, 칸끼리 벽선 하나로 딱 붙는 평면도 스타일 */
+  .floor-grid{--fm-wall:rgba(255,255,255,.62);padding:0 1px 1px 0;}
+  :root[data-theme="light"] .floor-grid{--fm-wall:rgba(20,20,24,.78);}
+  .floor-scroll{border-radius:0;}
+  .fm-cell{
+    border-radius:0 !important;
+    border:1px solid var(--fm-wall);
+    margin:0 -1px -1px 0;      /* 이웃 칸과 벽선이 겹쳐 한 줄로 보이게 */
+    box-sizing:border-box;
+    position:relative;
+  }
+  .fm-cell.arrow{border:0;margin:0;background:none;}
+  .fm-cell.sel{outline:2px solid var(--ink);outline-offset:-3px;z-index:2;}
+  .floor-legend i{border-radius:0;}
 
   /* ============================================================
      4. 내 캘린더 (월간 달력 + 하단 팝업 + 모달 내 직접 분류명/색상 편집)
@@ -1971,6 +1985,7 @@
     <div class="app-tile-grid" id="appTileGrid"></div>
     <div class="app-tile-edit-bar" id="appTileEditBar" style="display:none;">
       <span>👆 타일을 드래그하거나 다른 타일을 눌러 위치를 바꾸세요</span>
+      <button type="button" class="tt-btn" id="appTileCfgBtn" style="padding:5px 12px;font-size:12.5px;">⚙ 설정</button>
       <button type="button" class="tt-btn" id="appTileEditDoneBtn" style="padding:5px 12px;font-size:12.5px;">완료</button>
     </div>
   </div>
@@ -2310,7 +2325,6 @@
     <!-- ===== TAB: 모바일 학생증 ===== -->
     <div class="tab-panel" data-tab="idcard">
       <section>
-        <h2>🪪 모바일 학생증</h2>
         <div id="idCardEmptyArea" style="display:none;">
           <div class="empty-state">
             <span class="es-icon">🪪</span>
@@ -3153,7 +3167,12 @@ document.addEventListener('click', e=>{
     const navListEl = document.getElementById('sideNavList');
     if(!navListEl) return;
     const idAttrMap = { mytt:' id="sideMyTT"', mycal:' id="sideMyCal"', remind:' id="sideRemind"', mylms:' id="sideMyLMS"', idcard:' id="sideMyIdCard"' };
-    navListEl.innerHTML = userSideOrder.filter(k=>k!=='settings').map(k=>{
+    const tileMode = (userViewMode === 'tile');
+    const isHidden = k => tileMode && userHiddenTiles.includes(k);
+    // 사용자 설정 버튼(사이드메뉴 맨 아래)도 앱타일에서 뺐다면 함께 숨김
+    const cfgBtn = document.getElementById('openTabCfgBtn');
+    if(cfgBtn) cfgBtn.style.display = isHidden('settings') ? 'none' : '';
+    navListEl.innerHTML = userSideOrder.filter(k=>k!=='settings' && !isHidden(k)).map(k=>{
       const it = TAB_ITEMS[k];
       if(!it) return '';
       const extraId = idAttrMap[k] || '';
@@ -3551,6 +3570,7 @@ document.addEventListener('click', e=>{
           userHiddenTiles.push(hideKey);
           saveUserHiddenTiles();
           renderAppTiles();
+          renderSideMenu();
         }
         return;
       }
@@ -3757,7 +3777,6 @@ document.addEventListener('click', e=>{
       }
       userHiddenTiles = Array.from(tempHiddenTilesSet);
       saveUserHiddenTiles();
-      renderSideMenu();
       const vm = document.getElementById('viewModeSel');
       if(vm){
         userViewMode = vm.value;
@@ -3765,12 +3784,15 @@ document.addEventListener('click', e=>{
         tileEditMode = false;
         try{ localStorage.setItem(VIEW_MODE_KEY, userViewMode); }catch(e){}
       }
+      renderSideMenu();
       renderTabbar();
       updateViewModeDisplay();
       closeTabCfgModal();
     }
   });
 
+  const appTileCfgBtn = document.getElementById('appTileCfgBtn');
+  if(appTileCfgBtn) appTileCfgBtn.addEventListener('click', e=>{ e.stopPropagation(); openTabCfgModal(); });
   renderTabbar();
   updateViewModeDisplay();
   if(document.readyState === 'loading'){
