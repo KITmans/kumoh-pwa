@@ -2848,16 +2848,17 @@
     letter-spacing:-0.04em !important;
     line-height:1.1 !important;
     padding:0 1px !important;
-    color:#fff !important;
-    text-shadow:0 1px 1px rgba(0,0,0,.35);
+    color:#22303F !important;
+    text-shadow:none;
   }
   html body .floor-scroll .floor-grid .fm-cell *{font-weight:700 !important;white-space:nowrap !important;}
   html body .floor-scroll .floor-grid .fm-cell.arrow{font-size:calc(20px * var(--fm-z, 1)) !important;color:var(--ink) !important;text-shadow:none;}
-  html body .floor-scroll .floor-grid .fm-cell.free{background:#087F52 !important;}
-  html body .floor-scroll .floor-grid .fm-cell.busy{background:#1F5FD0 !important;}
-  html body .floor-scroll .floor-grid .fm-cell.off{background:#087F52 !important;opacity:.82 !important;}
-  html body .floor-scroll .floor-grid .fm-cell.office{background:#D1303D !important;opacity:1 !important;}
-  html body .floor-scroll .floor-grid .fm-cell.stair{background:#6B7684 !important;}
+  html body .floor-scroll .floor-grid .fm-cell.free{background:#C9EFDB !important;}
+  html body .floor-scroll .floor-grid .fm-cell.busy{background:#C8DDFF !important;}
+  html body .floor-scroll .floor-grid .fm-cell.off{background:#C9EFDB !important;opacity:.85 !important;}
+  html body .floor-scroll .floor-grid .fm-cell.office{background:#FFD3D6 !important;opacity:1 !important;}
+  html body .floor-scroll .floor-grid .fm-cell.stair{background:#E4E8ED !important;}
+  .floor-legend i{border:1px solid rgba(0,0,0,.14);}
 
   /* ===== 알림 설정: 선택칸 글자가 넘치지 않도록 ===== */
   .rm-row select{min-width:0;text-overflow:ellipsis;white-space:nowrap;}
@@ -2920,7 +2921,7 @@
       <section>
         <h2>테크노관 층별 강의실 현황</h2>
         <div class="floor-tabs" id="floorTabs"></div>
-        <p class="floor-legend"><span><i style="background:#087F52"></i>비어있음</span><span><i style="background:#1F5FD0"></i>강의중</span><span><i style="background:#D1303D"></i>교수실·연구실·학사지원실</span><span><i style="background:#6B7684"></i>엘리베이터·화장실 등</span></p>
+        <p class="floor-legend"><span><i style="background:#C9EFDB"></i>비어있음</span><span><i style="background:#C8DDFF"></i>강의중</span><span><i style="background:#FFD3D6"></i>교수실·연구실·학사지원실</span><span><i style="background:#E4E8ED"></i>엘리베이터·화장실 등</span></p>
         <div class="floor-zoom" id="floorZoom"><span>글자 크기</span><button type="button" data-z="1">작게</button><button type="button" data-z="1.3">보통</button><button type="button" data-z="1.65">크게</button></div>
         <div class="floor-scroll"><div class="floor-grid" id="floorGrid"></div></div>
         <div class="floor-info" id="floorInfo"></div>
