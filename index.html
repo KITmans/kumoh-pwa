@@ -137,6 +137,12 @@
 
   .tab-panel{display:none;}
   .tab-panel.active{display:block;}
+  /* 사파리식 스와이프 뒤로가기: 현재 화면이 손가락을 따라 밀려나고, 아래에 이전 화면이 살짝 따라 나옴 */
+  html.swipe-active{overflow-x:hidden;-webkit-user-select:none;user-select:none;}
+  .swipe-over{position:relative;z-index:4;background:var(--paper);box-shadow:-14px 0 32px rgba(0,0,0,.28);will-change:transform;}
+  .swipe-under{position:fixed;z-index:3;pointer-events:none;background:var(--paper);will-change:transform;overflow:hidden;}
+  .swipe-under > main{display:flex;flex-direction:column;min-height:100%;}
+  .swipe-under .swipe-dim{position:absolute;inset:0;background:#000;pointer-events:none;z-index:50;}
 
   section{padding:20px;border-bottom:1px solid var(--line);}
   section:last-child{border-bottom:none;}
@@ -3045,16 +3051,19 @@ document.addEventListener('click', e=>{
       '<div class="attach-list"><a class="attach-item" href="'+escapeHtml(sourceUrl)+'" target="_blank" rel="noopener">🔗 학교 홈페이지에서 원문 보기</a></div>';
   }
 
+  let noticeListScroll = 0; // 상세로 들어가기 직전 목록 스크롤 위치
   function closeNoticeDetail(fromPopState){
     if(noticeDetailView.style.display === 'none') return;
     noticeDetailView.style.display = 'none';
     noticeListView.style.display = '';
+    window.scrollTo(0, noticeListScroll || 0);
     if(!fromPopState && history.state && history.state.noticeDetail){
       try{ history.back(); }catch(e){}
     }
   }
 
   async function openNoticeDetail(articleNo){
+    noticeListScroll = window.scrollY || 0;
     noticeListView.style.display = 'none';
     noticeDetailView.style.display = '';
     noticeDetailArea.innerHTML = '<div class="notice-loading">불러오는 중이에요…</div>';
@@ -3078,30 +3087,6 @@ document.addEventListener('click', e=>{
     }
   });
 
-  // 공지 상세 화면에서 오른쪽으로 스와이프(왼쪽→오른쪽 드래그) 시 목록으로 돌아가기
-  (function(){
-    let sx = 0, sy = 0, st = 0, tracking = false;
-    noticeDetailView.addEventListener('touchstart', e=>{
-      if(!e.touches || e.touches.length !== 1) return;
-      const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-      // 표(table) 등 가로 스크롤 요소 내부에서 터치한 경우는 제외
-      if(e.target && e.target.closest && e.target.closest('table, pre, code')) { tracking = false; return; }
-      sx = e.touches[0].clientX;
-      sy = e.touches[0].clientY;
-      st = Date.now();
-      tracking = true;
-    }, {passive:true});
-    noticeDetailView.addEventListener('touchend', e=>{
-      if(!tracking || !e.changedTouches || !e.changedTouches.length) return;
-      tracking = false;
-      const dx = e.changedTouches[0].clientX - sx;
-      const dy = Math.abs(e.changedTouches[0].clientY - sy);
-      const dt = Date.now() - st;
-      if(dx > 65 && dx > dy * 1.6 && dt < 700){
-        closeNoticeDetail(false);
-      }
-    }, {passive:true});
-  })();
 
   // ===================== tab switching & 사용자 설정 (탭바 모드 / 앱타일 모드 + 12개 앱타일) =====================
   const TAB_ITEMS = {
@@ -3313,6 +3298,7 @@ document.addEventListener('click', e=>{
     updateHomeBtnVisibility();
   }
 
+  const tabScrollMem = {}; // 탭별 마지막 스크롤 위치 (스와이프 뒤로가기 때 복원)
   function switchTab(name, skipHistory){
     const it = TAB_ITEMS[name];
     if(!it) return;
@@ -3323,6 +3309,9 @@ document.addEventListener('click', e=>{
     if(it.type === 'action' && it.action === 'settings'){
       openTabCfgModal();
       return;
+    }
+    if(!tileHomeActive && currentActiveTab && currentActiveTab !== name && it.type === 'tab'){
+      tabScrollMem[currentActiveTab] = window.scrollY || 0;
     }
     if(!skipHistory && !tileHomeActive && currentActiveTab && currentActiveTab !== name){
       navHistoryStack.push(currentActiveTab);
@@ -3412,39 +3401,198 @@ document.addEventListener('click', e=>{
     });
   }
 
-  // 아이폰 스타일 화면 스와이프 뒤로가기 (왼쪽에서 오른쪽으로 스와이프)
-  (function initGlobalSwipeBack(){
-    let sx = 0, sy = 0, st = 0, tracking = false;
-    document.addEventListener('touchstart', e=>{
-      if(!e.touches || e.touches.length !== 1) return;
-      if(document.body.classList.contains('side-open')) { tracking = false; return; }
-      if(tileEditMode) { tracking = false; return; }
-      const t = e.target;
-      // 가로 스크롤 영역(도면, 시간표, 칩 바, 표 등) 내부에서 시작된 터치는 제외 (단, 화면 맨 왼쪽 28px 엣지에서 시작하면 뒤로가기 우선)
-      const x = e.touches[0].clientX;
-      const isLeftEdge = (x <= 28);
-      if(!isLeftEdge && t && t.closest && t.closest('.floor-scroll, .tt-scroll, .menu-day-row, .notice-cat-row, .cal-cat-bar, .lms-subtabs, .lms-chip-row, table, pre, code, input, textarea, select')){
-        tracking = false;
-        return;
+  // ===== 아이폰 사파리식 스와이프 뒤로가기 =====
+  // 화면 왼쪽에서 오른쪽으로 밀면 현재 화면이 손가락을 따라가고, 아래에 이전 화면이 살짝 따라 나옵니다.
+  // 손을 떼면 속도/거리에 따라 부드럽게 마무리(뒤로 가기) 하거나 원래대로 돌아갑니다.
+  (function initInteractiveSwipeBack(){
+    const mainEl = document.getElementById('tabContents');
+    if(!mainEl) return;
+    const NATIVE_EDGE = 18;      // 이 안쪽 엣지는 iOS 기본 뒤로가기(히스토리)에 맡김 (공지 상세만)
+    const START_ZONE  = 180;     // 왼쪽 이 범위에서 시작한 터치만 인식
+    const PARALLAX    = 0.3;     // 아래 화면이 따라 나오는 비율
+    const DIM_MAX     = 0.35;
+    const EASE        = 'cubic-bezier(.22,.78,.24,1)';
+    const reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+    let tracking = false, mode = null;       // mode: null | 'drag' | 'instant' | 'anim'
+    let sx = 0, sy = 0, startX = 0, W = 0, move = 0;
+    let plan = null, under = null, dim = null, samples = [];
+
+    // 이번 뒤로가기가 어디로 가는지 (상태는 바꾸지 않고 미리 계산만 함 — goHomeOrBack 과 같은 순서)
+    function computeBackPlan(){
+      if(document.querySelector('.cal-modal-bg.open')) return { kind:'instant' };
+      const cs = document.getElementById('calSheet');
+      if(cs && cs.classList.contains('open')) return { kind:'instant' };
+      if(noticeDetailView && noticeDetailView.style.display !== 'none'){
+        return { kind:'notice', tab:'notice', scroll: noticeListScroll || 0 };
       }
-      // 스와이프 시작 허용 범위: 화면 왼쪽 절반(<= 180px)에서 오른쪽으로 밀기
-      if(x > 180) { tracking = false; return; }
-      sx = x;
-      sy = e.touches[0].clientY;
-      st = Date.now();
-      tracking = true;
+      if(userViewMode === 'tile'){
+        return tileHomeActive ? null : { kind:'tile', scroll:0 };
+      }
+      const last = navHistoryStack.length ? navHistoryStack[navHistoryStack.length-1] : null;
+      if(last && last !== currentActiveTab) return { kind:'tab', tab:last, scroll: tabScrollMem[last] || 0 };
+      const home = getHomeTabId();
+      if(currentActiveTab !== home) return { kind:'tab', tab:home, scroll: tabScrollMem[home] || 0 };
+      return null;
+    }
+
+    // 아래에 깔릴 '이전 화면' 복제본 만들기
+    function buildUnder(p){
+      const wrap = mainEl.parentElement;
+      const wr = wrap.getBoundingClientRect();
+      const mr = mainEl.getBoundingClientRect();
+      const box = document.createElement('div');
+      box.className = 'swipe-under';
+      box.setAttribute('aria-hidden','true');
+      let inner;
+      if(p.kind === 'tile'){
+        inner = appTileView.cloneNode(true);
+        inner.style.display = '';
+        inner.removeAttribute('id');
+        inner.style.minHeight = '100%';
+        box.appendChild(inner);
+      } else {
+        const panel = document.querySelector('.tab-panel[data-tab="'+p.tab+'"]');
+        if(!panel) return null;
+        const mclone = mainEl.cloneNode(false);
+        mclone.removeAttribute('id');
+        inner = panel.cloneNode(true);
+        inner.classList.add('active');
+        if(p.kind === 'notice'){
+          const lv = inner.querySelector('#noticeListView');
+          const dv = inner.querySelector('#noticeDetailView');
+          if(dv) dv.remove();
+          if(lv) lv.style.display = '';
+        }
+        mclone.appendChild(inner);
+        box.appendChild(mclone);
+      }
+      dim = document.createElement('div');
+      dim.className = 'swipe-dim';
+      dim.style.opacity = String(DIM_MAX);
+      box.appendChild(dim);
+      // 이전 화면이 보이던 스크롤 위치에 맞춰 배치
+      const top = mr.top + (window.scrollY || 0) - (p.scroll || 0);
+      box.style.left = wr.left+'px';
+      box.style.width = wr.width+'px';
+      box.style.top = top+'px';
+      box.style.height = Math.max(window.innerHeight - top, window.innerHeight)+'px';
+      box.style.transform = 'translate3d('+(-wr.width*PARALLAX)+'px,0,0)';
+      document.body.appendChild(box);
+      W = wr.width;
+      return box;
+    }
+
+    function apply(m){
+      move = Math.max(0, Math.min(W, m));
+      const pr = W ? move / W : 0;
+      mainEl.style.transform = 'translate3d('+move+'px,0,0)';
+      if(under) under.style.transform = 'translate3d('+(-(1-pr)*W*PARALLAX)+'px,0,0)';
+      if(dim) dim.style.opacity = String((1-pr)*DIM_MAX);
+    }
+
+    function cleanup(){
+      // 내가 건드린 속성만 제거 (commit 으로 바뀐 display 등은 그대로 둠)
+      ['transform','transition','min-height'].forEach(p=> mainEl.style.removeProperty(p));
+      mainEl.classList.remove('swipe-over');
+      document.documentElement.classList.remove('swipe-active');
+      if(under && under.parentNode) under.parentNode.removeChild(under);
+      under = null; dim = null; plan = null; mode = null; tracking = false; samples = [];
+    }
+
+    function finish(commit){
+      mode = 'anim';
+      const remain = commit ? (W - move) : move;
+      const dur = reduceMotion ? 0 : Math.round(Math.max(170, Math.min(340, 110 + 260 * (W ? remain / W : 0))));
+      const tr = 'transform '+dur+'ms '+EASE;
+      mainEl.style.transition = tr;
+      if(under) under.style.transition = tr;
+      if(dim) dim.style.transition = 'opacity '+dur+'ms '+EASE;
+      requestAnimationFrame(()=>{
+        if(commit){
+          mainEl.style.transform = 'translate3d('+W+'px,0,0)';
+          if(under) under.style.transform = 'translate3d(0,0,0)';
+          if(dim) dim.style.opacity = '0';
+        } else {
+          mainEl.style.transform = 'translate3d(0,0,0)';
+          if(under) under.style.transform = 'translate3d('+(-W*PARALLAX)+'px,0,0)';
+          if(dim) dim.style.opacity = String(DIM_MAX);
+        }
+      });
+      setTimeout(()=>{
+        if(commit){
+          const sc = plan ? plan.scroll : 0;
+          goHomeOrBack();                 // 실제 화면 전환 (아래 복제본이 가리고 있어서 깜빡임 없음)
+          cleanup();                      // 같은 프레임에 덮개/복제본 제거
+          window.scrollTo(0, sc || 0);    // 레이아웃이 원복된 뒤에 스크롤 위치 복원
+          return;
+        }
+        cleanup();
+      }, dur + 30);
+    }
+
+    document.addEventListener('touchstart', e=>{
+      if(mode === 'anim') return;
+      if(!e.touches || e.touches.length !== 1){ if(mode === 'drag') finish(false); else tracking = false; return; }
+      if(document.body.classList.contains('side-open') || tileEditMode){ tracking = false; return; }
+      const t = e.target;
+      const x = e.touches[0].clientX;
+      // 가로 스크롤 영역(도면, 시간표, 칩 바, 표 등) 안에서 시작한 터치는 제외 (맨 왼쪽 28px 엣지는 예외)
+      if(x > 28 && t && t.closest && t.closest('.floor-scroll, .tt-scroll, .menu-day-row, .notice-cat-row, .cal-cat-bar, .lms-subtabs, .lms-chip-row, table, pre, code, input, textarea, select')){ tracking = false; return; }
+      if(x > START_ZONE){ tracking = false; return; }
+      // 공지 상세는 히스토리가 있어서 iOS 가 엣지 스와이프를 직접 처리 → 이중 동작 방지
+      if(x <= NATIVE_EDGE && history.state && history.state.noticeDetail){ tracking = false; return; }
+      sx = x; sy = e.touches[0].clientY; startX = x; move = 0; samples = [];
+      tracking = true; mode = null;
     }, {passive:true});
 
-    document.addEventListener('touchend', e=>{
-      if(!tracking || !e.changedTouches || !e.changedTouches.length) return;
-      tracking = false;
-      const dx = e.changedTouches[0].clientX - sx;
-      const dy = Math.abs(e.changedTouches[0].clientY - sy);
-      const dt = Date.now() - st;
-      if(dx > 68 && dx > dy * 1.65 && dt < 650){
-        goHomeOrBack();
+    document.addEventListener('touchmove', e=>{
+      if(!tracking || mode === 'anim' || !e.touches || !e.touches.length) return;
+      const x = e.touches[0].clientX, y = e.touches[0].clientY;
+      const dx = x - sx, dy = y - sy;
+      if(mode === null){
+        if(Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx)){ tracking = false; return; }   // 세로 스크롤
+        if(dx > 10 && dx > Math.abs(dy) * 1.3){
+          plan = computeBackPlan();
+          if(!plan){ tracking = false; return; }
+          if(plan.kind === 'instant'){ mode = 'instant'; return; }
+          under = buildUnder(plan);
+          if(!under){ plan = null; tracking = false; return; }
+          mainEl.classList.add('swipe-over');
+          mainEl.style.minHeight = Math.max(mainEl.getBoundingClientRect().height, window.innerHeight - mainEl.getBoundingClientRect().top)+'px';
+          document.documentElement.classList.add('swipe-active');
+          mode = 'drag';
+          startX = x;                  // 인식된 시점부터 따라가서 튀지 않게
+          samples = [];
+        } else return;
       }
-    }, {passive:true});
+      if(mode === 'drag'){
+        if(e.cancelable) e.preventDefault();
+        apply(x - startX);
+        const now = performance.now();
+        samples.push({ x, t: now });
+        while(samples.length > 2 && now - samples[0].t > 90) samples.shift();
+      }
+    }, {passive:false});
+
+    function onEnd(e, cancelled){
+      if(!tracking && mode !== 'drag') return;
+      if(mode === 'instant'){
+        const t = e.changedTouches && e.changedTouches[0];
+        if(!cancelled && t && (t.clientX - sx) > 68) goHomeOrBack();
+        tracking = false; mode = null; plan = null; return;
+      }
+      if(mode !== 'drag'){ tracking = false; mode = null; return; }
+      let v = 0;
+      if(samples.length >= 2){
+        const a = samples[0], b = samples[samples.length-1];
+        v = (b.x - a.x) / Math.max(1, b.t - a.t);     // px/ms
+      }
+      const commit = !cancelled && ((move > W * 0.35 && v > -0.1) || (v > 0.5 && move > 24));
+      finish(commit);
+    }
+    document.addEventListener('touchend', e=> onEnd(e, false), {passive:true});
+    document.addEventListener('touchcancel', e=> onEnd(e, true), {passive:true});
   })();
 
   // 아이폰 스타일 앱타일: 롱프레스 → 흔들림 → 드래그 재배치 (FLIP 애니메이션)
@@ -5521,7 +5669,7 @@ document.addEventListener('click', e=>{
 
   // ===================== 나의 LMS =====================
   const LMS_CFG_KEY = 'kit-lms-cfg-v1';
-  const LMS_CACHE_KEY = 'kit-lms-cache-v3';
+  const LMS_CACHE_KEY = 'kit-lms-cache-v4';
   const LMS_MENU_KEY = 'kit-lms-menus-v1';
   const LMS_PROXY = 'https://kumoh-lms-proxy.kangdongwan7.workers.dev'; // ← Worker 주소
   let lmsCfg = { host: 'https://canvas.kumoh.ac.kr', token: '' };
@@ -5741,9 +5889,7 @@ document.addEventListener('click', e=>{
         const ymd = (dObj && !isNaN(dObj.getTime())) ? fmtYMD(dObj.getFullYear(), dObj.getMonth()+1, dObj.getDate()) : '';
         const hm = (dObj && !isNaN(dObj.getTime())) ? (String(dObj.getHours()).padStart(2,'0')+':'+String(dObj.getMinutes()).padStart(2,'0')) : '23:59';
 
-        const fbHtml = (a.comments && a.comments.length) ? a.comments.map(cm=>
-          '<div class="lms-feedback-box"><div class="fb-who">💬 '+escapeHtml(cm.author||'교수님/조교 코멘트')+(cm.date?' · '+escapeHtml(fmtKorDateTime(cm.date)):'')+'</div>'+escapeHtml(cm.comment)+'</div>'
-        ).join('') : '';
+        const fbHtml = (a.comments && a.comments.length) ? a.comments.map(cm=> lmsCommentHtml(cm, '교수님/조교 코멘트')).join('') : '';
 
         return '<div class="lms-card">'+
           '<div class="lms-card-top">'+
@@ -5773,9 +5919,7 @@ document.addEventListener('click', e=>{
       }
       lmsContentArea.innerHTML = list.map(f=>{
         const scTxt = (f.score != null ? f.score : '-') + (f.points != null ? ' / '+f.points : '');
-        const fbHtml = (f.comments && f.comments.length) ? f.comments.map(cm=>
-          '<div class="lms-feedback-box"><div class="fb-who">💬 '+escapeHtml(cm.author||'교수님 코멘트')+(cm.date?' · '+escapeHtml(fmtKorDateTime(cm.date)):'')+'</div>'+escapeHtml(cm.comment)+'</div>'
-        ).join('') : '<div class="lms-meta"><span>코멘트 없음</span></div>';
+        const fbHtml = (f.comments && f.comments.length) ? f.comments.map(cm=> lmsCommentHtml(cm, '교수님 코멘트')).join('') : '<div class="lms-meta"><span>코멘트 없음</span></div>';
         return '<div class="lms-card">'+
           '<div class="lms-card-top">'+
             '<span class="lms-course-badge">'+escapeHtml(f.courseName||'과목')+'</span>'+
@@ -5913,6 +6057,15 @@ document.addEventListener('click', e=>{
     }
   }
 
+  // 코멘트 한 건 HTML (작성자 · 시간 · 본문 · 첨부파일)
+  function lmsCommentHtml(cm, fallbackWho){
+    const who = cm.mine ? '나' : (cm.author || fallbackWho || '교수님/조교');
+    const files = (cm.files && cm.files.length) ? '<div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">'+cm.files.map(f=>
+      f.url ? '<a href="'+escapeHtml(f.url)+'" target="_blank" rel="noopener" style="font-size:12.5px;">📎 '+escapeHtml(f.name)+'</a>' : '<span style="font-size:12.5px;">📎 '+escapeHtml(f.name)+'</span>'
+    ).join('')+'</div>' : '';
+    return '<div class="lms-feedback-box"><div class="fb-who">💬 '+escapeHtml(who)+(cm.date?' · '+escapeHtml(fmtKorDateTime(cm.date)):'')+'</div>'+
+      (cm.comment ? '<div style="white-space:pre-line;overflow-wrap:anywhere;">'+escapeHtml(cm.comment)+'</div>' : '')+files+'</div>';
+  }
   const LMS_HDR = ()=>({ 'Authorization':'Bearer '+lmsCfg.token, 'Accept':'application/json' });
   async function lmsFetchAll(path, maxPages){
     let out = [], url = LMS_PROXY + path;
@@ -5967,18 +6120,23 @@ document.addEventListener('click', e=>{
       const sinceAnnStr = fmtYMD(sinceAnn.getFullYear(), sinceAnn.getMonth()+1, sinceAnn.getDate());
 
       // 2. 각 과목별 과제(제출상태, 점수, 코멘트), 강의자료(파일 + 모듈), 과목별 공지(discussion_topics?only_announcements=true) 병렬 수집
+      let cmtFailCnt = 0; // 코멘트(제출물) 조회 실패한 과목 수
       const perCoursePromises = courses.map(async c=>{
-        const [asgRes, filesRes, modRes, cAnnRes] = await Promise.allSettled([
-          lmsFetchAll('/api/v1/courses/'+c.id+'/assignments?include[]=submission&include[]=score_statistics&per_page=50', 2),
+        const [asgRes, filesRes, modRes, cAnnRes, subRes] = await Promise.allSettled([
+          lmsFetchAll('/api/v1/courses/'+c.id+'/assignments?include[]=submission&include[]=submission_comments&include[]=score_statistics&per_page=50', 2),
           lmsFetchAll('/api/v1/courses/'+c.id+'/files?per_page=50', 2),
           lmsFetchAll('/api/v1/courses/'+c.id+'/modules?include[]=items&per_page=30', 2),
-          lmsFetchAll('/api/v1/courses/'+c.id+'/discussion_topics?only_announcements=true&per_page=30', 2)
+          lmsFetchAll('/api/v1/courses/'+c.id+'/discussion_topics?only_announcements=true&per_page=30', 2),
+          // 교수님/조교 코멘트는 제출물(submissions) API 에서만 확실히 내려옴 → 내 제출물 + 코멘트
+          lmsFetchAll('/api/v1/courses/'+c.id+'/students/submissions?student_ids[]=self&include[]=submission_comments&per_page=100', 3)
         ]);
         const asgs = asgRes.status === 'fulfilled' ? asgRes.value : [];
         const fls  = filesRes.status === 'fulfilled' ? filesRes.value : [];
         const mods = modRes.status === 'fulfilled' ? modRes.value : [];
         const cAnns = cAnnRes.status === 'fulfilled' ? cAnnRes.value : [];
-        return { course: c, asgs, fls, mods, cAnns };
+        const subs = subRes.status === 'fulfilled' ? subRes.value : [];
+        if(subRes.status !== 'fulfilled') cmtFailCnt++;
+        return { course: c, asgs, fls, mods, cAnns, subs };
       });
 
       const [perCourseResults, annRes, calEvRes, calAsgRes, upRes] = await Promise.all([
@@ -5995,7 +6153,10 @@ document.addEventListener('click', e=>{
       const seenFileKeys = new Set();
       const rawAnnList = [];
 
-      perCourseResults.forEach(({ course, asgs, fls, mods, cAnns })=>{
+      perCourseResults.forEach(({ course, asgs, fls, mods, cAnns, subs })=>{
+        // 제출물 API 결과를 과제 ID 별로 정리 (코멘트 + 제출자 ID)
+        const subByAsg = {};
+        (Array.isArray(subs)?subs:[]).forEach(sb=>{ if(sb && sb.assignment_id != null) subByAsg[sb.assignment_id] = sb; });
         (Array.isArray(cAnns)?cAnns:[]).forEach(a=>{
           if(a && (a.title || a.message)){
             rawAnnList.push(Object.assign({}, a, { _courseId: course.id, _courseName: course.name }));
@@ -6008,12 +6169,28 @@ document.addEventListener('click', e=>{
           const wf = sub.workflow_state || 'unsubmitted';
           const submitted = !!(sub.submitted_at || wf==='submitted' || wf==='graded' || wf==='pending_review');
           const graded = (wf==='graded' || sub.score != null || sub.grade != null);
-          const rawComments = Array.isArray(sub.submission_comments) ? sub.submission_comments : [];
+          // 과제 목록의 코멘트 + 제출물 API 의 코멘트를 합치고 중복 제거
+          const subX = subByAsg[a.id] || {};
+          const rawComments = [].concat(
+            Array.isArray(sub.submission_comments) ? sub.submission_comments : [],
+            Array.isArray(subX.submission_comments) ? subX.submission_comments : []
+          );
+          const seenCm = new Set();
+          const myId = subX.user_id || sub.user_id || null;
           const comments = rawComments.map(cm=>({
-            author: cm.author_name || (cm.author && cm.author.display_name) || '교수님/조교',
+            id: cm.id,
+            author: cm.author_name || (cm.author && (cm.author.display_name || cm.author.name)) || '교수님/조교',
+            mine: !!(myId && cm.author_id && String(cm.author_id) === String(myId)),
             comment: cm.comment || '',
-            date: cm.created_at || ''
-          })).filter(cm=>cm.comment);
+            date: cm.created_at || cm.edited_at || '',
+            files: (Array.isArray(cm.attachments) ? cm.attachments : []).map(f=>({ name: f.display_name || f.filename || '첨부파일', url: f.url || '' }))
+          })).filter(cm=>{
+            if(!(cm.comment || cm.files.length)) return false;
+            const key = cm.id != null ? 'id'+cm.id : cm.date+'|'+cm.comment;
+            if(seenCm.has(key)) return false;
+            seenCm.add(key);
+            return true;
+          }).sort((x,y)=> String(x.date).localeCompare(String(y.date)));
 
           const item = {
             id: a.id,
@@ -6241,7 +6418,8 @@ document.addEventListener('click', e=>{
       };
       try{ localStorage.setItem(LMS_CACHE_KEY, JSON.stringify(lmsState)); }catch(e){}
       lmsDot.className = 'lms-dot ok';
-      lmsStatusTxt.textContent = '동기화 완료 · 과목 '+courses.length+'개 · 과제 '+allAssignments.length+'건';
+      lmsStatusTxt.textContent = '동기화 완료 · 과목 '+courses.length+'개 · 과제 '+allAssignments.length+'건'+
+        (cmtFailCnt && cmtFailCnt === courses.length ? ' · ⚠ 코멘트 조회 실패(Worker가 submissions 경로를 막고 있을 수 있어요)' : '');
       renderLMS();
       if(typeof renderRM === 'function') renderRM();
     }catch(err){
