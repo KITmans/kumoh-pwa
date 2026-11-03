@@ -7771,7 +7771,7 @@ document.addEventListener('click', e=>{
 </script>
 <script>
   if('serviceWorker' in navigator){
-    window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+    window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch((e)=>console.error('SW 등록 실패', e)); });
   }
 </script>
 <script>
@@ -7842,7 +7842,10 @@ document.addEventListener('click', e=>{
       }
       if(await permP !== 'granted'){ setStatus('알림이 허용되지 않았어요. 아이폰 설정 앱에서 이 앱의 알림을 허용해 주세요.', true); return; }
       const appKey = b64u(key);
-      const reg = await navigator.serviceWorker.ready;
+      const reg = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, rej)=> setTimeout(()=> rej(new Error('서비스 워커가 준비되지 않았어요. 앱을 완전히 종료했다가 다시 열어 주세요.')), 10000))
+      ]);
       let sub = await reg.pushManager.getSubscription();
       if(sub){
         const cur = sub.options && sub.options.applicationServerKey ? new Uint8Array(sub.options.applicationServerKey) : null;

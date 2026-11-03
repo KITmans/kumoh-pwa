@@ -1,16 +1,19 @@
-const CACHE_NAME = 'kit-app-shell-v7';
+const CACHE_NAME = 'kit-app-shell-v8';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
-  './icons/icon.svg',
+  './icon-192.png',
+  './icon-512.png',
   './FlightSans-Regular.ttf',
   './FlightSans-Bold.ttf'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then((cache) => Promise.all(APP_SHELL.map((u) => cache.add(u).catch(() => {})))) // 파일 하나가 없어도 설치는 계속 진행
+      .then(() => self.skipWaiting())
   );
 });
 
