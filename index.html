@@ -3119,6 +3119,23 @@
 
     <!-- ===== TAB: 알림 (사이드메뉴에서 진입) ===== -->
     <div class="tab-panel" data-tab="remind">
+      <section id="rmPushSection">
+        <h2>앱을 꺼도 받는 푸시 알림</h2>
+        <p class="count-line">학교 공지와 LMS 새 공지·과제를 서버가 5분마다 확인해서, 앱이 꺼져 있어도 알려드려요.</p>
+        <div class="rm-row" style="margin-top:8px;">
+          <button class="tt-btn" id="rmPushRegBtn" type="button" style="color:#fff;">1. 이 기기 푸시 등록</button>
+          <button class="tt-btn ghost" id="rmPushOffBtn" type="button" style="display:none;">등록 해제</button>
+        </div>
+        <p class="count-line" id="rmPushStatus" style="margin:12px 0 0;"></p>
+        <div id="rmPushOutBox" style="display:none;margin-top:10px;">
+          <div class="rm-row">
+            <button class="tt-btn" id="rmPushCopyBtn" type="button" style="color:#fff;">2. 구독 정보 복사</button>
+            <a class="tt-btn ghost" id="rmPushGhLink" href="#" target="_blank" rel="noopener" style="text-decoration:none;display:none;">3. GitHub 열기</a>
+          </div>
+          <p class="count-line" style="margin-top:10px;">GitHub 화면에서 이름은 <b>PUSH_SUB</b>, 값은 방금 복사한 내용을 붙여넣고 저장하세요. 몇 분 안에 "푸시 연결 완료" 알림이 오면 끝이에요.</p>
+          <textarea id="rmPushSubOut" class="tt-search" readonly rows="3" style="width:100%;font-size:11px;line-height:1.4;word-break:break-all;margin-top:6px;"></textarea>
+        </div>
+      </section>
       <section>
         <h2>나의 LMS 새 공지 · 과제 알림</h2>
         <p class="count-line">LMS에 새로운 과목 공지나 과제가 올라오면 푸시 알림으로 바로 알려드려요.</p>
@@ -3345,6 +3362,7 @@
     }
     return 'data/';
   })();
+  window.KIT_DATA_BASE = DATA_BASE;
 
   const CACHE_PREFIX = 'kumohData_v2:';
   function readCache(path){
@@ -7363,12 +7381,12 @@ document.addEventListener('click', e=>{
         const seenAsgSet = new Set(rm.lms.seenAsg || []);
         const newAnns = announcements.filter(a=>!seenAnnSet.has(String(a.courseId+'|'+a.id)));
         const newAsgs = allAssignments.filter(a=>!seenAsgSet.has(String(a.courseId+'|'+a.id)));
-        if(rm.lms.annOn && newAnns.length){
+        if(rm.lms.annOn && newAnns.length && !(window.kitServerPushOn && window.kitServerPushOn())){
           newAnns.slice(0, 3).forEach(a=>{
             rmNotify('📢 [LMS 새 공지] '+(a.courseName||'과목'), a.title, 'lms-ann-'+a.courseId+'-'+a.id);
           });
         }
-        if(rm.lms.asgOn && newAsgs.length){
+        if(rm.lms.asgOn && newAsgs.length && !(window.kitServerPushOn && window.kitServerPushOn())){
           newAsgs.slice(0, 3).forEach(a=>{
             rmNotify('📝 [LMS 새 과제] '+(a.courseName||'과목'), a.title + (a.due_at ? ' · 마감: '+fmtKorDateTime(a.due_at) : ''), 'lms-asg-'+a.courseId+'-'+a.id);
           });
@@ -7755,6 +7773,105 @@ document.addEventListener('click', e=>{
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
   }
+</script>
+<script>
+// ===== 서버 푸시 등록 (앱을 꺼도 알림) =====
+// 이 기기의 '푸시 구독 정보'를 만들어 보여주고, 사용자가 GitHub Secret(PUSH_SUB)에 붙여넣으면
+// GitHub Actions 가 새 공지/LMS 소식이 있을 때 이 기기로 푸시를 보낸다.
+// 푸시용 공개키는 Actions 가 data 브랜치에 올려둔 push-key.json 에서 자동으로 받아온다.
+(function initServerPush(){
+  const KEY_PUB = 'kit-push-vapid-v1', FLAG = 'kit-server-push';
+  const $ = id => document.getElementById(id);
+  const regBtn = $('rmPushRegBtn'), offBtn = $('rmPushOffBtn'), copyBtn = $('rmPushCopyBtn');
+  const out = $('rmPushSubOut'), outBox = $('rmPushOutBox'), st = $('rmPushStatus'), ghLink = $('rmPushGhLink');
+  if(!regBtn) return;
+
+  window.kitServerPushOn = function(){ try{ return localStorage.getItem(FLAG) === '1'; }catch(e){ return false; } };
+
+  const b64u = s=>{ const p='='.repeat((4-s.length%4)%4); return Uint8Array.from(atob((s+p).replace(/-/g,'+').replace(/_/g,'/')), c=>c.charCodeAt(0)); };
+  const sameKey = (a,b)=> !!a && !!b && a.length===b.length && a.every((v,i)=>v===b[i]);
+  function setStatus(msg, bad){ st.textContent = msg; st.style.color = bad ? '#d33' : ''; }
+
+  let cachedKey = null;
+  async function fetchKey(){
+    const base = window.KIT_DATA_BASE || 'data/';
+    const r = await fetch(base + 'push-key.json?t=' + Date.now(), { cache:'no-cache' });
+    if(!r.ok) throw new Error('KEY_MISSING');
+    const j = await r.json();
+    if(!j || !j.publicKey) throw new Error('KEY_MISSING');
+    cachedKey = j.publicKey;
+    return cachedKey;
+  }
+
+  // GitHub 'Secret 추가' 화면 주소 (데이터 주소에서 계정/저장소 이름을 읽음)
+  (function(){
+    const m = String(window.KIT_DATA_BASE || '').match(/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\//);
+    if(m){ ghLink.href = 'https://github.com/'+m[1]+'/'+m[2]+'/settings/secrets/actions/new'; ghLink.style.display = ''; }
+  })();
+
+  function showSub(sub){
+    out.value = JSON.stringify(sub.toJSON());
+    outBox.style.display = '';
+    offBtn.style.display = '';
+    regBtn.textContent = '다시 등록';
+  }
+  function hideSub(){ outBox.style.display = 'none'; offBtn.style.display = 'none'; regBtn.textContent = '1. 이 기기 푸시 등록'; out.value = ''; }
+
+  async function refresh(){
+    if(!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)){
+      setStatus('이 환경에서는 푸시를 쓸 수 없어요. 아이폰은 홈 화면에 추가한 앱에서만 가능해요 (iOS 16.4 이상).', true);
+      regBtn.disabled = true; return;
+    }
+    fetchKey().catch(()=>{});                    // 미리 받아 두면 등록 버튼이 바로 반응해요
+    try{
+      const reg = await navigator.serviceWorker.getRegistration();
+      const sub = reg && await reg.pushManager.getSubscription();
+      if(sub){ showSub(sub); setStatus('이 기기는 푸시가 등록돼 있어요.'); }
+      else { hideSub(); setStatus('아직 등록되지 않았어요.'); }
+    }catch(e){ setStatus('상태를 확인하지 못했어요.', true); }
+  }
+
+  regBtn.addEventListener('click', async ()=>{
+    try{
+      setStatus('등록하는 중…');
+      const permP = Notification.requestPermission();   // 터치 직후 바로 호출해야 아이폰에서 허용 창이 떠요
+      let key = cachedKey;
+      if(!key){
+        try{ key = await fetchKey(); }
+        catch(e){ setStatus('서버 키를 아직 받지 못했어요. GitHub Actions 가 한 번 실행된 뒤(최대 10분) 다시 눌러 주세요.', true); return; }
+      }
+      if(await permP !== 'granted'){ setStatus('알림이 허용되지 않았어요. 아이폰 설정 앱에서 이 앱의 알림을 허용해 주세요.', true); return; }
+      const appKey = b64u(key);
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if(sub){
+        const cur = sub.options && sub.options.applicationServerKey ? new Uint8Array(sub.options.applicationServerKey) : null;
+        if(!sameKey(cur, appKey)){ await sub.unsubscribe(); sub = null; }   // 다른 키로 만든 구독이면 새로 만들기
+      }
+      if(!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: appKey });
+      try{ localStorage.setItem(KEY_PUB, key); localStorage.setItem(FLAG, '1'); }catch(e){}
+      showSub(sub);
+      setStatus('등록됐어요. 아래 2번, 3번을 진행해 주세요.');
+    }catch(e){ setStatus('등록하지 못했어요: '+((e && e.message) || e), true); }
+  });
+
+  offBtn.addEventListener('click', async ()=>{
+    try{
+      const reg = await navigator.serviceWorker.getRegistration();
+      const sub = reg && await reg.pushManager.getSubscription();
+      if(sub) await sub.unsubscribe();
+      try{ localStorage.removeItem(FLAG); }catch(e){}
+      hideSub(); setStatus('등록을 해제했어요. GitHub의 PUSH_SUB 도 지워 두세요.');
+    }catch(e){ setStatus('해제하지 못했어요.', true); }
+  });
+
+  copyBtn.addEventListener('click', async ()=>{
+    try{ await navigator.clipboard.writeText(out.value); setStatus('복사했어요. 3번으로 GitHub에 붙여넣으세요.'); }
+    catch(e){ out.focus(); out.select(); try{ document.execCommand('copy'); setStatus('복사했어요.'); }catch(_){ setStatus('아래 칸을 길게 눌러 직접 복사해 주세요.', true); } }
+  });
+
+  refresh();
+})();
 </script>
 <div class="side-dim" id="sideDim"></div>
 <aside class="side-menu" id="sideMenu" aria-hidden="true">

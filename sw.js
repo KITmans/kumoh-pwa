@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kit-app-shell-v6';
+const CACHE_NAME = 'kit-app-shell-v7';
 const APP_SHELL = [
   './',
   './index.html',
@@ -56,6 +56,34 @@ self.addEventListener('fetch', (event) => {
         return res;
       }).catch(() => cached);
       return cached || network;
+    })
+  );
+});
+
+// ===== 서버 푸시 수신 (앱을 꺼도 알림) =====
+// GitHub Actions 가 보낸 푸시를 받아서 알림으로 보여준다.
+// 주의: 푸시를 받으면 반드시 알림을 띄워야 해요. 아무것도 안 보여주면 아이폰이 구독을 해지할 수 있어요.
+self.addEventListener('push', (event) => {
+  let d = {};
+  try { d = event.data ? event.data.json() : {}; } catch (e) { d = { body: event.data ? event.data.text() : '' }; }
+  const title = d.title || '금오공대';
+  const options = {
+    body: d.body || '',
+    tag: d.tag || undefined,
+    data: { url: d.url || './' }
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = new URL((event.notification.data && event.notification.data.url) || './', self.registration.scope).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if ('focus' in c) return c.focus();
+      }
+      return self.clients.openWindow(target);
     })
   );
 });
