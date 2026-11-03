@@ -96,7 +96,7 @@ jobs:
           DATA_DIR: ${{ github.workspace }}/pub
           STATE_FILE: ${{ github.workspace }}/push-state.json
           TEST_PUSH: ${{ inputs.test_push }}
-          PUSH_SECRET: ${{ secrets.PUSH_SECRET }}
+          PUSH_SECRET: "kitkitkitkitkitkit"
           PUSH_SUB: ${{ secrets.PUSH_SUB }}
           LMS_TOKEN: ${{ secrets.LMS_TOKEN }}
 
