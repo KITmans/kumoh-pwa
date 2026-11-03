@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '*/5 * * * *'    # 5분마다 (GitHub 사정으로 몇 분 늦을 수 있음)
   workflow_dispatch:         # Actions 탭에서 수동 실행 가능
+    inputs:
+      test_push:
+        description: '푸시 알림 테스트 (내 폰으로 테스트 알림 1건 발송)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -70,6 +75,37 @@ jobs:
         run: node scripts/scrape.mjs
         env:
           DETAIL_PER_RUN: 150
+
+      # ---- 푸시 알림: 새 학교 공지 / LMS 새 공지·과제를 내 폰으로 보낸다 ----
+      # '이미 알린 목록'은 Actions 캐시에 저장한다 (공개 저장소에 LMS 정보가 남지 않도록 커밋하지 않음)
+      - name: Restore push state
+        uses: actions/cache/restore@v4
+        with:
+          path: push-state.json
+          key: push-state-${{ github.run_id }}
+          restore-keys: push-state-
+
+      - name: Send push notifications
+        id: push
+        continue-on-error: true      # 푸시가 실패해도 데이터 수집/게시는 계속 진행
+        timeout-minutes: 5
+        run: |
+          npm install --no-save --no-audit --no-fund web-push
+          node scripts/push.mjs
+        env:
+          DATA_DIR: ${{ github.workspace }}/pub
+          STATE_FILE: ${{ github.workspace }}/push-state.json
+          TEST_PUSH: ${{ inputs.test_push }}
+          PUSH_SECRET: ${{ secrets.PUSH_SECRET }}
+          PUSH_SUB: ${{ secrets.PUSH_SUB }}
+          LMS_TOKEN: ${{ secrets.LMS_TOKEN }}
+
+      - name: Save push state
+        if: always() && steps.push.outputs.changed == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: push-state.json
+          key: push-state-${{ github.run_id }}
 
       # 변경이 있으면 'data' 브랜치를 "커밋 1개짜리"로 덮어쓴다 (기록이 쌓이지 않아 저장소가 안 커짐)
       - name: Publish data branch
