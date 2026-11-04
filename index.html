@@ -6689,6 +6689,7 @@ document.addEventListener('click', e=>{
   let lmsSubTab = lmsVisibleMenus[0] || 'assignments';
   let lmsFilterCourse = 'all';
   let lmsFilterStatus = 'all'; // all | unsubmitted | submitted | graded
+  let lmsSubmittedSubFilter = 'all'; // all(전체과제보기) | ungraded(미채점과제만 보기)
   let lmsCalOnlyUnsub = false; // LMS 일정 탭: 미제출 과제만 보기
 
   let lmsState = {
@@ -6811,12 +6812,18 @@ document.addEventListener('click', e=>{
       const stList = [
         { k:'all', l:'전체' },
         { k:'unsubmitted', l:'미제출' },
-        { k:'unsubmitted', l:'미제출 과제만 보기' },
+        { k:'submitted', l:'제출완료' },
         { k:'graded', l:'채점완료' }
       ];
       statusChips = '<div class="lms-chip-row">' + stList.map(s=>
         '<button type="button" class="lms-chip'+(lmsFilterStatus===s.k?' on':'')+'" data-lst="'+s.k+'">'+s.l+'</button>'
       ).join('') + '</div>';
+      if(lmsFilterStatus === 'submitted'){
+        statusChips += '<div class="lms-chip-row" style="width:100%;margin-top:4px;">' +
+          '<button type="button" class="lms-chip'+(lmsSubmittedSubFilter==='all'?' on':'')+'" data-lsub-st="all">전체과제보기</button>' +
+          '<button type="button" class="lms-chip'+(lmsSubmittedSubFilter==='ungraded'?' on':'')+'" data-lsub-st="ungraded">미채점과제만 보기</button>' +
+        '</div>';
+      }
     }
     if(lmsSubTab === 'cal'){
       statusChips = '<div class="lms-chip-row">' +
@@ -6846,7 +6853,10 @@ document.addEventListener('click', e=>{
     if(lmsSubTab === 'assignments'){
       let list = (lmsState.assignments || []).filter(a=>matchCourse(a.courseId));
       if(lmsFilterStatus === 'unsubmitted') list = list.filter(a=>!a.submitted && !a.graded);
-      else if(lmsFilterStatus === 'submitted') list = list.filter(a=>a.submitted);
+      else if(lmsFilterStatus === 'submitted'){
+        list = list.filter(a=>a.submitted);
+        if(lmsSubmittedSubFilter === 'ungraded') list = list.filter(a=>!a.graded);
+      }
       else if(lmsFilterStatus === 'graded') list = list.filter(a=>a.graded);
 
       if(!list.length){
@@ -7444,6 +7454,12 @@ document.addEventListener('click', e=>{
     const chip = e.target.closest && e.target.closest('[data-lst]');
     if(chip){
       lmsFilterStatus = chip.getAttribute('data-lst');
+      renderLMS();
+      return;
+    }
+    const subChip = e.target.closest && e.target.closest('[data-lsub-st]');
+    if(subChip){
+      lmsSubmittedSubFilter = subChip.getAttribute('data-lsub-st');
       renderLMS();
       return;
     }
