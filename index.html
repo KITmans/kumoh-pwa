@@ -3335,7 +3335,8 @@
   // 데이터는 GitHub Actions가 'data' 브랜치에 올려둔 JSON을 읽는다.
   //  - GitHub Pages(https://아이디.github.io/저장소/)에서 열면 주소를 자동으로 계산
   //  - 그 외(내 컴퓨터 테스트 등)에는 아래 DATA_BASE_OVERRIDE 에 직접 적어도 됨
-  const DATA_BASE_OVERRIDE = '';
+  const DATA_BASE_OVERRIDE = 'https://raw.githubusercontent.com/KITmans/kumoh-pwa/data/';
+  const LMS_BASE_OVERRIDE = 'https://raw.githubusercontent.com/KITmans/kumoh-pwa/data/';
   const DATA_BASE = (function(){
     if(DATA_BASE_OVERRIDE) return DATA_BASE_OVERRIDE;
     const h = location.hostname;
@@ -3425,7 +3426,7 @@
     buildingBases.forEach(base=>{
       const o = document.createElement('option');
       o.value = base;
-      o.textContent = buildingGroups[base].label+' ('+buildingGroups[base].rooms.length+')';
+      o.textContent = buildingGroups[base].label;
       buildingSel.appendChild(o);
     });
   })();
@@ -6810,7 +6811,7 @@ document.addEventListener('click', e=>{
       const stList = [
         { k:'all', l:'전체' },
         { k:'unsubmitted', l:'미제출' },
-        { k:'submitted', l:'제출완료' },
+        { k:'unsubmitted', l:'미제출 과제만 보기' },
         { k:'graded', l:'채점완료' }
       ];
       statusChips = '<div class="lms-chip-row">' + stList.map(s=>
