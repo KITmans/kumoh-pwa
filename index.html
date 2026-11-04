@@ -3119,6 +3119,29 @@
 
     <!-- ===== TAB: 알림 (사이드메뉴에서 진입) ===== -->
     <div class="tab-panel" data-tab="remind">
+      <section id="pushSection">
+        <h2>앱이 꺼져 있어도 받는 푸시</h2>
+        <p class="count-line">GitHub가 5분마다 새 학교 공지·LMS 소식을 확인해서, 앱을 종료했거나 백그라운드에 있어도 알림을 보내요.</p>
+        <p class="count-line" id="pushStatus"></p>
+        <div class="rm-row" style="justify-content:center;">
+          <button class="tt-btn" id="pushRegBtn" type="button">이 기기 푸시 등록</button>
+          <button class="tt-btn ghost" id="pushOffBtn" type="button" style="display:none;">등록 해제</button>
+        </div>
+        <div id="pushSubBox" style="display:none;margin-top:12px;">
+          <p class="count-line">아래 내용을 복사해서 GitHub 저장소 <b>Settings → Secrets and variables → Actions</b>의 <b>PUSH_SUB</b> 시크릿에 붙여넣어 주세요. 알림 종류(아래 체크)를 바꾸면 다시 복사해서 갱신해야 적용돼요. 이 내용은 남에게 공유하지 마세요.</p>
+          <textarea id="pushSubText" class="tt-search" readonly rows="5" style="width:100%;font-size:11px;box-sizing:border-box;"></textarea>
+          <div class="rm-row" style="justify-content:center;margin-top:8px;">
+            <button class="tt-btn" id="pushCopyBtn" type="button">복사하기</button>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h2>학교 공지 알림</h2>
+        <p class="count-line">금오공대 홈페이지에 새 공지가 올라오면 알려드려요. 받고 싶은 분류만 골라주세요.</p>
+        <label class="rm-sw"><input type="checkbox" data-pushnotice="academic"> 학사안내</label>
+        <label class="rm-sw" style="margin-top:8px;"><input type="checkbox" data-pushnotice="event"> 행사안내</label>
+        <label class="rm-sw" style="margin-top:8px;"><input type="checkbox" data-pushnotice="news"> 일반소식</label>
+      </section>
       <section>
         <h2>나의 LMS 새 공지 · 과제 알림</h2>
         <p class="count-line">LMS에 새로운 과목 공지나 과제가 올라오면 푸시 알림으로 바로 알려드려요.</p>
@@ -3190,7 +3213,7 @@
           <button class="tt-btn" id="rmAsk" type="button">알림 허용하기</button>
           <button class="tt-btn ghost" id="rmTest" type="button">테스트 알림 보내기</button>
         </div>
-        <p class="note-block">앱이 열려 있거나 백그라운드에 있을 때 알려드려요. 앱을 완전히 종료하면 알림이 오지 않을 수 있어요.<br>아이폰은 Safari에서 "홈 화면에 추가"한 앱에서만 알림을 받을 수 있어요.</p>
+        <p class="note-block">수업·캘린더·버스 알림은 앱이 열려 있거나 백그라운드에 있을 때 알려드려요. 학교 공지·LMS 알림은 위에서 푸시를 등록하면 앱이 꺼져 있어도 와요.<br>아이폰은 Safari에서 "홈 화면에 추가"한 앱에서만 알림을 받을 수 있어요.</p>
       </section>
     </div>
 
@@ -6521,6 +6544,7 @@ document.addEventListener('click', e=>{
     else if(Notification.permission==='denied') rmPerm.innerHTML = '<span class="rm-warn">알림이 차단돼 있어요. 브라우저/기기 설정에서 허용해 주세요.</span>';
     else rmPerm.textContent = '아직 알림 권한이 없어요. 아래 버튼으로 허용해 주세요.';
     document.getElementById('rmAsk').style.display = (rmSupported() && Notification.permission==='default') ? '' : 'none';
+    pushRender();
   }
 
   if(rmLmsAnnOn){
@@ -6613,6 +6637,112 @@ document.addEventListener('click', e=>{
       on:true
     });
     saveRM(); renderRM(); rmTick();
+  });
+
+  // ---- 서버 푸시 등록 (앱이 꺼져 있어도 GitHub Actions 가 알림을 보냄) ----
+  const PUSH_CFG_KEY = 'kit-push-v1';
+  const pushCfg = { notice:{ academic:true, event:true, news:true } };
+  try{
+    const o = JSON.parse(localStorage.getItem(PUSH_CFG_KEY)||'null');
+    if(o && o.notice && typeof o.notice==='object') Object.assign(pushCfg.notice, o.notice);
+  }catch(e){}
+  function savePushCfg(){ try{ localStorage.setItem(PUSH_CFG_KEY, JSON.stringify(pushCfg)); }catch(e){} }
+
+  const pushStatus = document.getElementById('pushStatus');
+  const pushRegBtn = document.getElementById('pushRegBtn');
+  const pushOffBtn = document.getElementById('pushOffBtn');
+  const pushSubBox = document.getElementById('pushSubBox');
+  const pushSubText = document.getElementById('pushSubText');
+
+  function pushSupported(){ return ('serviceWorker' in navigator) && ('PushManager' in window) && rmSupported(); }
+  function b64uToBytes(s){
+    const b = (s + '='.repeat((4 - s.length % 4) % 4)).replace(/-/g,'+').replace(/_/g,'/');
+    return Uint8Array.from(atob(b), c=>c.charCodeAt(0));
+  }
+  function sameBytes(a, b){
+    if(!a || !b) return false;
+    const x = new Uint8Array(a), y = new Uint8Array(b);
+    return x.length===y.length && x.every((v,i)=>v===y[i]);
+  }
+  async function pushGetSub(){
+    try{
+      const reg = await navigator.serviceWorker.getRegistration();
+      return reg ? await reg.pushManager.getSubscription() : null;
+    }catch(e){ return null; }
+  }
+  // GitHub 시크릿(PUSH_SUB)에 넣을 내용: 구독 정보 + 받을 알림 종류
+  function pushPayload(sub){
+    const j = sub.toJSON();
+    return JSON.stringify({
+      endpoint:j.endpoint, keys:j.keys,
+      prefs:{ notice:pushCfg.notice, lmsAnn:!!rm.lms.annOn, lmsAsg:!!rm.lms.asgOn }
+    });
+  }
+  async function pushRender(){
+    if(!pushStatus) return;
+    document.querySelectorAll('[data-pushnotice]').forEach(cb=>{
+      cb.checked = pushCfg.notice[cb.getAttribute('data-pushnotice')] !== false;
+    });
+    if(!pushSupported()){
+      pushStatus.innerHTML = '<span class="rm-warn">이 환경에서는 푸시를 쓸 수 없어요. 아이폰은 iOS 16.4 이상에서 Safari로 "홈 화면에 추가"한 앱에서만 가능해요.</span>';
+      pushRegBtn.style.display = 'none'; pushOffBtn.style.display = 'none'; pushSubBox.style.display = 'none';
+      return;
+    }
+    const sub = await pushGetSub();
+    if(sub && Notification.permission==='granted'){
+      pushStatus.textContent = '이 기기가 푸시에 등록돼 있어요. 아래 내용이 GitHub의 PUSH_SUB 시크릿에 저장돼 있어야 알림이 와요.';
+      pushSubBox.style.display = '';
+      const v = pushPayload(sub);
+      if(pushSubText.value !== v) pushSubText.value = v;
+      pushRegBtn.textContent = '다시 등록';
+      pushOffBtn.style.display = '';
+    } else {
+      pushStatus.textContent = '아직 이 기기가 등록되지 않았어요. 등록하면 복사할 내용이 나와요.';
+      pushSubBox.style.display = 'none';
+      pushRegBtn.textContent = '이 기기 푸시 등록';
+      pushOffBtn.style.display = 'none';
+    }
+  }
+  if(pushRegBtn) pushRegBtn.addEventListener('click', async ()=>{
+    if(!pushSupported()){ alert('이 환경에서는 푸시를 쓸 수 없어요.\n(아이폰은 홈 화면에 추가한 앱에서만 가능해요)'); return; }
+    if(!(await rmAskPermission())) return;
+    pushRegBtn.disabled = true;
+    try{
+      const r = await fetch(DATA_BASE+'push-key.json?t='+Date.now(), { cache:'no-cache' });
+      const pubKey = r.ok ? (await r.json()).publicKey : '';
+      if(!pubKey) throw new Error('NOKEY');
+      const keyBytes = b64uToBytes(pubKey);
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      // 푸시 인증키(PUSH_SECRET)가 바뀐 경우에만 기존 등록을 지우고 새로 만든다
+      if(sub && !sameBytes(sub.options && sub.options.applicationServerKey, keyBytes)){ await sub.unsubscribe(); sub = null; }
+      if(!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:keyBytes });
+    }catch(e){
+      alert(e && e.message==='NOKEY'
+        ? '푸시 공개키를 아직 받지 못했어요.\nGitHub 저장소에 PUSH_SECRET 시크릿을 저장하고 Actions의 "Update kumoh data"를 한 번 실행한 뒤 다시 눌러주세요.'
+        : '푸시 등록에 실패했어요: '+((e && e.message) || e));
+    }
+    pushRegBtn.disabled = false;
+    pushRender();
+  });
+  if(pushOffBtn) pushOffBtn.addEventListener('click', async ()=>{
+    const sub = await pushGetSub();
+    if(sub){ try{ await sub.unsubscribe(); }catch(e){} }
+    pushRender();
+  });
+  const pushCopyBtn = document.getElementById('pushCopyBtn');
+  if(pushCopyBtn) pushCopyBtn.addEventListener('click', async ()=>{
+    let ok = false;
+    try{ await navigator.clipboard.writeText(pushSubText.value); ok = true; }catch(e){}
+    if(!ok){ pushSubText.select(); try{ ok = document.execCommand('copy'); }catch(e){} }
+    pushCopyBtn.textContent = ok ? '복사됐어요!' : '길게 눌러 직접 복사해 주세요';
+    setTimeout(()=>{ pushCopyBtn.textContent = '복사하기'; }, 2000);
+  });
+  document.addEventListener('change', e=>{
+    const cb = e.target.closest && e.target.closest('[data-pushnotice]');
+    if(!cb) return;
+    pushCfg.notice[cb.getAttribute('data-pushnotice')] = cb.checked;
+    savePushCfg(); pushRender();
   });
 
   document.getElementById('rmAsk').addEventListener('click', rmAskPermission);

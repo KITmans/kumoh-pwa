@@ -3,17 +3,14 @@ const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
+  './icons/icon.svg',
   './FlightSans-Regular.ttf',
   './FlightSans-Bold.ttf'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => Promise.all(APP_SHELL.map((u) => cache.add(u).catch(() => {})))) // 파일 하나가 없어도 설치는 계속 진행
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
   );
 });
 
@@ -72,6 +69,7 @@ self.addEventListener('push', (event) => {
   const title = d.title || '금오공대';
   const options = {
     body: d.body || '',
+    icon: './icons/icon-192.png',
     tag: d.tag || undefined,
     data: { url: d.url || './' }
   };

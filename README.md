@@ -88,6 +88,23 @@
 - **안드로이드(Chrome)**: 주소 접속 → 메뉴(⋮) → **홈 화면에 추가 / 앱 설치**
 - **아이폰(Safari)**: 주소 접속 → 공유 버튼 → **홈 화면에 추가**
 
+## 10단계. 앱이 꺼져 있어도 오는 푸시 알림 (학교 공지 / LMS 공지·과제)
+GitHub Actions가 5분마다 새 글을 확인하고, 있으면 웹 푸시를 보냅니다. 폰의 앱이 꺼져 있어도 도착해요.
+
+1. **시크릿 만들기** (Settings → Secrets and variables → Actions → New repository secret)
+   - `PUSH_SECRET`: 내가 정하는 16자 이상 아무 글자 (예: `my-kumoh-push-2026-abcdef`). 한 번 정하면 바꾸지 마세요.
+   - `LMS_TOKEN`: (LMS 알림을 받으려면) 앱 "나의 LMS"에 넣은 Canvas 액세스 토큰과 같은 값
+2. Actions → **Update kumoh data → Run workflow** 한 번 실행 (푸시 공개키가 `data` 브랜치에 만들어져요)
+3. 폰에서 홈 화면에 설치한 앱 실행 → 사이드메뉴 **알림** → **이 기기 푸시 등록** → 알림 허용
+4. 화면에 나온 내용을 **복사하기** → GitHub에 `PUSH_SUB` 시크릿으로 저장
+5. Actions → Run workflow → **test_push 체크** 후 실행 → 폰에 "테스트 알림"이 오면 성공
+6. 이후 새 공지·LMS 소식이 올라오면 5분 안팎으로 알림이 와요. (처음 실행 때는 기존 글을 알리지 않고 기준만 저장해요)
+
+- 알림 탭에서 학교 공지 분류(학사/행사/일반)나 LMS 공지·과제 체크를 바꾸면, 새로 나온 내용을 다시 `PUSH_SUB`에 붙여넣어야 적용돼요.
+- 폰을 바꾸거나 앱을 지웠다 다시 깔면 3~4단계를 다시 하세요.
+- 아이폰은 iOS 16.4 이상 + Safari "홈 화면에 추가"로 설치한 앱에서만 푸시가 와요.
+- LMS 확인이 안 되면(해외 IP 차단 등) Settings → Secrets and variables → Actions → **Variables**에 `LMS_BASE`를 추가해 접속 주소를 바꿀 수 있어요.
+
 ---
 
 # 앱을 고치고 싶을 때
