@@ -198,6 +198,25 @@ async function checkLms(events) {
 }
 
 // ---------- 발송 ----------
+// 방해금지 시간(한국 시간). prefs.quiet = { on, start:'23:00', end:'07:00' }, 자정을 넘겨도 된다.
+function nowKstMin() {
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date());
+  const g = (t) => Number(parts.find((p) => p.type === t)?.value);
+  return (g('hour') % 24) * 60 + g('minute');
+}
+const toMin = (s) => {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(s || '');
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+};
+function inQuiet(sub) {
+  const q = sub.prefs?.quiet;
+  if (!q || !q.on) return false;
+  const s = toMin(q.start), e = toMin(q.end);
+  if (s == null || e == null || s === e) return false;
+  const n = nowKstMin();
+  return s < e ? (n >= s && n < e) : (n >= s || n < e);
+}
+
 // 앱의 알림 설정(prefs)이 구독 정보에 같이 들어있다. 없으면 전부 받는다.
 function wants(sub, kind = '') {
   const p = sub.prefs;
@@ -256,6 +275,14 @@ if (!DRY) {
     vapid.publicKey,
     vapid.privateKey,
   );
+}
+
+// 모든 기기가 방해금지 시간이면 아무것도 확인/저장하지 않고 끝낸다.
+// 상태를 갱신하지 않으므로, 시간이 끝난 첫 실행에서 그동안 쌓인 새 소식이 한꺼번에 발송된다.
+if (!DRY && !TEST && subs.length && subs.every(inQuiet)) {
+  console.log('방해금지 시간이라 이번 실행은 건너뛰어요 (끝나면 쌓인 소식을 알려드려요)');
+  setOutput('changed', 'false');
+  process.exit(0);
 }
 
 const events = [];
