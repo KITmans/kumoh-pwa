@@ -3546,7 +3546,7 @@
     freeBuildingSel.appendChild(allOpt);
     buildingBases.forEach(base=>{
       const o = document.createElement('option');
-      o.value = base; o.textContent = buildingGroups[base].label+' ('+buildingGroups[base].rooms.length+')';
+      o.value = base; o.textContent = buildingGroups[base].label;
       freeBuildingSel.appendChild(o);
     });
   })();
@@ -6688,6 +6688,7 @@ document.addEventListener('click', e=>{
   let lmsSubTab = lmsVisibleMenus[0] || 'assignments';
   let lmsFilterCourse = 'all';
   let lmsFilterStatus = 'all'; // all | unsubmitted | submitted | graded
+  let lmsCalOnlyUnsub = false; // LMS 일정 탭: 미제출 과제만 보기
 
   let lmsState = {
     user: null,
@@ -6815,6 +6816,12 @@ document.addEventListener('click', e=>{
       statusChips = '<div class="lms-chip-row">' + stList.map(s=>
         '<button type="button" class="lms-chip'+(lmsFilterStatus===s.k?' on':'')+'" data-lst="'+s.k+'">'+s.l+'</button>'
       ).join('') + '</div>';
+    }
+    if(lmsSubTab === 'cal'){
+      statusChips = '<div class="lms-chip-row">' +
+        '<button type="button" class="lms-chip'+(!lmsCalOnlyUnsub?' on':'')+'" data-lcal="all">전체 일정</button>' +
+        '<button type="button" class="lms-chip'+(lmsCalOnlyUnsub?' on':'')+'" data-lcal="unsub">미제출 과제만</button>' +
+        '</div>';
     }
     lmsFilterBar.innerHTML = '<select id="lmsCourseFilterSel">'+courseOpts+'</select>' + statusChips;
   }
@@ -6976,9 +6983,9 @@ document.addEventListener('click', e=>{
     }
     // 5. 캘린더 이벤트 전체
     else if(lmsSubTab === 'cal'){
-      const list = (lmsState.calEventsAll || []).filter(u=>matchCourse(u.courseId));
+      const list = (lmsState.calEventsAll || []).filter(u=>matchCourse(u.courseId) && (!lmsCalOnlyUnsub || (u.type==='assignment' && !u.submitted)));
       if(!list.length){
-        lmsContentArea.innerHTML = '<div class="empty-state">등록된 LMS 캘린더 이벤트가 없어요.</div>';
+        lmsContentArea.innerHTML = '<div class="empty-state">'+(lmsCalOnlyUnsub ? '미제출 과제 일정이 없어요.' : '등록된 LMS 캘린더 이벤트가 없어요.')+'</div>';
         return;
       }
       lmsContentArea.innerHTML = list.map(u=>{
@@ -7297,6 +7304,7 @@ document.addEventListener('click', e=>{
           start_at: startAt,
           type: isAsg ? 'assignment' : (raw.type || fallbackType || 'event'),
           desc: cleanLmsHtmlText(raw.description, 80).replace(/\n+/g, ' '),
+          submitted: raw._submitted === true,
           html_url: raw.html_url || lmsCfg.host
         });
       };
@@ -7310,6 +7318,7 @@ document.addEventListener('click', e=>{
             start_at: a.due_at,
             type: 'assignment',
             description: a.submitted ? '제출완료' : '미제출 과제',
+            _submitted: !!a.submitted,
             html_url: a.html_url
           }, 'assignment');
         }
@@ -7434,6 +7443,12 @@ document.addEventListener('click', e=>{
     const chip = e.target.closest && e.target.closest('[data-lst]');
     if(chip){
       lmsFilterStatus = chip.getAttribute('data-lst');
+      renderLMS();
+      return;
+    }
+    const calChip = e.target.closest && e.target.closest('[data-lcal]');
+    if(calChip){
+      lmsCalOnlyUnsub = calChip.getAttribute('data-lcal') === 'unsub';
       renderLMS();
     }
   });
