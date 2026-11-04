@@ -3119,22 +3119,6 @@
 
     <!-- ===== TAB: 알림 (사이드메뉴에서 진입) ===== -->
     <div class="tab-panel" data-tab="remind">
-      <section id="pushSection">
-        <h2>앱이 꺼져 있어도 받는 푸시</h2>
-        <p class="count-line">GitHub가 5분마다 새 학교 공지·LMS 소식을 확인해서, 앱을 종료했거나 백그라운드에 있어도 알림을 보내요.</p>
-        <p class="count-line" id="pushStatus"></p>
-        <div class="rm-row" style="justify-content:center;">
-          <button class="tt-btn" id="pushRegBtn" type="button">이 기기 푸시 등록</button>
-          <button class="tt-btn ghost" id="pushOffBtn" type="button" style="display:none;">등록 해제</button>
-        </div>
-        <div id="pushSubBox" style="display:none;margin-top:12px;">
-          <p class="count-line">아래 내용을 복사해서 GitHub 저장소 <b>Settings → Secrets and variables → Actions</b>의 <b>PUSH_SUB</b> 시크릿에 붙여넣어 주세요. 알림 종류(아래 체크)를 바꾸면 다시 복사해서 갱신해야 적용돼요. 이 내용은 남에게 공유하지 마세요.</p>
-          <textarea id="pushSubText" class="tt-search" readonly rows="5" style="width:100%;font-size:11px;box-sizing:border-box;"></textarea>
-          <div class="rm-row" style="justify-content:center;margin-top:8px;">
-            <button class="tt-btn" id="pushCopyBtn" type="button">복사하기</button>
-          </div>
-        </div>
-      </section>
       <section>
         <h2>학교 공지 알림</h2>
         <p class="count-line">금오공대 홈페이지에 새 공지가 올라오면 알려드려요. 받고 싶은 분류만 골라주세요.</p>
@@ -3214,6 +3198,36 @@
           <button class="tt-btn ghost" id="rmTest" type="button">테스트 알림 보내기</button>
         </div>
         <p class="note-block">수업·캘린더·버스 알림은 앱이 열려 있거나 백그라운드에 있을 때 알려드려요. 학교 공지·LMS 알림은 위에서 푸시를 등록하면 앱이 꺼져 있어도 와요.<br>아이폰은 Safari에서 "홈 화면에 추가"한 앱에서만 알림을 받을 수 있어요.</p>
+      </section>
+      <section>
+        <h2>알림 받지 않는 시간</h2>
+        <p class="count-line">이 시간에는 학교 공지·LMS 푸시를 보내지 않고, 시간이 끝나면 그동안 쌓인 소식을 한꺼번에 알려드려요. (한국 시간 기준)</p>
+        <label class="rm-sw"><input type="checkbox" id="pushQuietOn"> 방해금지 시간 사용</label>
+        <div class="rm-row" id="pushQuietRow" style="align-items:center;gap:8px;">
+          <input type="time" class="tt-search" id="pushQuietStart" aria-label="시작 시각">
+          <span>부터</span>
+          <input type="time" class="tt-search" id="pushQuietEnd" aria-label="종료 시각">
+          <span>까지</span>
+        </div>
+        <p class="count-line">바꾼 뒤에는 아래 "앱이 꺼져 있어도 받는 푸시"에서 내용을 다시 복사해 PUSH_SUB 에 갱신해야 적용돼요.</p>
+      </section>
+      <section id="pushSection">
+        <details id="pushDetails">
+          <summary style="cursor:pointer;font-size:17px;font-weight:700;color:var(--ink);padding:2px 0;">앱이 꺼져 있어도 받는 푸시 (기기 등록)</summary>
+          <p class="count-line" style="margin-top:10px;">GitHub가 5분마다 새 학교 공지·LMS 소식을 확인해서, 앱을 종료했거나 백그라운드에 있어도 알림을 보내요.</p>
+          <p class="count-line" id="pushStatus"></p>
+          <div class="rm-row" style="justify-content:center;">
+            <button class="tt-btn" id="pushRegBtn" type="button">이 기기 푸시 등록</button>
+            <button class="tt-btn ghost" id="pushOffBtn" type="button" style="display:none;">등록 해제</button>
+          </div>
+          <div id="pushSubBox" style="display:none;margin-top:12px;">
+            <p class="count-line">아래 내용을 복사해서 GitHub 저장소 <b>Settings → Secrets and variables → Actions</b>의 <b>PUSH_SUB</b> 시크릿에 붙여넣어 주세요. 알림 종류나 방해금지 시간을 바꾸면 다시 복사해서 갱신해야 적용돼요. 이 내용은 남에게 공유하지 마세요.</p>
+            <textarea id="pushSubText" class="tt-search" readonly rows="5" style="width:100%;font-size:11px;box-sizing:border-box;"></textarea>
+            <div class="rm-row" style="justify-content:center;margin-top:8px;">
+              <button class="tt-btn" id="pushCopyBtn" type="button">복사하기</button>
+            </div>
+          </div>
+        </details>
       </section>
     </div>
 
@@ -6641,10 +6655,11 @@ document.addEventListener('click', e=>{
 
   // ---- 서버 푸시 등록 (앱이 꺼져 있어도 GitHub Actions 가 알림을 보냄) ----
   const PUSH_CFG_KEY = 'kit-push-v1';
-  const pushCfg = { notice:{ academic:true, event:true, news:true } };
+  const pushCfg = { notice:{ academic:true, event:true, news:true }, quiet:{ on:false, start:'23:00', end:'07:00' } };
   try{
     const o = JSON.parse(localStorage.getItem(PUSH_CFG_KEY)||'null');
     if(o && o.notice && typeof o.notice==='object') Object.assign(pushCfg.notice, o.notice);
+    if(o && o.quiet && typeof o.quiet==='object') Object.assign(pushCfg.quiet, o.quiet);
   }catch(e){}
   function savePushCfg(){ try{ localStorage.setItem(PUSH_CFG_KEY, JSON.stringify(pushCfg)); }catch(e){} }
 
@@ -6675,11 +6690,27 @@ document.addEventListener('click', e=>{
     const j = sub.toJSON();
     return JSON.stringify({
       endpoint:j.endpoint, keys:j.keys,
-      prefs:{ notice:pushCfg.notice, lmsAnn:!!rm.lms.annOn, lmsAsg:!!rm.lms.asgOn }
+      prefs:{ notice:pushCfg.notice, lmsAnn:!!rm.lms.annOn, lmsAsg:!!rm.lms.asgOn, quiet:pushCfg.quiet }
     });
   }
+  const pushQuietOn = document.getElementById('pushQuietOn');
+  const pushQuietStart = document.getElementById('pushQuietStart');
+  const pushQuietEnd = document.getElementById('pushQuietEnd');
+  function pushQuietChanged(){
+    pushCfg.quiet.on = pushQuietOn.checked;
+    if(pushQuietStart.value) pushCfg.quiet.start = pushQuietStart.value;
+    if(pushQuietEnd.value) pushCfg.quiet.end = pushQuietEnd.value;
+    savePushCfg(); pushRender();
+  }
+  [pushQuietOn, pushQuietStart, pushQuietEnd].forEach(el=>{ if(el) el.addEventListener('change', pushQuietChanged); });
   async function pushRender(){
     if(!pushStatus) return;
+    if(pushQuietOn && document.activeElement !== pushQuietStart && document.activeElement !== pushQuietEnd){
+      pushQuietOn.checked = !!pushCfg.quiet.on;
+      pushQuietStart.value = pushCfg.quiet.start;
+      pushQuietEnd.value = pushCfg.quiet.end;
+      pushQuietStart.disabled = pushQuietEnd.disabled = !pushCfg.quiet.on;
+    }
     document.querySelectorAll('[data-pushnotice]').forEach(cb=>{
       cb.checked = pushCfg.notice[cb.getAttribute('data-pushnotice')] !== false;
     });
