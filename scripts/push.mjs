@@ -107,6 +107,7 @@ function checkNotices(events) {
       .filter((n) => Number(n.articleNo) > last)
       .sort((a, b) => Number(a.articleNo) - Number(b.articleNo))
       .forEach((n) => events.push({
+        kind: `notice:${key}`,
         title: `[${label}] 새 공지`,
         body: n.title || '(제목 없음)',
         tag: `notice-${key}-${n.articleNo}`,
@@ -160,7 +161,7 @@ async function checkLms(events) {
         if (seenAnn.has(k)) continue;
         seenAnn.add(k);
         if (!firstRun && knownBefore[cid]) {
-          events.push({ title: `[LMS 새 공지] ${nameOf[cid] || '과목'}`, body: a.title || '(제목 없음)', tag: `lms-ann-${cid}-${a.id}` });
+          events.push({ kind: 'lmsAnn', title: `[LMS 새 공지] ${nameOf[cid] || '과목'}`, body: a.title || '(제목 없음)', tag: `lms-ann-${cid}-${a.id}` });
         }
       }
     } catch (e) {
@@ -181,7 +182,7 @@ async function checkLms(events) {
         seenAsg.add(k);
         if (!firstRun && knownBefore[cid]) {
           const due = a.due_at ? ` · 마감 ${fmtKST(a.due_at)}` : '';
-          events.push({ title: `[LMS 새 과제] ${c.name}`, body: `${a.name || '과제'}${due}`, tag: `lms-asg-${cid}-${a.id}` });
+          events.push({ kind: 'lmsAsg', title: `[LMS 새 과제] ${c.name}`, body: `${a.name || '과제'}${due}`, tag: `lms-asg-${cid}-${a.id}` });
         }
       }
       known[cid] = 1;
@@ -197,17 +198,31 @@ async function checkLms(events) {
 }
 
 // ---------- 발송 ----------
+// 앱의 알림 설정(prefs)이 구독 정보에 같이 들어있다. 없으면 전부 받는다.
+function wants(sub, kind = '') {
+  const p = sub.prefs;
+  if (!p || typeof p !== 'object') return true;
+  if (kind.startsWith('notice:')) return p.notice?.[kind.slice(7)] !== false;
+  if (kind === 'lmsAnn') return p.lmsAnn !== false;
+  if (kind === 'lmsAsg') return p.lmsAsg !== false;
+  return true;
+}
+
 async function sendAll(subs, events) {
-  const list = events.length > MAX_SEND
-    ? [...events.slice(0, MAX_SEND - 1), { title: '새 소식', body: `그 외 ${events.length - (MAX_SEND - 1)}건이 더 있어요`, tag: `more-${Date.now()}` }]
-    : events;
   let ok = 0;
+  let attempted = 0;
   const dead = new Set();
-  for (const ev of list) {
-    const payload = JSON.stringify({ title: ev.title, body: ev.body, tag: ev.tag, url: './' });
-    for (const sub of subs) {
+  for (const sub of subs) {
+    const mine = events.filter((e) => wants(sub, e.kind));
+    const list = mine.length > MAX_SEND
+      ? [...mine.slice(0, MAX_SEND - 1), { title: '새 소식', body: `그 외 ${mine.length - (MAX_SEND - 1)}건이 더 있어요`, tag: `more-${Date.now()}` }]
+      : mine;
+    const target = { endpoint: sub.endpoint, keys: sub.keys };
+    for (const ev of list) {
+      attempted++;
+      const payload = JSON.stringify({ title: ev.title, body: ev.body, tag: ev.tag, url: './' });
       try {
-        await webpush.sendNotification(sub, payload, { TTL: 60 * 60 * 24, urgency: 'normal' });
+        await webpush.sendNotification(target, payload, { TTL: 60 * 60 * 24, urgency: 'normal' });
         ok++;
       } catch (e) {
         if (e.statusCode === 404 || e.statusCode === 410) dead.add(sub.endpoint);
@@ -215,7 +230,7 @@ async function sendAll(subs, events) {
       }
     }
   }
-  return { ok, dead: [...dead] };
+  return { ok, attempted, dead: [...dead] };
 }
 
 // ---------- 실행 ----------
@@ -271,13 +286,15 @@ if (TEST) {
 }
 
 let sendOk = 0;
+let attempted = 0;
 if (events.length) {
   if (DRY) {
     console.log(JSON.stringify(events, null, 2));
   } else {
     const r = await sendAll(subs, events);
     sendOk = r.ok;
-    console.log(`알림 ${events.length}건 · 발송 성공 ${r.ok}회`);
+    attempted = r.attempted;
+    console.log(`알림 ${events.length}건 · 발송 시도 ${r.attempted}회 · 성공 ${r.ok}회`);
     if (r.dead.length) warn('푸시 구독이 만료됐어요. 앱에서 "다시 등록" 후 PUSH_SUB 시크릿을 갱신해 주세요.');
   }
 } else {
@@ -285,7 +302,8 @@ if (events.length) {
 }
 
 // 발송에 모두 실패했다면 "알린 것"으로 처리하지 않고 다음 실행에서 다시 시도한다
-const advance = TEST ? false : DRY ? true : (!events.length || sendOk > 0);
+// (앱 설정으로 전부 걸러져 보낼 게 없었던 경우도 "알린 것"으로 본다)
+const advance = TEST ? false : DRY ? true : (attempted === 0 || sendOk > 0);
 if (advance && JSON.stringify(state) !== stateBefore) {
   fs.writeFileSync(STATE_FILE, JSON.stringify(state));
   setOutput('changed', 'true');
