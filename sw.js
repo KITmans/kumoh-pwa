@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kit-app-shell-v8';
+const CACHE_NAME = 'kit-app-shell-v9';
 const APP_SHELL = [
   './',
   './index.html',
@@ -73,8 +73,37 @@ self.addEventListener('push', (event) => {
     tag: d.tag || undefined,
     data: { url: d.url || './' }
   };
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(Promise.all([
+    self.registration.showNotification(title, options),
+    logNotif(title, options.body)
+  ]));
 });
+
+// 받은 알림을 IndexedDB 에 저장 (앱의 종 모양 알림 기록에서 읽음)
+function logNotif(title, body) {
+  return new Promise((resolve) => {
+    try {
+      const r = indexedDB.open('kit-notif', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('log', { keyPath: 'id', autoIncrement: true });
+      r.onerror = () => resolve();
+      r.onsuccess = () => {
+        const db = r.result;
+        const tx = db.transaction('log', 'readwrite');
+        const s = tx.objectStore('log');
+        s.add({ title, body, ts: Date.now() });
+        const c = s.getAllKeys();
+        c.onsuccess = () => { const k = c.result || []; for (let i = 0; i < k.length - 100; i++) s.delete(k[i]); };
+        tx.oncomplete = () => {
+          db.close();
+          self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then((list) => list.forEach((c2) => c2.postMessage({ type: 'notif-log' })))
+            .then(resolve, resolve);
+        };
+        tx.onerror = () => resolve();
+      };
+    } catch (e) { resolve(); }
+  });
+}
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
