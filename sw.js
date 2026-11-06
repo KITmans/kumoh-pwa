@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kit-app-shell-v9';
+const CACHE_NAME = 'kit-app-shell-v10';
 const APP_SHELL = [
   './',
   './index.html',
@@ -74,8 +74,8 @@ self.addEventListener('push', (event) => {
     data: { url: d.url || './' }
   };
   event.waitUntil(Promise.all([
-    self.registration.showNotification(title, options),
-    logNotif(title, options.body)
+    Promise.resolve(self.registration.showNotification(title, options)).catch(() => {}),
+    logNotif(title, options.body).catch(() => {})
   ]));
 });
 
