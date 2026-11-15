@@ -2870,6 +2870,66 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+<!-- ===== Kit 스플래시(인트로) 화면 시작 ===== -->
+<style>
+  #kit-splash {
+    position: fixed;
+    inset: 0;
+    background-color: #00A9CE; /* 아이콘 및 manifest.json 배경색과 100% 동일한 푸른색 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  #kit-splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  #kit-splash .splash-logo {
+    color: #FFFFFF !important;
+    font-family: 'Flight Sans', "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 68px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1 !important;
+    animation: kitSplashPop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+  }
+  @keyframes kitSplashPop {
+    0% { opacity: 0; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+</style>
+
+<div id="kit-splash" aria-hidden="true">
+  <span class="splash-logo">Kit</span>
+</div>
+
+<script>
+  (function(){
+    var splash = document.getElementById('kit-splash');
+    if (!splash) return;
+    var metaTheme = document.querySelector('meta[name="theme-color"]');
+    var prevColor = metaTheme ? metaTheme.getAttribute('content') : '#17171C';
+
+    // 스플래시 표시 중에는 상단 상태바 색상도 아이콘 배경색(#00A9CE)으로 맞춤
+    if (metaTheme) metaTheme.setAttribute('content', '#00A9CE');
+
+    // 1.5초(1500ms) 동안 표시 후 부드럽게 사라짐
+    setTimeout(function(){
+      splash.classList.add('hide');
+      if (metaTheme) metaTheme.setAttribute('content', prevColor);
+      setTimeout(function(){
+        if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+      }, 400);
+    }, 1500);
+  })();
+</script>
+<!-- ===== Kit 스플래시(인트로) 화면 끝 ===== -->
 <div class="wrap">
 
   <header class="top">
